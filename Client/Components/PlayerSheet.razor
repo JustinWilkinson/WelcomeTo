@@ -1,0 +1,15 @@
+﻿<div class="container-fluid grass-background p-2">
+    <TabControl>
+        <TabPage Title="Board">
+            <PlayerBoard />
+        </TabPage>
+        <TabPage Title="Score Sheet">
+            <PlayerScoreSheet />
+        </TabPage>
+    </TabControl>
+</div>
+
+@code{
+    [Parameter]
+    public Player Player { get; set; }
+}
