@@ -1,0 +1,82 @@
+﻿@inject IHttpService Http
+@inject IJSRuntime JSRuntime
+
+@if (ChatMessages == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="card border rounded">
+        <div id="@Id" class="overflow-auto p-0" style="height: 71vh;">
+            <ul class="list-group">
+                @foreach (var chatMessage in ChatMessages.OrderBy(c => c.SentAt))
+                {
+                    <li class="list-group-item adjustable-font-size-small pt-2 pb-2" title="Sent at @chatMessage.SentAt.ToLocalTime().ToString("HH:mm:ss")">
+                        <span class="font-weight-bold">@chatMessage.PlayerName:</span> @chatMessage.Message
+                    </li>
+                }
+            </ul>
+        </div>
+        <div class="card-footer pt-2 pb-2">
+            <input id="@($"new{Id}")" type="text" class="form-control w-100" style="font-size: small;" value="@_newMessage" @oninput="e => _newMessage = e.Value.ToString()" @onkeydown="@(e => HandleKeyDown(e))" placeholder="Type a message..." autocomplete="off"/>
+        </div>
+    </div>
+}
+
+
+@code {
+    [Parameter]
+    public List<GameMessage> ChatMessages { get; set; }
+
+    [CascadingParameter]
+    public GameHubCommunicator HubCommunicator { get; set; }
+
+    [CascadingParameter]
+    public Player Player { get; set; }
+
+    [Parameter]
+    public string OverrideHubGroup { get; set; }
+
+    [Parameter]
+    public string ChatId { get; set; }
+
+    [Parameter]
+    public string Id { get; set; }
+
+    private string _newMessage;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("cryptonyms.scrollToBottomOfElement", Id);
+        }
+    }
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Escape")
+        {
+            await JSRuntime.InvokeVoidAsync("cryptonyms.blurElement", Id);
+        }
+        else if (e.Key == "Enter")
+        {
+            await SendChatMessageAsync();
+        }
+    }
+
+    private async Task SendChatMessageAsync()
+    {
+        if (!string.IsNullOrWhiteSpace(_newMessage))
+        {
+            var chatMessage = new GameMessage(Player.Name, _newMessage);
+            ChatMessages.Add(chatMessage);
+            await Task.WhenAll(
+                Http.PutAsync("api/Message/AddMessage", new { MessageBoardId = ChatId, GameMessage = chatMessage }),
+                HubCommunicator.SendGameMessageAsync(ChatId, chatMessage));
+            await JSRuntime.InvokeVoidAsync("cryptonyms.scrollToBottomOfElement", Id);
+            _newMessage = null;
+        }
+    }
+}

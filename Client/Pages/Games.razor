@@ -1,0 +1,91 @@
+﻿@page "/Games"
+
+@inject IHttpService Http
+@inject IJSRuntime JSRuntime
+
+<div class="row">
+    <div class="col-11">
+        <h1>Games</h1>
+        <div class="row pl-3">
+            <NavLink class="nav-link pl-0" href="@($"WaitingRoom/{Guid.NewGuid().ToString()}")" Match="NavLinkMatch.All">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Click here to start a new game...
+            </NavLink>
+        </div>
+        <div class="row pl-3">
+            <p><strong>Note: </strong>Completed games are cleared daily at 00:00 (UTC). Games in progress will also be cleared if they are older than 5 days.</p>
+        </div>
+    </div>
+    <div class="col-1">
+        Put an image here?
+    </div>
+</div>
+
+@if (_games == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="container-fluid">
+        <div class="row">
+            <h3>Public Games</h3>
+        </div>
+        <div class="row">
+            <table id="GamesTable" class="table table-striped table-bordered w-100">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Started</th>
+                        <th>Completed</th>
+                        <th>Number of Players</th>
+                        <th>Winner</th>
+                        <th>Final Message</th>
+                        <th>Link</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var game in _games.OrderByDescending(g => g.StartedAtUtc ?? DateTime.MaxValue).ThenBy(g => g.Name))
+                    {
+                        <tr>
+                            <td>@game.Name</td>
+                            <td>@(game.StartedAtUtc?.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss")  ?? "Not yet started")</td>
+                            <td>@(game.CompletedAtUtc?.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss") ?? "In Progress")</td>
+                            <td>@(game.Players?.Count ?? 0)</td>
+                            <td>@(game.Winner ?? "Undecided")</td>
+                            <td>@game.CompletedMessage</td>
+                            <td>
+                                @if (!game.CompletedAtUtc.HasValue)
+                                {
+                                    <a href="PlayGame/@game.Id">
+                                        <span class="oi oi-list-rich" aria-hidden="true"></span> Go to game
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span>Game Completed</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+@code {
+    private IEnumerable<Game> _games;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _games = await Http.GetAsync<IEnumerable<Game>>("api/Game/List");
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("cryptonyms.initialiseGamesDataTable");
+        }
+    }
+}

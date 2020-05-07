@@ -1,0 +1,160 @@
+﻿@page "/WaitingRoom/{GameId}"
+
+@inject IHttpService Http
+@inject GameStorage Storage
+@inject NavigationManager NavigationManager
+@inject GameHubCommunicator GameHub
+
+<h3>Waiting Room</h3>
+@if (_game == null)
+{
+    <p><em>Loading...</em></p>
+}
+else if (_game.StartedAtUtc.HasValue)
+{
+    <p>Sorry, this game has been started by the host! <a href="" @onclick="HostNewGame">Click here to host a new game</a></p>
+}
+else
+{
+    <p>Distribute this URL to any players. You can edit your player name using the input box in the table.</p>
+    <div class="row w-100 pl-3">
+        <table class="table table-striped table-bordered col-4">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Player Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (var i = 0; i < _game.Players.Count; i++)
+                {
+                    <tr>
+                        <td class="align-middle">@(i + 1)</td>
+                        <td>
+                            <input class="form-control" type="text" value="@_game.Players[i].Name" disabled="@(_game.Players[i].Name != _player.Name)" @onchange="e => ChangeNameAsync(e.Value.ToString())" />
+                            @if (_newNameValidationMessage != null)
+                            {
+                                <label class="text-danger ml-2">@_newNameValidationMessage</label>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="row w-100 pl-3">
+        @if (_player.IsHost)
+        {
+            <button class="btn btn-success" disabled="@(_game.Players.Count < 1)" @onclick="StartGameAsync">Start Game</button>
+        }
+        else
+        {
+            <span>Waiting for host to start game...</span>
+        }
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string GameId { get; set; }
+
+    private Game _game;
+    private Player _player;
+    private string _newNameValidationMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Storage.GameId != GameId)
+        {
+            Storage.GameId = GameId;
+            Storage.PlayerName = null;
+        }
+
+        await ConfigureHubAsync();
+        _game = await Http.GetAsync<Game>($"api/Game/Get?id={GameId}");
+        if (_game == null)
+        {
+            await Http.PutAsync("api/Game/New", new { GameId = GameId, Name = "Unnamed Game", PrivateGame = false });
+            _game = await Http.GetAsync<Game>($"api/Game/Get?id={GameId}");
+            _player = _game.Players.Single();
+        }
+        else if (_game.StartedAtUtc.HasValue)
+        {
+            return;
+        }
+        else
+        {
+            var playerName = Storage.PlayerName;
+            if (playerName == null)
+            {
+                await JoinGameAsync();
+            }
+            else
+            {
+                _player = _game.Players.SingleOrDefault(p => p.Name == playerName);
+                if (_player == null)
+                {
+                    Storage.PlayerName = null;
+                    await JoinGameAsync();
+                }
+            }
+        }
+
+        Storage.PlayerName = _player.Name;
+    }
+
+    private async Task ConfigureHubAsync()
+    {
+        GameHub.RegisterHandler("UpdateGame", async () =>
+        {
+            _game = await Http.GetAsync<Game>($"api/Game/Get?id={GameId}");
+            StateHasChanged();
+        });
+
+        await GameHub.StartAsync();
+        await GameHub.AddToGroupAsync(GameId);
+    }
+
+    private async Task JoinGameAsync()
+    {
+        _player = await Http.PostAsync<Player>($"api/Game/Join", GameId);
+        _game.Players.Add(_player);
+        await GameHub.UpdateGameAsync(GameId);
+    }
+
+    private async Task ChangeNameAsync(string newName)
+    {
+        if (_player.Name != newName)
+        {
+            if (string.IsNullOrWhiteSpace(newName))
+            {
+                _newNameValidationMessage = "Please enter a non-empty name!";
+            }
+            else if (_game.Players.Any(x => x.Name == newName))
+            {
+                _newNameValidationMessage = "A player with that name already exists in this game!";
+            }
+            else
+            {
+                await Task.WhenAll(
+                    Http.PostAsync("api/Game/UpdatePlayer", new { GameId = GameId, OldName = _player.Name, NewName = newName }),
+                    GameHub.UpdateGameAsync(GameId));
+                _player.Name = newName;
+                Storage.PlayerName = _player.Name;
+                _newNameValidationMessage = null;
+            }
+        }
+    }
+
+    private async Task StartGameAsync()
+    {
+        await Http.PostAsync("api/Game/Start", GameId);
+        await GameHub.UpdateGameAsync(GameId);
+        NavigationManager.NavigateTo($"PlayGame/{GameId}");
+    }
+
+    private void HostNewGame()
+    {
+        NavigationManager.NavigateTo($"WaitingRoom/{Guid.NewGuid().ToString()}", true);
+    }
+}

@@ -1,0 +1,27 @@
+﻿@page "/"
+
+@inject IHttpService Http
+
+<h1>Welcome to WelcomeTo</h1>
+
+<div class="container-fluid">
+    <div class="row">
+        <p>An online game inspired by the popular <a href="https://boardgamegeek.com/boardgame/233867/welcome/" target="_blank">Welcome To boardgame</a>. @(_gameCountString ?? "Fetching statistics...")</p>
+    </div>
+    <div class="row">
+        <p>Learn more about WelcomeTo by going to the <NavLink href="About" Match="NavLinkMatch.All">About page</NavLink>, or <NavLink href="NewGame" Match="NavLinkMatch.All">click here to create a new game</NavLink>.</p>
+    </div>
+    <div>
+        Put an image here?
+    </div>
+</div>
+
+@code {
+    private string _gameCountString;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var gameCount = await Http.GetAsync<int>("api/Game/Count");
+        _gameCountString = $"We have currently hosted {gameCount.ToString("N0")} game{(gameCount == 1 ? "" : "s")}!";
+    }
+}

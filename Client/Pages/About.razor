@@ -1,0 +1,147 @@
+﻿@page "/About"
+
+@inject IHttpService Http
+
+<div class="container-fluid">
+    <h1>About WelcomeTo</h1>
+
+    <div class="row">
+        <div class="col-10">
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h4 class="mb-0">Basic Information</h4>
+                </div>
+                <div class="card-body">
+                    <ul>
+                        <li>WelcomeTo was created during the COVID-19 outbreak to allow people to play games together online whilst social distancing.</li>
+                        <li>It has built in messaging to allow players to communicate with other players in the game, but feel free to bring along your own voice chats!</li>
+                        <li>Since its public release we have hosted @(_gameCountString ?? "fetching statistics...").</li>
+                    </ul>
+                    <p class="mb-0">
+                        Stay safe, and enjoy!
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-2 text-center">
+            <img src="/images/silhouette-agents.png" style="height: 25vh; " />
+        </div>
+    </div>
+
+    <div class="card mb-5">
+        <div class="card-header">
+            <h4 class="mb-0">Player Guide</h4>
+        </div>
+        <div class="card-body">
+            <p>Click the tabs below to show documentation on the relevant subject.</p>
+            <div class="card border rounded">
+                <TabControl AdditionalButtonGroupClasses="card-header">
+                    <TabPage Title="New Games">
+                        <div class="card-body">
+                            <ul class="mb-0">
+
+                            </ul>
+                            <div class="row mt-2">
+
+                            </div>
+                        </div>
+                    </TabPage>
+                    <TabPage Title="Player Identification">
+                        <div class="card-body">
+                            <ul class="mb-0">
+
+                            </ul>
+                            <div class="row mt-2">
+
+                            </div>
+                        </div>
+                    </TabPage>
+                    <TabPage Title="Gameplay">
+                        <div class="card-body">
+                            <ul class="mb-0">
+
+                            </ul>
+                            <div class="row mt-2">
+
+                            </div>
+                        </div>
+                    </TabPage>
+                </TabControl>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-5">
+        <h3>Acknowledgements:</h3>
+        <p>WelcomeTo gameplay was inspired by the popular <a href="https://czechgames.com/en/codenames/" target="_blank">Codenames boardgame</a>.</p>
+        <div class="card mb-3">
+            <div class="card-header">
+                <h4 class="mb-0">Software</h4>
+            </div>
+            <div class="card-body">
+                <p>
+                    WelcomeTo was created using Microsoft's <a href="https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor" target="_blank">Blazor</a> WebAssembly.
+                    The site was authored by <a href="https://github.com/JustinWilkinson/" target="_blank">Justin Wilkinson</a>, and makes use of the below open source software libraries, listed by category and alphabetically.
+                </p>
+                <div class="row">
+                    <div class="col">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <h5 class="mb-0">Client</h5>
+                            </div>
+                            <div class="card-body">
+                                <ul>
+                                    <li>Cloudcrate's <a href="https://github.com/cloudcrate/BlazorStorage/blob/master/LICENSE.txt" target="_blank">BlazorStorage</a> v3.0.0</li>
+                                    <li>Green Sock's <a href="https://greensock.com/standard-license/" target="_blank">GSAP</a> v3.2.6</li>
+                                    <li>JamesNK's <a href="https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md" target="_blank">NewtonSoft.Json</a> v12.0.3</li>
+                                    <li><a href="https://jquery.org/license/" target="_blank">jQuery</a> JavaScript Library v3.5.0</li>
+                                    <li><a href="https://www.useiconic.com/open" target="_blank">Open Iconic</a></li>
+                                    <li>SpryMedia Ltd's <a href="https://datatables.net/license/mit" target="_blank">DataTables</a> v1.10.20</li>
+                                    <li>Twitter's <a href="https://github.com/twbs/bootstrap/blob/v4.0.0/LICENSE" target="_blank">Bootstrap</a> v4.3.1</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <h5 class="mb-0">Server</h5>
+                            </div>
+                            <div class="card-body">
+                                <ul>
+                                    <li>JamesNK's <a href="https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md" target="_blank">NewtonSoft.Json</a> v12.0.3</li>
+                                    <li><a href="https://github.com/NLog/NLog/blob/master/LICENSE.txt" target="_blank">NLog</a> v4.7.0</li>
+                                    <li><a href="https://www.quartz-scheduler.net/license.html" target="_blank">Quartz.NET</a> v3.0.7</li>
+                                    <li>SQLite's <a href="https://www.sqlite.org/copyright.html" target="_blank">System.Data.SQLite</a> v1.0.112</li>
+                                    <li>stefanprodan's <a href="https://github.com/stefanprodan/AspNetCoreRateLimit/blob/master/LICENSE.md" target="_blank">AspNetCoreRateLimit</a> v3.0.5</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-3">
+            <div class="card-header">
+                <h4 class="mb-0">Images</h4>
+            </div>
+            <div class="card-body">
+                <ul>
+
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    private string _gameCountString;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var gameCount = await Http.GetAsync<int>("api/Game/Count");
+        _gameCountString = $"{gameCount.ToString("N0")} game{(gameCount == 1 ? "" : "s")}.";
+    }
+}

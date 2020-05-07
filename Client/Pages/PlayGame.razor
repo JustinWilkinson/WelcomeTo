@@ -1,0 +1,61 @@
+﻿@page "/PlayGame/{GameId}"
+
+@inject IHttpService Http
+@inject GameStorage Storage
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@inject BlazorTimer Timer
+@inject GameHubCommunicator GameHub
+
+@if (Game == null)
+{
+    @if (_urlWrong)
+    {
+        <p>Sorry, it doesn't look like this is a valid game - please make sure your URL is correct and retry.</p>
+    }
+    else
+    {
+        <p><em>Loading...</em></p>
+    }
+}
+else
+{
+    <div>Board goes here</div>
+}
+
+@code {
+    public Player IdentifiedPlayer { get; set; }
+    public Game Game { get; private set; }
+
+    private bool _urlWrong = false;
+
+
+    [Parameter]
+    public string GameId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Game = await Http.GetAsync<Game>($"api/Game/Get?id={GameId}");
+
+        if (Game == null)
+        {
+            _urlWrong = true;
+        }
+        else
+        {
+            await ConfigureHubAsync();
+        }
+    }
+
+    private async Task ConfigureHubAsync()
+    {
+        GameHub.RegisterHandler("UpdateGame", async () =>
+        {
+            Game = await Http.GetAsync<Game>($"api/Game/Get?id={GameId}");
+            StateHasChanged();
+        });
+
+        await GameHub.StartAsync();
+        await GameHub.AddToGroupAsync(GameId);
+    }
+}
