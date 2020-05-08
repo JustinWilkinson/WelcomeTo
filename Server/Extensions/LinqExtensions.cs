@@ -37,8 +37,8 @@ namespace WelcomeTo.Server.Extensions
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="enumerable">Enumerable to distribute</param>
-        /// <param name="receivers">Collections to add values from the Enumerable to.</param>
-        public static void Distribute<T>(this IEnumerable<T> enumerable, params IEnumerable<T>[] receivers)
+        /// <param name="receivers">Stacks to push values from the Enumerable to</param>
+        public static void Distribute<T>(this IEnumerable<T> enumerable, params Stack<T>[] receivers)
         {
             if (receivers == null)
             {
@@ -59,7 +59,7 @@ namespace WelcomeTo.Server.Extensions
                 foreach (var value in enumerable)
                 {
                     var remainder = index++ % receiversCount;
-                    receivers[remainder].Append(value);
+                    receivers[remainder].Push(value);
                 }
             }
         }

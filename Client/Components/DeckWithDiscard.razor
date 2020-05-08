@@ -1,0 +1,33 @@
+﻿<CardTemplate>
+    @if (Deck.Count == 0)
+    {
+        <span>Deck @Index</span>
+    }
+    else
+    {
+        var topCard = Deck.Peek();
+        <span>@topCard.HouseNumber</span>
+    }
+</CardTemplate>
+<CardTemplate>
+    @if (Discard.Count == 0)
+    {
+        <span>Discard @Index</span>
+    }
+    else
+    {
+        var topCard = Discard.Peek();
+        <span>@topCard.Type</span>
+    }
+</CardTemplate>
+
+@code{
+    [Parameter]
+    public int Index{ get; set; }
+
+    [Parameter]
+    public Stack<Card> Deck { get; set; }
+
+    [Parameter]
+    public Stack<Card> Discard { get; set; }
+}

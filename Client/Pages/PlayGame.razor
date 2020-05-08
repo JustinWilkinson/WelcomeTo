@@ -20,71 +20,20 @@
 }
 else
 {
-    <div class="row mb-4" style="height: 25vh;">
-        <div class="col">
-            <div class="card border-rounded h-100">
-                <div class="card-body text-center text-muted">
-                    Deck 1
-                </div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="card border-rounded h-100">
-                <div class="card-body text-center text-muted">
-                    Discard 1
-                </div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="card border-rounded h-100">
-                <div class="card-body text-center text-muted">
-                    Deck 2
-                </div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="card border-rounded h-100">
-                <div class="card-body text-center text-muted">
-                    Discard 2
-                </div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="card border-rounded h-100">
-                <div class="card-body text-center text-muted">
-                    Deck 3
-                </div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="card border-rounded h-100">
-                <div class="card-body text-center text-muted">
-                    Discard 3
-                </div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="card border-rounded h-100">
-                <div class="card-body text-center text-muted">
-                    Plan 1
-                </div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="card border-rounded h-100">
-                <div class="card-body text-center text-muted">
-                    Plan 2
-                </div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="card border-rounded h-100">
-                <div class="card-body text-center text-muted">
-                    Plan 3
-                </div>
-            </div>
-        </div>
-    </div>
+<div class="row mb-4" style="height: 25vh;">
+    <DeckWithDiscard Index="1" Deck="Game.GameDeck.Deck1" Discard="Game.GameDeck.Discard1"/>
+    <DeckWithDiscard Index="2" Deck="Game.GameDeck.Deck2" Discard="Game.GameDeck.Discard2" />
+    <DeckWithDiscard Index="3" Deck="Game.GameDeck.Deck3" Discard="Game.GameDeck.Discard3" />
+    <CardTemplate>
+        @Game.Plans.Plan1.Type
+    </CardTemplate>
+    <CardTemplate>
+        @Game.Plans.Plan2.Type
+    </CardTemplate>
+    <CardTemplate>
+        @Game.Plans.Plan3.Type
+    </CardTemplate>
+</div>
     <TabControl>
         @foreach (var player in Game.Players)
         {
