@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Linq;
 using System.Text.Json;
 using WelcomeTo.Server.Extensions;
 using WelcomeTo.Server.Repository;
+using WelcomeTo.Server.Services;
 using WelcomeTo.Shared;
 
 namespace WelcomeTo.Server.Controllers
@@ -15,30 +17,32 @@ namespace WelcomeTo.Server.Controllers
         private readonly ILogger<GameController> _logger;
         private readonly IGameRepository _gameRepository;
         private readonly IGameCountRepository _gameCountRepository;
+        private readonly IGameBuilder _gameBuilder;
 
-        public GameController(ILogger<GameController> logger, IGameRepository gameRepository, IGameCountRepository gameCountRepository)
+        public GameController(ILogger<GameController> logger, IGameRepository gameRepository, IGameCountRepository gameCountRepository, IGameBuilder gameBuilder)
         {
             _logger = logger;
             _gameRepository = gameRepository;
             _gameCountRepository = gameCountRepository;
+            _gameBuilder = gameBuilder;
         }
 
         [HttpPut("New")]
         public void New(JsonElement json)
         {
-            _gameRepository.CreateGame(Game.NewGame(json.GetStringProperty("GameId"), json.GetStringProperty("Name")), json.GetBooleanProperty("PrivateGame"));
+            _gameRepository.CreateGame(_gameBuilder.Build(json.GetStringProperty("GameId"), json.GetStringProperty("Name")), json.GetBooleanProperty("PrivateGame"));
             _gameCountRepository.IncrementGameCount();
         }
 
         [HttpPost("Start")]
-        public void StartGame(JsonElement gameIdJson) => _gameRepository.ModifyGame(gameIdJson.GetString(), game => game.StartGame());
+        public void StartGame(JsonElement gameIdJson) => _gameRepository.ModifyGame(gameIdJson.GetString(), game => game.StartedAtUtc = DateTime.UtcNow);
 
         [HttpPost("Join")]
         public Player Join(JsonElement gameIdJson)
         {
             return _gameRepository.ModifyGame(gameIdJson.GetString(), game =>
             {
-                var player = new Player { Name = $"Player {game.Players.Count}" };
+                var player = new Player { Name = $"Player {game.Players.Count}", Board = _gameBuilder.StartingBoard, ScoreSheet = _gameBuilder.StartingScoreSheet };
                 game.Players.Add(player);
                 return player;
             });

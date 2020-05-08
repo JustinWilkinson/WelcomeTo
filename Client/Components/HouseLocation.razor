@@ -1,0 +1,58 @@
+﻿<div class="col-1 @GetHouseClass()">
+    <div class="card h-100 bg-transparent border-0">
+        <div class="card-header pt-1 pb-0 pl-2 pr-2 text-center bg-transparent border-0">
+            <div class="garden">
+                @if (House.Pool == PoolType.Built)
+                {
+                    <div class="bg-primary rounded w-75 h-100 float-right"></div>
+                }
+                else if (House.Pool == PoolType.Unbuilt)
+                {
+                    <div class="bg-secondary rounded w-75 h-100 float-right"></div>
+                }
+            </div>
+        </div>
+        <div class="card-body w-100 p-2">
+            <div class="d-flex h-100 justify-content-center bg-light">
+                <div class="align-self-center justify-content-center">
+                    @if (House.Number.HasValue)
+                    {
+                        <h3 class="p-0 mb-0 font-weight-bold bubblegum-font">@House.Number</h3>
+                    }
+                    else
+                    {
+                        <input type="number" min="0" max="15" class="form-control" />
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="card-footer p-0 text-center bg-transparent border-0">
+            <img src="/images/house.png" class="house-image" />
+        </div>
+    </div>
+</div>
+
+
+@code {
+    [Parameter]
+    public bool IsFirst { get; set; }
+
+    [Parameter]
+    public House House { get; set; }
+
+    private string GetHouseClass()
+    {
+        var houseClass = "house";
+
+        if (IsFirst)
+        {
+            houseClass += " house-first";
+        }
+        if (House.FenceBuilt)
+        {
+            houseClass += " house-fenced";
+        }
+
+        return houseClass;
+    }
+}

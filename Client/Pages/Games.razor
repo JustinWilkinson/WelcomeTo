@@ -51,14 +51,18 @@ else
                             <td>@(game.StartedAtUtc?.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss")  ?? "Not yet started")</td>
                             <td>@(game.CompletedAtUtc?.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss") ?? "In Progress")</td>
                             <td>@(game.Players?.Count ?? 0)</td>
-                            <td>@(game.Winner ?? "Undecided")</td>
+                            <td>@(game.Winner?.Name ?? "Undecided")</td>
                             <td>@game.CompletedMessage</td>
                             <td>
-                                @if (!game.CompletedAtUtc.HasValue)
+                                @if (!game.StartedAtUtc.HasValue)
                                 {
-                                    <a href="PlayGame/@game.Id">
+                                    <a href="WaitingRoom/@game.Id">
                                         <span class="oi oi-list-rich" aria-hidden="true"></span> Go to game
                                     </a>
+                                }
+                                else if (game.StartedAtUtc.HasValue && !game.CompletedAtUtc.HasValue)
+                                {
+                                    <span>Game has already started.</span>
                                 }
                                 else
                                 {

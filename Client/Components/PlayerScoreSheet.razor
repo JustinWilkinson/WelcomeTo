@@ -88,25 +88,30 @@
             </thead>
             <tbody>
                 <tr>
-                    <td class="text-center align-middle">xx</td>
-                    <td class="text-center align-middle">xx</td>
-                    <td class="text-center align-middle">xx</td>
-                    <td class="text-center align-middle">xx</td>
-                    <td class="text-center align-middle">xx</td>
-                    <td class="text-center align-middle">xx</td>
-                    <td class="text-center align-middle">xx</td>
-                    <td class="text-center align-middle">xx</td>
-                    <td class="text-center align-middle">xx</td>
-                    <td class="text-center text-white align-middle bg-danger">xx</td>
-                    <td class="text-center text-white align-middle bg-danger">xx</td>
+                    <td class="text-center align-middle">@ScoreSheet.Plan1</td>
+                    <td class="text-center align-middle">@ScoreSheet.Plan2</td>
+                    <td class="text-center align-middle">@ScoreSheet.Plan3</td>
+                    <td class="text-center align-middle">@ScoreSheet.TopParks</td>
+                    <td class="text-center align-middle">@ScoreSheet.MiddleParks</td>
+                    <td class="text-center align-middle">@ScoreSheet.BottomParks</td>
+                    <td class="text-center align-middle">@ScoreSheet.Pools</td>
+                    <td class="text-center align-middle">@ScoreSheet.TempAgency</td>
+                    <td class="text-center align-middle">@ScoreSheet.EstateValue</td>
+                    <td class="text-center text-white align-middle bg-danger">@ScoreSheet.Bis</td>
+                    <td class="text-center text-white align-middle bg-danger">@ScoreSheet.Refusals</td>
                 </tr>
             </tbody>
             <tfoot>
                 <tr class="table-secondary">
                     <td class="font-weight-bold text-center align-middle">Total: </td>
-                    <td colspan="10" class="font-weight-bold text-left align-middle">xxx</td>
+                    <td colspan="10" class="font-weight-bold text-left align-middle">@ScoreSheet.Total</td>
                 </tr>
             </tfoot>
         </table>
     </div>
 </div>
+
+@code{
+    [Parameter]
+    public ScoreSheet ScoreSheet { get; set; }
+}

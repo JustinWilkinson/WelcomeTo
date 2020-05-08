@@ -9,7 +9,9 @@
         <p>An online game inspired by the popular <a href="https://boardgamegeek.com/boardgame/233867/welcome/" target="_blank">Welcome To boardgame</a>. @(_gameCountString ?? "Fetching statistics...")</p>
     </div>
     <div class="row">
-        <p>Learn more about WelcomeTo by going to the <NavLink href="About" Match="NavLinkMatch.All">About page</NavLink>, or <NavLink href="NewGame" Match="NavLinkMatch.All">click here to create a new game</NavLink>.</p>
+        <p>
+            Learn more about WelcomeTo by going to the <NavLink href="About" Match="NavLinkMatch.All">About page</NavLink>, or <NavLink href="@($"WaitingRoom/{Guid.NewGuid().ToString()}")" Match="NavLinkMatch.All">click here to create a new game</NavLink>.
+        </p>
     </div>
     <div>
         Put an image here?
