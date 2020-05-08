@@ -5,8 +5,6 @@ namespace WelcomeTo.Shared
 {
     public class Game
     {
-        private static readonly Random _random = new Random();
-
         public Guid Id { get; set; }
 
         public string Name { get; set; }
@@ -21,22 +19,10 @@ namespace WelcomeTo.Shared
 
         public Turn CurrentTurn { get; set; }
 
-        public string Winner { get; set; }
+        public Player Winner { get; set; }
 
-        public static Game NewGame(string id, string name)
-        {
-            return new Game
-            {
-                Id = new Guid(id),
-                Name = name ?? "Unnamed Game",
-                Players = new List<Player> { new Player { Name = "Host", IsHost = true } },
-                CurrentTurn = new Turn()
-            };
-        }
+        public GameDeck GameDeck { get; set; }
 
-        public void StartGame()
-        {
-            StartedAtUtc = DateTime.UtcNow;
-        }
+        public CityPlans Plans { get; set; }
     }
 }

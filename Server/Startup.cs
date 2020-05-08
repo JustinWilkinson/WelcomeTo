@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Database = WelcomeTo.Server.Repository.Repository;
+using WelcomeTo.Server.Services;
 
 namespace WelcomeTo.Server
 {
@@ -46,6 +47,9 @@ namespace WelcomeTo.Server
             services.AddSingleton<IGameCountRepository, GameCountRepository>();
             services.AddSingleton<IGameRepository, GameRepository>();
             services.AddSingleton<IMessageRepository, MessageRepository>();
+
+            // Other Services
+            services.AddSingleton<IGameBuilder, GameBuilder>();
 
             // Rate limiter.
             services.AddMemoryCache();
