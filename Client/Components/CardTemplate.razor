@@ -1,6 +1,6 @@
 ﻿<div class="col">
     <div class="card border-rounded h-100">
-        <div class="card-body text-center">
+        <div class="card-body text-center @BodyClass">
             @ChildContent
         </div>
     </div>
@@ -9,4 +9,7 @@
 @code{
     [Parameter]
     public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public string BodyClass { get; set; }
 }

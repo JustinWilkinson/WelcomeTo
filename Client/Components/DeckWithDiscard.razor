@@ -1,33 +1,77 @@
-﻿<CardTemplate>
-    @if (Deck.Count == 0)
-    {
-        <span>Deck @Index</span>
-    }
-    else
-    {
-        var topCard = Deck.Peek();
-        <span>@topCard.HouseNumber</span>
-    }
-</CardTemplate>
-<CardTemplate>
-    @if (Discard.Count == 0)
-    {
-        <span>Discard @Index</span>
-    }
-    else
-    {
-        var topCard = Discard.Peek();
-        <span>@topCard.Type</span>
-    }
-</CardTemplate>
+﻿@if (Deck.Count == 0)
+{
+    <CardTemplate>
+        <div class="d-flex justify-content-center h-100">
+            <div class="align-self-center justify-content-center text-muted">
+                <h2 class="mb-0 bubblegum-font">Deck @Index</h2>
+            </div>
+        </div>
+    </CardTemplate>
+}
+else
+{
+    <CardTemplate BodyClass="card-background-house">
+        <img class="card-img" src="/images/house.png" style="height: 55%;" />
+        <div class="d-flex justify-content-center" style="height: 45%;">
+            <div class="align-self-center justify-content-center">
+                <h1 class="mb-0 bubblegum-font">@Deck.Peek().HouseNumber</h1>
+            </div>
+        </div>
+    </CardTemplate>
+}
+@if (Discard.Count == 0)
+{
+    <CardTemplate>
+        <div class="d-flex justify-content-cente h-100">
+            <div class="align-self-center justify-content-center text-muted">
+                <h3 class="mb-0 bubblegum-font">Discard @Index</h3>
+            </div>
+        </div>
+    </CardTemplate>
+}
+else
+{
+    <CardTemplate BodyClass="card-background-effect">
+        <img class="card-img h-75" src="/images/@GetEffectImage(Discard.Peek().Type)" />
+    </CardTemplate>
+}
 
 @code{
     [Parameter]
-    public int Index{ get; set; }
+    public int Index { get; set; }
 
     [Parameter]
     public Stack<Card> Deck { get; set; }
 
     [Parameter]
     public Stack<Card> Discard { get; set; }
+
+    private string GetEffectImage(CardType type)
+    {
+        var image = "";
+
+        switch (type)
+        {
+            case CardType.Bis:
+                image = "mailbox";
+                break;
+            case CardType.Fence:
+                image = "fence";
+                break;
+            case CardType.Park:
+                image = "tree";
+                break;
+            case CardType.Pool:
+                image = "pool";
+                break;
+            case CardType.RealEstateValue:
+                image = "coins";
+                break;
+            case CardType.TempAgency:
+                image = "barrier";
+                break;
+        }
+
+        return $"{image}.png";
+    }
 }
