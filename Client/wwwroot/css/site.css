@@ -291,7 +291,7 @@ app {
 
 .garden {
     height: 1.6rem;
-    background-image: url(/images/tree.png);
+    background-image: url(/images/garden.png);
     background-size: contain;
     background-repeat: repeat-x;
 }
@@ -314,4 +314,12 @@ app {
 
 .bubblegum-font {
     font-family: 'Bubblegum Sans';
+}
+
+.card-background {
+    background-color: moccasin;
+}
+
+.card-background-effect {
+    background-image: radial-gradient(white, moccasin);
 }

@@ -1,0 +1,79 @@
+﻿<div class="col">
+    <div class="card border-rounded h-100 card-background">
+        <div class="card-header">
+            <div class="float-left text-center">
+                <img class="house-image" src="/images/house.png" />
+            </div>
+            <div class="float-right text-center text-danger">
+                @CityPlan.Type
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="d-flex h-100 justify-content-center">
+                <div class="align-self-center justify-content-center">
+                    <div class="row text-center mb-2 small">
+                        @foreach (var size in _topRow)
+                        {
+                            <div class="col p-1 border border-dark">
+                                @for (var i = 0; i < size; i++)
+                                {
+                                    <span class="oi oi-home"></span>
+                                }
+                                <strong class="bubblegum-font">@size</strong>
+                            </div>
+                        }
+                    </div>
+                    <div class="row text-center small">
+                        @foreach (var size in _bottomRow)
+                        {
+                            <div class="col p-1 border border-dark">
+                                @for (var i = 0; i < size; i++)
+                                {
+                                    <span class="oi oi-home"></span>
+                                }
+                                <strong class="bubblegum-font">@size</strong>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <div class="float-left text-center">
+                <div class="rounded-circle bg-dark text-warning pl-2 pr-2">
+                    @CityPlan.FirstPoints
+                </div>
+            </div>
+            <div class="float-right text-center">
+                <div class="rounded-circle bg-warning text-dark pl-2 pr-2">
+                    @CityPlan.BasicPoints
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code{
+    [Parameter]
+    public CityPlan CityPlan { get; set; }
+
+    private List<int> _topRow = new List<int>();
+    private List<int> _bottomRow = new List<int>();
+
+    protected override void OnParametersSet()
+    {
+        var halfSize = CityPlan.EstateSizes.Sum() / 2;
+        var topRowSum = 0;
+        foreach (var size in CityPlan.EstateSizes)
+        {
+            topRowSum += size;
+            if (topRowSum > halfSize)
+            {
+                break;
+            }
+
+            _topRow.Add(size);
+        }
+        _bottomRow.AddRange(CityPlan.EstateSizes.Skip(_topRow.Count));
+    }
+}
