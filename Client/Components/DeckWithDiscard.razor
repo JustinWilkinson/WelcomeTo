@@ -32,7 +32,11 @@ else
 else
 {
     <CardTemplate BodyClass="card-background-effect">
-        <img class="card-img h-75" src="/images/@GetEffectImage(Discard.Peek().Type)" />
+        <div class="d-flex justify-content-center h-100">
+            <div class="align-self-center justify-content-center">
+                <img class="card-img" src="/images/@GetEffectImage(Discard.Peek().Type)" />
+            </div>
+        </div>
     </CardTemplate>
 }
 
