@@ -316,10 +316,10 @@ app {
     font-family: 'Bubblegum Sans';
 }
 
-.card-background-effect {
-    background-image: radial-gradient(white, moccasin);
+.card-background {
+    background-color: moccasin;
 }
 
-.card-background-house {
-    background-color: moccasin;
+.card-background-effect {
+    background-image: radial-gradient(white, moccasin);
 }
