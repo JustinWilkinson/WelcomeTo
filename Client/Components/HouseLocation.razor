@@ -13,20 +13,31 @@
             </div>
         </div>
         <div class="card-body w-100 p-2">
-            <div class="d-flex h-100 justify-content-center">
-                <div class="align-self-center justify-content-center bg-light">
-                    @if (House.Number.HasValue)
+            <div class="d-flex h-100 justify-content-center bg-light">
+                <div class="align-self-center text-center w-100">
+                    @if (!IsSelectedHouse && House.Number.HasValue)
                     {
-                        <h3 class="p-0 mb-0 font-weight-bold bubblegum-font">@House.Number</h3>
-                    }
-                    else if (CanBuildHere())
-                    {
-                        <input type="number" min="0" max="15" class="form-control text-center" />
+                        <h3 class="pt-1 mb-0 font-weight-bold bubblegum-font">@House.Number</h3>
                     }
                     else
                     {
-                        <input type="number" min="0" max="15" class="form-control text-center" disabled />
+                        var possibilities = GetPossibilitiesForBuilding();
+                        if ((!Parent.SelectedHouseIndex.HasValue || IsSelectedHouse) && possibilities.Any())
+                        {
+                            <select class="form-control py-0 rounded-0 centered-select" @onchange="OnHouseSelected">
+                                <option value="-1" selected>Select</option>
+                                @foreach (var possibility in possibilities)
+                                {
+                                    <option value="@possibility">@possibility</option>
+                                }
+                            </select>
+                        }
+                        else
+                        {
+                            <input type="number" min="0" max="15" class="form-control text-center" disabled />
+                        }
                     }
+
                 </div>
             </div>
         </div>
@@ -38,6 +49,9 @@
 
 
 @code {
+    [CascadingParameter]
+    public PlayerBoard Parent { get; set; }
+
     [CascadingParameter]
     public Turn CurrentTurn { get; set; }
 
@@ -63,20 +77,30 @@
         return houseClass;
     }
 
-    private bool CanBuildHere()
+    private IEnumerable<int> GetPossibilitiesForBuilding()
     {
-        var builtHouses = Street.Houses.Where(x => x.Number.HasValue);
+        var possibilities = CurrentTurn.GetHouseNumbers();
+        var builtHouses = Street.Houses.Where(x => x.Number.HasValue && x.Index != House.Index);
 
         if (!builtHouses.Any())
         {
-            return true;
+            return possibilities;
         }
         else
         {
             var nearestHouseLeft = builtHouses.Where(x => x.Index < House.Index).OrderBy(x => x.Index).FirstOrDefault();
             var nearestHouseRight = builtHouses.Where(x => x.Index > House.Index).OrderBy(x => x.Index).FirstOrDefault();
 
-            return CurrentTurn.GetHouseNumbers().Any(n => (nearestHouseLeft == null || n > nearestHouseLeft.Number.Value) && (nearestHouseRight == null || n < nearestHouseRight.Number.Value));
+            return possibilities.Where(n => (nearestHouseLeft == null || n > nearestHouseLeft.Number.Value) && (nearestHouseRight == null || n < nearestHouseRight.Number.Value));
         }
     }
+
+    private void OnHouseSelected(ChangeEventArgs e)
+    {
+        var value = Convert.ToInt32(e.Value);
+        House.Number = value >= 0 ? value : new int?();
+        Parent.SelectedHouseChanged(Street.Position, House.Number.HasValue ? House.Index : new int?());
+    }
+
+    private bool IsSelectedHouse => Parent.SelectedHouseStreet == Street.Position && Parent.SelectedHouseIndex == House.Index;
 }

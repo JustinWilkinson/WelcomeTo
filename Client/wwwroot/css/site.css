@@ -327,3 +327,7 @@ app {
 .card {
     user-select: none;
 }
+
+.centered-select {
+    text-align-last: center;
+}

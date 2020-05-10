@@ -18,9 +18,13 @@
         <p><em>Loading...</em></p>
     }
 }
+else if (IdentifiedPlayer == null)
+{
+    <p>Sorry, it doesn't look like you're part of this game. <NavLink href="@($"WaitingRoom/{Guid.NewGuid().ToString()}")" Match="NavLinkMatch.All">Click here to host a new game</NavLink></p>
+}
 else
 {
-    <CascadingValue Value="Game">
+    <CascadingValue Value="Game.CurrentTurn">
         <div class="row mb-4 h-25 overflow-auto">
             <DeckWithDiscard Index="1" Deck="Game.GameDeck.Deck1" Discard="Game.GameDeck.Discard1" />
             <DeckWithDiscard Index="2" Deck="Game.GameDeck.Deck2" Discard="Game.GameDeck.Discard2" />
@@ -59,7 +63,12 @@ else
         }
         else
         {
-            await ConfigureHubAsync();
+            IdentifiedPlayer = Game.Players.SingleOrDefault(x => x.Name == Storage.PlayerName);
+
+            if (IdentifiedPlayer != null)
+            {
+                await ConfigureHubAsync();
+            }
         }
     }
 
