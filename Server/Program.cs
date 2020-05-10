@@ -1,11 +1,11 @@
-﻿using WelcomeTo.Server.Jobs;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NLog;
 using NLog.Web;
 using System;
 using System.Threading.Tasks;
+using WelcomeTo.Server.Jobs;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace WelcomeTo.Server
