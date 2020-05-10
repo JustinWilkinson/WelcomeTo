@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 namespace WelcomeTo.Shared
 {
@@ -19,6 +18,11 @@ namespace WelcomeTo.Shared
 
         public Dictionary<Player, bool> PlayerActionTaken { get; set; }
 
-        public IEnumerable<int> GetHouseNumbers() => new[] { HouseNumberCard1.HouseNumber, HouseNumberCard2.HouseNumber, HouseNumberCard3.HouseNumber };
+        public IEnumerable<NumberEffectPair> GetNumberEffectPairs() => new[] 
+        { 
+            new NumberEffectPair { Number = HouseNumberCard1.HouseNumber, Effect = EffectCard1.Type },
+            new NumberEffectPair { Number = HouseNumberCard2.HouseNumber, Effect = EffectCard2.Type },
+            new NumberEffectPair { Number = HouseNumberCard3.HouseNumber, Effect = EffectCard3.Type }
+        };
     }
 }

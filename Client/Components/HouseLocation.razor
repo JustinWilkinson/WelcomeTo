@@ -22,13 +22,31 @@
                     else
                     {
                         var possibilities = GetPossibilitiesForBuilding();
-                        if ((!Parent.SelectedHouseIndex.HasValue || IsSelectedHouse) && possibilities.Any())
+                        if (IsSelectedHouse)
                         {
                             <select class="form-control py-0 rounded-0 centered-select" @onchange="OnHouseSelected">
-                                <option value="-1" selected>Select</option>
+                                <option value="null">Select</option>
                                 @foreach (var possibility in possibilities)
                                 {
-                                    <option value="@possibility">@possibility</option>
+                                    if (possibility.Equals(PlayerSheet.SelectedNumberEffectPair))
+                                    {
+                                        <option value="@JsonConvert.SerializeObject(possibility)" selected>@possibility.Number</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@JsonConvert.SerializeObject(possibility)">@possibility.Number</option>
+                                    }
+
+                                }
+                            </select>
+                        }
+                        else if (!PlayerSheet.SelectedHouseIndex.HasValue && possibilities.Any())
+                        {
+                            <select class="form-control py-0 rounded-0 centered-select" @onchange="OnHouseSelected">
+                                <option value="null" selected>Select</option>
+                                @foreach (var possibility in possibilities)
+                                {
+                                    <option value="@JsonConvert.SerializeObject(possibility)">@possibility.Number</option>
                                 }
                             </select>
                         }
@@ -50,7 +68,7 @@
 
 @code {
     [CascadingParameter]
-    public PlayerBoard Parent { get; set; }
+    public PlayerSheet PlayerSheet { get; set; }
 
     [CascadingParameter]
     public Turn CurrentTurn { get; set; }
@@ -77,9 +95,9 @@
         return houseClass;
     }
 
-    private IEnumerable<int> GetPossibilitiesForBuilding()
+    private IEnumerable<NumberEffectPair> GetPossibilitiesForBuilding()
     {
-        var possibilities = CurrentTurn.GetHouseNumbers();
+        var possibilities = CurrentTurn.GetNumberEffectPairs();
         var builtHouses = Street.Houses.Where(x => x.Number.HasValue && x.Index != House.Index);
 
         if (!builtHouses.Any())
@@ -91,16 +109,16 @@
             var nearestHouseLeft = builtHouses.Where(x => x.Index < House.Index).OrderBy(x => x.Index).FirstOrDefault();
             var nearestHouseRight = builtHouses.Where(x => x.Index > House.Index).OrderBy(x => x.Index).FirstOrDefault();
 
-            return possibilities.Where(n => (nearestHouseLeft == null || n > nearestHouseLeft.Number.Value) && (nearestHouseRight == null || n < nearestHouseRight.Number.Value));
+            return possibilities.Where(pair => (nearestHouseLeft == null || pair.Number > nearestHouseLeft.Number.Value) && (nearestHouseRight == null || pair.Number < nearestHouseRight.Number.Value));
         }
     }
 
     private void OnHouseSelected(ChangeEventArgs e)
     {
-        var value = Convert.ToInt32(e.Value);
-        House.Number = value >= 0 ? value : new int?();
-        Parent.SelectedHouseChanged(Street.Position, House.Number.HasValue ? House.Index : new int?());
+        var pair = JsonConvert.DeserializeObject<NumberEffectPair>(e.Value.ToString());
+        House.Number = pair?.Number;
+        PlayerSheet.SelectedHouseChanged(Street.Position, House.Number.HasValue ? House.Index : new int?(), pair);
     }
 
-    private bool IsSelectedHouse => Parent.SelectedHouseStreet == Street.Position && Parent.SelectedHouseIndex == House.Index;
+    private bool IsSelectedHouse => PlayerSheet.SelectedHouseStreet == Street.Position && PlayerSheet.SelectedHouseIndex == House.Index;
 }

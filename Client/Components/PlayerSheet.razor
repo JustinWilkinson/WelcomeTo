@@ -1,13 +1,15 @@
-﻿<div class="container-fluid grass-background p-2">
-    <TabControl>
-        <TabPage Title="Board">
-            <PlayerBoard Board="Player.Board"/>
-        </TabPage>
-        <TabPage Title="Score Sheet">
-            <PlayerScoreSheet ScoreSheet="Player.ScoreSheet" />
-        </TabPage>
-    </TabControl>
-</div>
+﻿<CascadingValue Value="this">
+    <div class="container-fluid grass-background p-2">
+        <TabControl>
+            <TabPage Title="Board">
+                <PlayerBoard Board="Player.Board" />
+            </TabPage>
+            <TabPage Title="Score Sheet">
+                <PlayerScoreSheet ScoreSheet="Player.ScoreSheet" />
+            </TabPage>
+        </TabControl>
+    </div>
+</CascadingValue>
 
 @code{
     [CascadingParameter]
@@ -15,4 +17,16 @@
 
     [Parameter]
     public Player Player { get; set; }
+
+    public StreetPosition? SelectedHouseStreet { get; set; }
+    public int? SelectedHouseIndex { get; set; }
+    public NumberEffectPair SelectedNumberEffectPair { get; set; }
+
+    public void SelectedHouseChanged(StreetPosition street, int? selectedHouseIndex, NumberEffectPair selectedNumberEffectPair)
+    {
+        SelectedHouseStreet = street;
+        SelectedHouseIndex = selectedHouseIndex;
+        SelectedNumberEffectPair = selectedNumberEffectPair;
+        StateHasChanged();
+    }
 }
