@@ -2,7 +2,7 @@
     <div class="card border-rounded h-100 card-background">
         <div class="card-header">
             <div class="float-left text-center">
-                <img class="house-image" src="/images/house.png" />
+                <img class="house-image" src="/images/house.png" draggable="false" />
             </div>
             <div class="float-right text-center text-danger">
                 @CityPlan.Type
@@ -64,15 +64,19 @@
     {
         var halfSize = CityPlan.EstateSizes.Sum() / 2;
         var topRowSum = 0;
-        foreach (var size in CityPlan.EstateSizes)
+        for (var i = 0; i < CityPlan.EstateSizes.Count; i++)
         {
+            var size = CityPlan.EstateSizes[i];
             topRowSum += size;
-            if (topRowSum > halfSize)
+
+            if (i == 0 || topRowSum <= halfSize)
+            {
+                _topRow.Add(size);
+            }
+            else
             {
                 break;
             }
-
-            _topRow.Add(size);
         }
         _bottomRow.AddRange(CityPlan.EstateSizes.Skip(_topRow.Count));
     }

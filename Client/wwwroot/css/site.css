@@ -323,3 +323,7 @@ app {
 .card-background-effect {
     background-image: radial-gradient(white, moccasin);
 }
+
+.card {
+    user-select: none;
+}

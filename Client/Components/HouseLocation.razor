@@ -19,23 +19,30 @@
                     {
                         <h3 class="p-0 mb-0 font-weight-bold bubblegum-font">@House.Number</h3>
                     }
-                    else
+                    else if (CanBuildHere())
                     {
                         <input type="number" min="0" max="15" class="form-control text-center" />
+                    }
+                    else
+                    {
+                        <input type="number" min="0" max="15" class="form-control text-center" disabled />
                     }
                 </div>
             </div>
         </div>
         <div class="card-footer p-0 text-center bg-transparent border-0">
-            <img src="/images/house.png" class="house-image" />
+            <img src="/images/house.png" class="house-image" draggable="false" />
         </div>
     </div>
 </div>
 
 
 @code {
+    [CascadingParameter]
+    public Turn CurrentTurn { get; set; }
+
     [Parameter]
-    public bool IsFirst { get; set; }
+    public Street Street { get; set; }
 
     [Parameter]
     public House House { get; set; }
@@ -44,7 +51,7 @@
     {
         var houseClass = "house";
 
-        if (IsFirst)
+        if (House.Index == 0)
         {
             houseClass += " house-first";
         }
@@ -54,5 +61,22 @@
         }
 
         return houseClass;
+    }
+
+    private bool CanBuildHere()
+    {
+        var builtHouses = Street.Houses.Where(x => x.Number.HasValue);
+
+        if (!builtHouses.Any())
+        {
+            return true;
+        }
+        else
+        {
+            var nearestHouseLeft = builtHouses.Where(x => x.Index < House.Index).OrderBy(x => x.Index).FirstOrDefault();
+            var nearestHouseRight = builtHouses.Where(x => x.Index > House.Index).OrderBy(x => x.Index).FirstOrDefault();
+
+            return CurrentTurn.GetHouseNumbers().Any(n => (nearestHouseLeft == null || n > nearestHouseLeft.Number.Value) && (nearestHouseRight == null || n < nearestHouseRight.Number.Value));
+        }
     }
 }

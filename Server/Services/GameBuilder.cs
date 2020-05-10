@@ -101,7 +101,7 @@ namespace WelcomeTo.Server.Services
             {
                 Position = position,
                 ParkPoints = _parkPoints[position],
-                Houses = _poolPositions[position].Select(hasPool => new House { Pool = hasPool ? PoolType.Unbuilt : PoolType.None }).ToList()
+                Houses = _poolPositions[position].Select((hasPool, index) => new House { Index = index, Pool = hasPool ? PoolType.Unbuilt : PoolType.None }).ToList()
             };
         }
     }

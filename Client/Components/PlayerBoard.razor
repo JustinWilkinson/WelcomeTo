@@ -11,9 +11,9 @@
                 <h4 class="font-weight-bold text-warning">Welcome To</h4>
                 <input id="CityName" type="text" class="form-control" placeholder="Enter a name here..." />
             </div>
-            @for (var i = 0; i < Board.TopStreet.Houses.Count; i++)
+            @foreach (var house in Board.TopStreet.Houses)
             {
-                <HouseLocation IsFirst="i == 0" House="Board.TopStreet.Houses[i]" />
+                <HouseLocation Street="Board.TopStreet" House="house" />
             }
         </div>
         <div class="row mt-2 bg-dark horizontal-road"></div>
@@ -29,9 +29,9 @@
             <div class="col-1">
                 <div class="h-100 bg-dark vertical-road mx-auto"></div>
             </div>
-            @for (var i = 0; i < Board.MiddleStreet.Houses.Count; i++)
+            @foreach (var house in Board.MiddleStreet.Houses)
             {
-                <HouseLocation IsFirst="i == 0" House="Board.MiddleStreet.Houses[i]" />
+                <HouseLocation Street="Board.MiddleStreet" House="house" />
             }
         </div>
         <div class="row" style="height: 0.5rem;">
@@ -46,9 +46,9 @@
             </div>
         </div>
         <div id="BottomStreet" class="row street">
-            @for (var i = 0; i < Board.BottomStreet.Houses.Count; i++)
+            @foreach (var house in Board.BottomStreet.Houses)
             {
-                <HouseLocation IsFirst="i == 0" House="Board.BottomStreet.Houses[i]" />
+                <HouseLocation Street="Board.BottomStreet" House="house" />
             }
         </div>
         <div class="row mt-2 bg-dark horizontal-road"></div>
@@ -56,6 +56,9 @@
 }
 
 @code{
+    [CascadingParameter]
+    public Turn CurrentTurn { get; set; }
+
     [Parameter]
     public Board Board { get; set; }
 }

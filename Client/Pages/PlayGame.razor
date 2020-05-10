@@ -20,22 +20,24 @@
 }
 else
 {
-    <div class="row mb-4" style="min-height: 25vh;">
-        <DeckWithDiscard Index="1" Deck="Game.GameDeck.Deck1" Discard="Game.GameDeck.Discard1" />
-        <DeckWithDiscard Index="2" Deck="Game.GameDeck.Deck2" Discard="Game.GameDeck.Discard2" />
-        <DeckWithDiscard Index="3" Deck="Game.GameDeck.Deck3" Discard="Game.GameDeck.Discard3" />
-        <CityPlanCard CityPlan="Game.Plans.Plan1" />
-        <CityPlanCard CityPlan="Game.Plans.Plan2" />
-        <CityPlanCard CityPlan="Game.Plans.Plan3" />
-    </div>
-    <TabControl>
-        @foreach (var player in Game.Players)
-        {
-            <TabPage Title="@player.Name">
-                <PlayerSheet Player="player" />
-            </TabPage>
-        }
-    </TabControl>
+    <CascadingValue Value="Game">
+        <div class="row mb-4 h-25 overflow-auto">
+            <DeckWithDiscard Index="1" Deck="Game.GameDeck.Deck1" Discard="Game.GameDeck.Discard1" />
+            <DeckWithDiscard Index="2" Deck="Game.GameDeck.Deck2" Discard="Game.GameDeck.Discard2" />
+            <DeckWithDiscard Index="3" Deck="Game.GameDeck.Deck3" Discard="Game.GameDeck.Discard3" />
+            <CityPlanCard CityPlan="Game.Plans.Plan1" />
+            <CityPlanCard CityPlan="Game.Plans.Plan2" />
+            <CityPlanCard CityPlan="Game.Plans.Plan3" />
+        </div>
+        <TabControl>
+            @foreach (var player in Game.Players)
+            {
+                <TabPage Title="@player.Name">
+                    <PlayerSheet Player="player" />
+                </TabPage>
+            }
+        </TabControl>
+    </CascadingValue>
 }
 
 @code {

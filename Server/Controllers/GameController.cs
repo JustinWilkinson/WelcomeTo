@@ -35,7 +35,17 @@ namespace WelcomeTo.Server.Controllers
         }
 
         [HttpPost("Start")]
-        public void StartGame(JsonElement gameIdJson) => _gameRepository.ModifyGame(gameIdJson.GetString(), game => game.StartedAtUtc = DateTime.UtcNow);
+        public void StartGame(JsonElement gameIdJson)
+        {
+            _gameRepository.ModifyGame(gameIdJson.GetString(), game =>
+            {
+                game.StartedAtUtc = DateTime.UtcNow;
+                game.StartNextTurn();
+            });
+        }
+
+        [HttpPost("NextTurn")]
+        public void StartNextTurn(JsonElement gameIdJson) => _gameRepository.ModifyGame(gameIdJson.GetString(), game => game.StartNextTurn());
 
         [HttpPost("Join")]
         public Player Join(JsonElement gameIdJson)
