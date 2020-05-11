@@ -35,7 +35,17 @@ namespace WelcomeTo.Server.Controllers
         }
 
         [HttpPost("Start")]
-        public void StartGame(JsonElement gameIdJson) => _gameRepository.ModifyGame(gameIdJson.GetString(), game => game.StartedAtUtc = DateTime.UtcNow);
+        public void StartGame(JsonElement gameIdJson)
+        {
+            _gameRepository.ModifyGame(gameIdJson.GetString(), game =>
+            {
+                game.StartedAtUtc = DateTime.UtcNow;
+                game.StartNextTurn();
+            });
+        }
+
+        [HttpPost("NextTurn")]
+        public void StartNextTurn(JsonElement gameIdJson) => _gameRepository.ModifyGame(gameIdJson.GetString(), game => game.StartNextTurn());
 
         [HttpPost("Join")]
         public Player Join(JsonElement gameIdJson)
@@ -48,10 +58,22 @@ namespace WelcomeTo.Server.Controllers
             });
         }
 
-        [HttpPost("UpdatePlayer")]
-        public void UpdatePlayer(JsonElement json)
+        [HttpPost("UpdatePlayerName")]
+        public void UpdatePlayerName(JsonElement json)
         {
             _gameRepository.ModifyGame(json.GetStringProperty("GameId"), game => game.Players.Single(p => p.Name == json.GetStringProperty("OldName")).Name = json.GetStringProperty("NewName"));
+        }
+
+        [HttpPost("UpdatePlayerSheet")]
+        public void UpdatePlayerSheet(JsonElement json)
+        {
+            _gameRepository.ModifyGame(json.GetStringProperty("GameId"), game =>
+            {
+                var newPlayerInfo = json.GetObjectProperty<Player>("Player");
+                var dbPlayerInfo = game.Players.Single(p => p.Name == newPlayerInfo.Name);
+                dbPlayerInfo.Board = newPlayerInfo.Board;
+                dbPlayerInfo.ScoreSheet = newPlayerInfo.ScoreSheet;
+            });
         }
 
         [HttpPost("Save")]

@@ -2,6 +2,8 @@
 {
     public class Board
     {
+        public string TownName { get; set; }
+
         public Street TopStreet { get; set; }
 
         public Street MiddleStreet { get; set; }

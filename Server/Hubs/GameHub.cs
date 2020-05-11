@@ -1,6 +1,6 @@
-﻿using WelcomeTo.Shared;
-using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.SignalR;
 using System.Threading.Tasks;
+using WelcomeTo.Shared;
 
 namespace WelcomeTo.Server.Hubs
 {

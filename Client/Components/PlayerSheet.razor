@@ -1,15 +1,75 @@
-﻿<div class="container-fluid grass-background p-2">
-    <TabControl>
-        <TabPage Title="Board">
-            <PlayerBoard Board="Player.Board"/>
-        </TabPage>
-        <TabPage Title="Score Sheet">
-            <PlayerScoreSheet ScoreSheet="Player.ScoreSheet" />
-        </TabPage>
-    </TabControl>
-</div>
+﻿@inject IHttpService Http 
+
+<CascadingValue Value="this">
+    <div class="container-fluid grass-background p-2">
+        <TabControl>
+            <ExtraTabHeaderContent>
+                @if (SelectedHouseIndex.HasValue)
+                {
+                    <button class="btn btn-primary ml-auto" @onclick="UpdatePlayerSheetAsync">Confirm Action</button>
+                }
+                else
+                {
+                    <button class="btn btn-primary ml-auto" disabled>Confirm Action</button>
+                }
+            </ExtraTabHeaderContent>
+            <TabContent>
+                <TabPage Title="Board">
+                    <PlayerBoard Board="Player.Board" />
+                </TabPage>
+                <TabPage Title="Score Sheet">
+                    <PlayerScoreSheet ScoreSheet="Player.ScoreSheet" />
+                </TabPage>
+            </TabContent>
+        </TabControl>
+    </div>
+</CascadingValue>
 
 @code{
+    [CascadingParameter]
+    public Game Game { get; set; }
+
+    [CascadingParameter]
+    public NumberEffectPair SelectedNumberEffectPair { get; set; }
+
     [Parameter]
     public Player Player { get; set; }
+
+    [Parameter]
+    public Action OnActionTaken { get; set; }
+
+    public StreetPosition? SelectedHouseStreet { get; set; }
+    public int? SelectedHouseIndex { get; set; }
+
+    public int? SelectedHouseNumber { get; set; }
+
+    public void SelectedHouseChanged(StreetPosition? street, int? selectedHouseIndex, int? selectedHouseNumber)
+    {
+        SelectedHouseStreet = street;
+        SelectedHouseIndex = selectedHouseIndex;
+        SelectedHouseNumber = selectedHouseNumber;
+        StateHasChanged();
+    }
+
+    private async Task UpdatePlayerSheetAsync()
+    {
+        if (SelectedHouseStreet != null && SelectedHouseIndex != null && SelectedHouseNumber != null)
+        {
+            var street = SelectedHouseStreet switch
+            {
+                StreetPosition.Top => Player.Board.TopStreet,
+                StreetPosition.Middle => Player.Board.TopStreet,
+                StreetPosition.Bottom => Player.Board.TopStreet,
+                _ => null
+            };
+
+            if (street != null)
+            {
+                street.Houses[SelectedHouseIndex.Value].Number = SelectedHouseNumber.Value;
+                await Http.PostAsync("api/Game/UpdatePlayerSheet", new { GameId = Game.Id, Player = Player });
+                SelectedHouseChanged(null, null, null);
+                OnActionTaken?.Invoke();
+            }
+        }
+    }
 }

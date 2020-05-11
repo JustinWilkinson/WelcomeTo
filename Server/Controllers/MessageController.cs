@@ -1,10 +1,10 @@
-﻿using WelcomeTo.Server.Extensions;
-using WelcomeTo.Server.Repository;
-using WelcomeTo.Shared;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Text.Json;
+using WelcomeTo.Server.Extensions;
+using WelcomeTo.Server.Repository;
+using WelcomeTo.Shared;
 
 namespace WelcomeTo.Server.Controllers
 {

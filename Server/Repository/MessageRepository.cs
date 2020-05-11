@@ -1,10 +1,10 @@
-﻿using WelcomeTo.Server.Extensions;
-using WelcomeTo.Shared;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Linq;
+using WelcomeTo.Server.Extensions;
+using WelcomeTo.Shared;
 
 namespace WelcomeTo.Server.Repository
 {

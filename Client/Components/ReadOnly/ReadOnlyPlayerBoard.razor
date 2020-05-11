@@ -3,17 +3,17 @@
     <div class="container-fluid">
         <div class="row parks">
             <div class="col-5 col-md-3 ml-auto p-2">
-                <Parks Points="Board.TopStreet.ParkPoints" />
+                <ReadOnlyParks Points="Board.TopStreet.ParkPoints" />
             </div>
         </div>
         <div id="TopStreet" class="row street">
             <div class="col-2 text-center p-1 p-md-3">
                 <h4 class="font-weight-bold text-warning">Welcome To</h4>
-                <input id="CityName" type="text" class="form-control @(Board.TownName != null ? "text-center" : "")" placeholder="Enter a name here..." @bind="Board.TownName" />
+                <input id="CityName" type="text" class="form-control @(Board.TownName != null ? "text-center" : "")" placeholder="No name provided" @bind="Board.TownName" disabled />
             </div>
             @foreach (var house in Board.TopStreet.Houses)
             {
-                <HouseLocation Street="Board.TopStreet" House="house" />
+                <ReadOnlyHouseLocation Street="Board.TopStreet" House="house" />
             }
         </div>
         <div class="row mt-2 bg-dark horizontal-road"></div>
@@ -22,7 +22,7 @@
                 <div class="h-100 bg-dark vertical-road mx-auto"></div>
             </div>
             <div class="col-5 col-md-3 ml-auto p-2">
-                <Parks Points="Board.MiddleStreet.ParkPoints" />
+                <ReadOnlyParks Points="Board.MiddleStreet.ParkPoints" />
             </div>
         </div>
         <div id="MiddleStreet" class="row street">
@@ -31,7 +31,7 @@
             </div>
             @foreach (var house in Board.MiddleStreet.Houses)
             {
-                <HouseLocation Street="Board.MiddleStreet" House="house" />
+                <ReadOnlyHouseLocation Street="Board.MiddleStreet" House="house" />
             }
         </div>
         <div class="row" style="height: 0.5rem;">
@@ -42,13 +42,13 @@
         <div class="row bg-dark horizontal-road"></div>
         <div class="row parks">
             <div class="col-5 col-md-3 ml-auto p-2">
-                <Parks Points="Board.BottomStreet.ParkPoints" />
+                <ReadOnlyParks Points="Board.BottomStreet.ParkPoints" />
             </div>
         </div>
         <div id="BottomStreet" class="row street">
             @foreach (var house in Board.BottomStreet.Houses)
             {
-                <HouseLocation Street="Board.BottomStreet" House="house" />
+                <ReadOnlyHouseLocation Street="Board.BottomStreet" House="house" />
             }
         </div>
         <div class="row mt-2 bg-dark horizontal-road"></div>

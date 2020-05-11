@@ -323,3 +323,17 @@ app {
 .card-background-effect {
     background-image: radial-gradient(white, moccasin);
 }
+
+.card {
+    user-select: none;
+}
+
+.centered-select {
+    text-align-last: center;
+}
+
+.blurred {
+    -webkit-filter: blur(3px);
+    filter: blur(3px);
+    filter: progid:DXImageTransform.Microsoft.Blur(PixelRadius='3');
+}

@@ -1,15 +1,15 @@
 using AspNetCoreRateLimit;
-using WelcomeTo.Server.Configuration;
-using WelcomeTo.Server.Hubs;
-using WelcomeTo.Server.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Database = WelcomeTo.Server.Repository.Repository;
+using WelcomeTo.Server.Configuration;
+using WelcomeTo.Server.Hubs;
+using WelcomeTo.Server.Repository;
 using WelcomeTo.Server.Services;
+using Database = WelcomeTo.Server.Repository.Repository;
 
 namespace WelcomeTo.Server
 {

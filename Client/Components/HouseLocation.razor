@@ -13,29 +13,68 @@
             </div>
         </div>
         <div class="card-body w-100 p-2">
-            <div class="d-flex h-100 justify-content-center">
-                <div class="align-self-center justify-content-center bg-light">
-                    @if (House.Number.HasValue)
+            <div class="d-flex h-100 justify-content-center bg-light">
+                <div class="align-self-center text-center w-100">
+                    @if (!IsSelectedHouse && House.Number.HasValue)
                     {
-                        <h3 class="p-0 mb-0 font-weight-bold bubblegum-font">@House.Number</h3>
+                        <h3 class="pt-1 mb-0 font-weight-bold bubblegum-font">@House.Number</h3>
                     }
                     else
                     {
-                        <input type="number" min="0" max="15" class="form-control text-center" />
+                        var possibileHouseNumbers = GetPossibileHouseNumbers();
+                        if (IsSelectedHouse)
+                        {
+                            <select class="form-control py-0 rounded-0 centered-select" @onchange="OnHouseSelected">
+                                <option value="0">Select</option>
+                                @foreach (var possibility in possibileHouseNumbers)
+                                {
+                                    if (possibility == PlayerSheet.SelectedHouseNumber)
+                                    {
+                                        <option value="@possibility" selected>@possibility</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@possibility">@possibility</option>
+                                    }
+
+                                }
+                            </select>
+                        }
+                        else if (!PlayerSheet.SelectedHouseIndex.HasValue && possibileHouseNumbers.Any())
+                        {
+                            <select class="form-control py-0 rounded-0 centered-select" @onchange="OnHouseSelected">
+                                <option value="0" selected>Select</option>
+                                @foreach (var possibility in possibileHouseNumbers)
+                                {
+                                    <option value="@possibility">@possibility</option>
+                                }
+                            </select>
+                        }
+                        else
+                        {
+                            <input type="number" min="0" max="15" class="form-control text-center" disabled />
+                        }
                     }
+
                 </div>
             </div>
         </div>
         <div class="card-footer p-0 text-center bg-transparent border-0">
-            <img src="/images/house.png" class="house-image" />
+            <img src="/images/@(House.Number.HasValue ? "house" : "house-outline").png" class="house-image" draggable="false" />
         </div>
     </div>
 </div>
 
 
 @code {
+    [CascadingParameter]
+    public PlayerSheet PlayerSheet { get; set; }
+
+    [CascadingParameter]
+    public NumberEffectPair SelectedNumberEffectPair { get; set; }
+
     [Parameter]
-    public bool IsFirst { get; set; }
+    public Street Street { get; set; }
 
     [Parameter]
     public House House { get; set; }
@@ -44,7 +83,7 @@
     {
         var houseClass = "house";
 
-        if (IsFirst)
+        if (House.Index == 0)
         {
             houseClass += " house-first";
         }
@@ -55,4 +94,52 @@
 
         return houseClass;
     }
+
+    private IEnumerable<int> GetPossibileHouseNumbers()
+    {
+        if (SelectedNumberEffectPair == null)
+        {
+            yield break;
+        }
+
+        var builtHouses = Street.Houses.Where(x => x.Number.HasValue && x.Index != House.Index);
+        var possibilities = new List<int> { SelectedNumberEffectPair.Number };
+
+        if (SelectedNumberEffectPair.Effect == CardType.TempAgency)
+        {
+            possibilities.Add(SelectedNumberEffectPair.Number - 2);
+            possibilities.Add(SelectedNumberEffectPair.Number - 1);
+            possibilities.Add(SelectedNumberEffectPair.Number + 1);
+            possibilities.Add(SelectedNumberEffectPair.Number + 2);
+        }
+
+        if (!builtHouses.Any())
+        {
+            foreach (var possibility in possibilities)
+            {
+                yield return possibility;
+            }
+        }
+        else
+        {
+            var nearestHouseLeft = builtHouses.Where(x => x.Index < House.Index).OrderByDescending(x => x.Index).FirstOrDefault();
+            var nearestHouseRight = builtHouses.Where(x => x.Index > House.Index).OrderBy(x => x.Index).FirstOrDefault();
+
+            foreach (var possibility in possibilities)
+            {
+                if ((nearestHouseLeft == null || possibility > nearestHouseLeft.Number.Value) && (nearestHouseRight == null || possibility < nearestHouseRight.Number.Value))
+                {
+                    yield return possibility;
+                }
+            }
+        }
+    }
+
+    private void OnHouseSelected(ChangeEventArgs e)
+    {
+        var pair = Convert.ToInt32(e.Value);
+        PlayerSheet.SelectedHouseChanged(Street.Position, pair > 0 ? House.Index : new int?(), pair > 0 ? pair : new int?());
+    }
+
+    private bool IsSelectedHouse => PlayerSheet.SelectedHouseStreet == Street.Position && PlayerSheet.SelectedHouseIndex == House.Index;
 }

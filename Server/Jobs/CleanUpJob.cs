@@ -1,9 +1,9 @@
-﻿using WelcomeTo.Server.Repository;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Quartz;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using WelcomeTo.Server.Repository;
 
 namespace WelcomeTo.Server.Jobs
 {
