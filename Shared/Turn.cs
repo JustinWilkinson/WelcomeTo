@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using WelcomeTo.Shared.Enumerations;
 
 namespace WelcomeTo.Shared
 {
@@ -20,9 +21,9 @@ namespace WelcomeTo.Shared
 
         public IEnumerable<NumberEffectPair> GetNumberEffectPairs() => new[] 
         { 
-            new NumberEffectPair { Number = HouseNumberCard1.HouseNumber, Effect = EffectCard1.Type },
-            new NumberEffectPair { Number = HouseNumberCard2.HouseNumber, Effect = EffectCard2.Type },
-            new NumberEffectPair { Number = HouseNumberCard3.HouseNumber, Effect = EffectCard3.Type }
+            new NumberEffectPair { DeckIndex = DeckIndex.Option1, Number = HouseNumberCard1.HouseNumber, Effect = EffectCard1.Type },
+            new NumberEffectPair { DeckIndex = DeckIndex.Option2, Number = HouseNumberCard2.HouseNumber, Effect = EffectCard2.Type },
+            new NumberEffectPair { DeckIndex = DeckIndex.Option3, Number = HouseNumberCard3.HouseNumber, Effect = EffectCard3.Type }
         };
     }
 }

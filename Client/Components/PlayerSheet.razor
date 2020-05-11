@@ -13,20 +13,21 @@
 
 @code{
     [CascadingParameter]
-    public Turn CurrentTurn { get; set; }
+    public NumberEffectPair SelectedNumberEffectPair { get; set; }
 
     [Parameter]
     public Player Player { get; set; }
 
     public StreetPosition? SelectedHouseStreet { get; set; }
     public int? SelectedHouseIndex { get; set; }
-    public NumberEffectPair SelectedNumberEffectPair { get; set; }
 
-    public void SelectedHouseChanged(StreetPosition street, int? selectedHouseIndex, NumberEffectPair selectedNumberEffectPair)
+    public int? SelectedHouseNumber { get; set; }
+
+    public void SelectedHouseChanged(StreetPosition? street, int? selectedHouseIndex, int? selectedHouseNumber)
     {
         SelectedHouseStreet = street;
         SelectedHouseIndex = selectedHouseIndex;
-        SelectedNumberEffectPair = selectedNumberEffectPair;
+        SelectedHouseNumber = selectedHouseNumber;
         StateHasChanged();
     }
 }

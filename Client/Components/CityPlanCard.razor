@@ -1,5 +1,5 @@
 ﻿<div class="col">
-    <div class="card border-rounded h-100 card-background">
+    <div class="card border-rounded card-background h-100">
         <div class="card-header">
             <div class="float-left text-center">
                 <img class="house-image" src="/images/house.png" draggable="false" />
@@ -60,7 +60,7 @@
     private List<int> _topRow = new List<int>();
     private List<int> _bottomRow = new List<int>();
 
-    protected override void OnParametersSet()
+    protected override void OnInitialized()
     {
         var halfSize = CityPlan.EstateSizes.Sum() / 2;
         var topRowSum = 0;
@@ -78,6 +78,7 @@
                 break;
             }
         }
+
         _bottomRow.AddRange(CityPlan.EstateSizes.Skip(_topRow.Count));
     }
 }
