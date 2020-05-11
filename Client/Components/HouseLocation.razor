@@ -15,20 +15,20 @@
         <div class="card-body w-100 p-2">
             <div class="d-flex h-100 justify-content-center bg-light">
                 <div class="align-self-center text-center w-100">
-                    @if (!IsSelectedHouse && House.Number.HasValue)
+                    @if (House.Number.HasValue)
                     {
-                        <h3 class="pt-1 mb-0 font-weight-bold bubblegum-font">@House.Number</h3>
+                        <h3 class="pt-1 mb-0 font-weight-bold bubblegum-font">@(House.IsBis ? $"{House.Number} Bis" : House.Number.ToString())</h3>
                     }
                     else
                     {
-                        var possibileHouseNumbers = GetPossibileHouseNumbers();
-                        if (IsSelectedHouse)
+                        var possibleHouseNumbers = GetPossibileHouseNumbers();
+                        if (OnSelectedStreet && PlayerSheet.SelectedHouse.Index == House.Index)
                         {
                             <select class="form-control py-0 rounded-0 centered-select" @onchange="OnHouseSelected">
                                 <option value="0">Select</option>
-                                @foreach (var possibility in possibileHouseNumbers)
+                                @foreach (var possibility in possibleHouseNumbers)
                                 {
-                                    if (possibility == PlayerSheet.SelectedHouseNumber)
+                                    if (possibility == PlayerSheet.SelectedHouse.Number)
                                     {
                                         <option value="@possibility" selected>@possibility</option>
                                     }
@@ -36,15 +36,14 @@
                                     {
                                         <option value="@possibility">@possibility</option>
                                     }
-
                                 }
                             </select>
                         }
-                        else if (!PlayerSheet.SelectedHouseIndex.HasValue && possibileHouseNumbers.Any())
+                        else if (PlayerSheet.SelectedHouse == null && possibleHouseNumbers.Any())
                         {
                             <select class="form-control py-0 rounded-0 centered-select" @onchange="OnHouseSelected">
                                 <option value="0" selected>Select</option>
-                                @foreach (var possibility in possibileHouseNumbers)
+                                @foreach (var possibility in possibleHouseNumbers)
                                 {
                                     <option value="@possibility">@possibility</option>
                                 }
@@ -52,7 +51,41 @@
                         }
                         else
                         {
-                            <input type="number" min="0" max="15" class="form-control text-center" disabled />
+                            var possibleBisNumbers = SelectedNumberEffectPair != null && SelectedNumberEffectPair.Effect == CardType.Bis ? GetBisNumbers() : null;
+                            if (possibleBisNumbers != null && possibleBisNumbers.Any())
+                            {
+                                if (PlayerSheet.SelectedBisHouse != null && PlayerSheet.SelectedBisHouse.Street == Street.Position && PlayerSheet.SelectedBisHouse.Index == House.Index)
+                                {
+                                    <select class="form-control py-0 rounded-0 centered-select" @onchange="OnBisHouseSelected">
+                                        <option value="0">Select</option>
+                                        @foreach (var possibility in possibleBisNumbers)
+                                        {
+                                            if (possibility == PlayerSheet.SelectedBisHouse.Number)
+                                            {
+                                                <option value="@possibility" selected>@possibility Bis</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@possibility">@possibility Bis</option>
+                                            }
+                                        }
+                                    </select>
+                                }
+                                else
+                                {
+                                    <select class="form-control py-0 rounded-0 centered-select" @onchange="OnBisHouseSelected">
+                                        <option value="0" selected>Select</option>
+                                        @foreach (var possibility in possibleBisNumbers)
+                                        {
+                                            <option value="@possibility">@possibility Bis</option>
+                                        }
+                                    </select>
+                                }
+                            }
+                            else
+                            {
+                                <input type="number" min="0" max="15" class="form-control text-center" disabled />
+                            }
                         }
                     }
 
@@ -78,6 +111,8 @@
 
     [Parameter]
     public House House { get; set; }
+
+    private bool OnSelectedStreet => PlayerSheet.SelectedHouse != null && PlayerSheet.SelectedHouse.Street == Street.Position;
 
     private string GetHouseClass()
     {
@@ -135,11 +170,48 @@
         }
     }
 
-    private void OnHouseSelected(ChangeEventArgs e)
+    private IEnumerable<int> GetBisNumbers()
     {
-        var pair = Convert.ToInt32(e.Value);
-        PlayerSheet.SelectedHouseChanged(Street.Position, pair > 0 ? House.Index : new int?(), pair > 0 ? pair : new int?());
+        var houseToTheLeft = Street.Houses.SingleOrDefault(x => x.Index == House.Index - 1);
+        if (houseToTheLeft != null && !houseToTheLeft.FenceBuilt)
+        {
+            if (houseToTheLeft.Number.HasValue)
+            {
+                yield return houseToTheLeft.Number.Value;
+            }
+            else if (OnSelectedStreet && PlayerSheet.SelectedHouse.Index == houseToTheLeft.Index)
+            {
+                yield return PlayerSheet.SelectedHouse.Number;
+            }
+        }
+
+        var houseToTheRight = Street.Houses.SingleOrDefault(x => x.Index == House.Index + 1);
+        if (houseToTheRight != null)
+        {
+            if (houseToTheRight.Number.HasValue)
+            {
+                yield return houseToTheRight.Number.Value;
+            }
+            else if (OnSelectedStreet && PlayerSheet.SelectedHouse.Index == houseToTheRight.Index)
+            {
+                yield return PlayerSheet.SelectedHouse.Number;
+            }
+        }
+
+        yield break;
     }
 
-    private bool IsSelectedHouse => PlayerSheet.SelectedHouseStreet == Street.Position && PlayerSheet.SelectedHouseIndex == House.Index;
+    private void OnHouseSelected(ChangeEventArgs e)
+    {
+        var selectedNumber = Convert.ToInt32(e.Value);
+        var selectedHouse = selectedNumber > 0 ? new SelectedHouse { Street = Street.Position, Index = House.Index, Number = selectedNumber } : null;
+        PlayerSheet.SelectedHouseChanged(selectedHouse);
+    }
+
+    private void OnBisHouseSelected(ChangeEventArgs e)
+    {
+        var selectedNumber = Convert.ToInt32(e.Value);
+        var selectedHouse = selectedNumber > 0 ? new SelectedHouse { Street = Street.Position, Index = House.Index, Number = selectedNumber } : null;
+        PlayerSheet.SelectedBisHouseChanged(selectedHouse);
+    }
 }

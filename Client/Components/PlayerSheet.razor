@@ -4,7 +4,7 @@
     <div class="container-fluid grass-background p-2">
         <TabControl>
             <ExtraTabHeaderContent>
-                @if (SelectedHouseIndex.HasValue)
+                @if (SelectedHouse != null)
                 {
                     <button class="btn btn-primary ml-auto" @onclick="UpdatePlayerSheetAsync">Confirm Action</button>
                 }
@@ -38,38 +38,38 @@
     [Parameter]
     public Action OnActionTaken { get; set; }
 
-    public StreetPosition? SelectedHouseStreet { get; set; }
-    public int? SelectedHouseIndex { get; set; }
+    public SelectedHouse SelectedHouse { get; set; }
+    public SelectedHouse SelectedBisHouse { get; set; }
 
-    public int? SelectedHouseNumber { get; set; }
-
-    public void SelectedHouseChanged(StreetPosition? street, int? selectedHouseIndex, int? selectedHouseNumber)
+    public void SelectedHouseChanged(SelectedHouse house)
     {
-        SelectedHouseStreet = street;
-        SelectedHouseIndex = selectedHouseIndex;
-        SelectedHouseNumber = selectedHouseNumber;
+        SelectedHouse = house;
+        SelectedBisHouseChanged(null);
+    }
+
+    public void SelectedBisHouseChanged(SelectedHouse house)
+    {
+        SelectedBisHouse = house;
         StateHasChanged();
     }
 
     private async Task UpdatePlayerSheetAsync()
     {
-        if (SelectedHouseStreet != null && SelectedHouseIndex != null && SelectedHouseNumber != null)
+        if (SelectedHouse != null)
         {
-            var street = SelectedHouseStreet switch
-            {
-                StreetPosition.Top => Player.Board.TopStreet,
-                StreetPosition.Middle => Player.Board.TopStreet,
-                StreetPosition.Bottom => Player.Board.TopStreet,
-                _ => null
-            };
+            var street = Player.Board.GetStreet(SelectedHouse.Street);
+            street.Houses[SelectedHouse.Index].Number = SelectedHouse.Number;
 
-            if (street != null)
+            if (SelectedBisHouse != null)
             {
-                street.Houses[SelectedHouseIndex.Value].Number = SelectedHouseNumber.Value;
-                await Http.PostAsync("api/Game/UpdatePlayerSheet", new { GameId = Game.Id, Player = Player });
-                SelectedHouseChanged(null, null, null);
-                OnActionTaken?.Invoke();
+                var bisHouse = Player.Board.GetStreet(SelectedBisHouse.Street).Houses[SelectedBisHouse.Index];
+                bisHouse.Number = SelectedBisHouse.Number;
+                bisHouse.IsBis = true;
             }
+
+            await Http.PostAsync("api/Game/UpdatePlayerSheet", new { GameId = Game.Id, Player = Player });
+            SelectedHouseChanged(null);
+            OnActionTaken?.Invoke();
         }
     }
 }
