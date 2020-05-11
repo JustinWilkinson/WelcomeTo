@@ -58,10 +58,22 @@ namespace WelcomeTo.Server.Controllers
             });
         }
 
-        [HttpPost("UpdatePlayer")]
-        public void UpdatePlayer(JsonElement json)
+        [HttpPost("UpdatePlayerName")]
+        public void UpdatePlayerName(JsonElement json)
         {
             _gameRepository.ModifyGame(json.GetStringProperty("GameId"), game => game.Players.Single(p => p.Name == json.GetStringProperty("OldName")).Name = json.GetStringProperty("NewName"));
+        }
+
+        [HttpPost("UpdatePlayerSheet")]
+        public void UpdatePlayerSheet(JsonElement json)
+        {
+            _gameRepository.ModifyGame(json.GetStringProperty("GameId"), game =>
+            {
+                var dbPlayerInfo = game.Players.Single(p => p.Name == json.GetStringProperty("Name"));
+                var newPlayerInfo = json.GetObjectProperty<Player>("Player");
+                dbPlayerInfo.Board = newPlayerInfo.Board;
+                dbPlayerInfo.ScoreSheet = newPlayerInfo.ScoreSheet;
+            });
         }
 
         [HttpPost("Save")]

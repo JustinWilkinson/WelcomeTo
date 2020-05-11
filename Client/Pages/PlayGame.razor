@@ -24,7 +24,7 @@ else if (IdentifiedPlayer == null)
 }
 else
 {
-    <CascadingValue Value="Game.CurrentTurn">
+    <CascadingValue Value="Game">
         <div class="row mb-4 h-25 overflow-auto">
             <div class="col-8">
                 <div class="row h-100">
@@ -49,15 +49,17 @@ else
         </div>
         <CascadingValue Value="SelectedNumberEffectPair">
             <TabControl>
-                <TabPage Title="@IdentifiedPlayer.Name">
-                    <PlayerSheet Player="IdentifiedPlayer" @ref="_playerSheet" />
-                </TabPage>
-                @foreach (var player in Game.Players.Where(p => p.Name != IdentifiedPlayer.Name))
-                {
-                    <TabPage Title="@player.Name">
-                        <PlayerSheet Player="player" />
+                <TabContent>
+                    <TabPage Title="@IdentifiedPlayer.Name">
+                        <PlayerSheet Player="IdentifiedPlayer" @ref="_playerSheet" />
                     </TabPage>
-                }
+                    @foreach (var player in Game.Players.Where(p => p.Name != IdentifiedPlayer.Name))
+                    {
+                        <TabPage Title="@player.Name">
+                            <ReadOnlyPlayerSheet Player="player" />
+                        </TabPage>
+                    }
+                </TabContent>
             </TabControl>
         </CascadingValue>
     </CascadingValue>

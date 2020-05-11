@@ -1,17 +1,34 @@
-﻿<CascadingValue Value="this">
+﻿@inject HttpService Http
+
+<CascadingValue Value="this">
     <div class="container-fluid grass-background p-2">
         <TabControl>
-            <TabPage Title="Board">
-                <PlayerBoard Board="Player.Board" />
-            </TabPage>
-            <TabPage Title="Score Sheet">
-                <PlayerScoreSheet ScoreSheet="Player.ScoreSheet" />
-            </TabPage>
+            <ExtraTabHeaderContent>
+                @if (SelectedHouseIndex.HasValue)
+                {
+                    <button class="btn btn-primary ml-auto" @onclick="UpdatePlayerSheetAsync">Confirm Action</button>
+                }
+                else
+                {
+                    <button class="btn btn-primary ml-auto" disabled>Confirm Action</button>
+                }
+            </ExtraTabHeaderContent>
+            <TabContent>
+                <TabPage Title="Board">
+                    <PlayerBoard Board="Player.Board" />
+                </TabPage>
+                <TabPage Title="Score Sheet">
+                    <PlayerScoreSheet ScoreSheet="Player.ScoreSheet" />
+                </TabPage>
+            </TabContent>
         </TabControl>
     </div>
 </CascadingValue>
 
 @code{
+    [CascadingParameter]
+    public Game Game { get; set; }
+
     [CascadingParameter]
     public NumberEffectPair SelectedNumberEffectPair { get; set; }
 
@@ -30,4 +47,6 @@
         SelectedHouseNumber = selectedHouseNumber;
         StateHasChanged();
     }
+
+    private async Task UpdatePlayerSheetAsync() => await Http.PostAsync("api/Game/UpdatePlayerSheet", new { GameId = Game.Id, Player = Player });
 }
