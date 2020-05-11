@@ -1,4 +1,4 @@
-﻿@inject HttpService Http
+﻿@inject IHttpService Http 
 
 <CascadingValue Value="this">
     <div class="container-fluid grass-background p-2">
@@ -35,6 +35,9 @@
     [Parameter]
     public Player Player { get; set; }
 
+    [Parameter]
+    public Action OnActionTaken { get; set; }
+
     public StreetPosition? SelectedHouseStreet { get; set; }
     public int? SelectedHouseIndex { get; set; }
 
@@ -48,5 +51,25 @@
         StateHasChanged();
     }
 
-    private async Task UpdatePlayerSheetAsync() => await Http.PostAsync("api/Game/UpdatePlayerSheet", new { GameId = Game.Id, Player = Player });
+    private async Task UpdatePlayerSheetAsync()
+    {
+        if (SelectedHouseStreet != null && SelectedHouseIndex != null && SelectedHouseNumber != null)
+        {
+            var street = SelectedHouseStreet switch
+            {
+                StreetPosition.Top => Player.Board.TopStreet,
+                StreetPosition.Middle => Player.Board.TopStreet,
+                StreetPosition.Bottom => Player.Board.TopStreet,
+                _ => null
+            };
+
+            if (street != null)
+            {
+                street.Houses[SelectedHouseIndex.Value].Number = SelectedHouseNumber.Value;
+                await Http.PostAsync("api/Game/UpdatePlayerSheet", new { GameId = Game.Id, Player = Player });
+                SelectedHouseChanged(null, null, null);
+                OnActionTaken?.Invoke();
+            }
+        }
+    }
 }

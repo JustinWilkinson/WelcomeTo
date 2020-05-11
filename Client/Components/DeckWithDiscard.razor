@@ -1,4 +1,4 @@
-﻿<div class="row h-100">
+﻿<div class="row">
     @if (Deck.Count == 0)
     {
         <CardTemplate>
@@ -12,8 +12,8 @@
     else
     {
         <CardTemplate BodyClass="card-background">
-            <img class="card-img" src="/images/house.png" style="height: 55%;" draggable="false" />
-            <div class="d-flex justify-content-center" style="height: 45%;">
+            <img class="card-img" src="/images/house.png" style="height: 60%;" draggable="false" />
+            <div class="d-flex justify-content-center" style="height: 40%;">
                 <div class="align-self-center justify-content-center">
                     <h1 class="mb-0 bubblegum-font">@Deck.Peek().HouseNumber</h1>
                 </div>

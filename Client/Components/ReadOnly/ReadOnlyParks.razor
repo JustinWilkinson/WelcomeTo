@@ -1,0 +1,16 @@
+﻿@if (Points != null && Points.Count > 0)
+{
+    <div class="row">
+        @foreach (var value in Points)
+        {
+            <div class="col-2 text-muted text-center mr-auto">
+                <div class="rounded-circle bg-warning">@value</div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    [Parameter]
+    public List<int> Points { get; set; }
+}

@@ -8,13 +8,13 @@
                 @CityPlan.Type
             </div>
         </div>
-        <div class="card-body">
+        <div class="card-body py-2 px-1">
             <div class="d-flex h-100 justify-content-center">
-                <div class="align-self-center justify-content-center">
-                    <div class="row text-center mb-2 small">
+                <div class="align-self-center">
+                    <div class="text-center mb-2 small">
                         @foreach (var size in _topRow)
                         {
-                            <div class="col p-1 border border-dark">
+                            <div class="d-inline-block p-1 border border-dark">
                                 @for (var i = 0; i < size; i++)
                                 {
                                     <span class="oi oi-home"></span>
@@ -23,10 +23,10 @@
                             </div>
                         }
                     </div>
-                    <div class="row text-center small">
+                    <div class="text-center small">
                         @foreach (var size in _bottomRow)
                         {
-                            <div class="col p-1 border border-dark">
+                            <div class="d-inline-block p-1 border border-dark">
                                 @for (var i = 0; i < size; i++)
                                 {
                                     <span class="oi oi-home"></span>
@@ -69,7 +69,7 @@
             var size = CityPlan.EstateSizes[i];
             topRowSum += size;
 
-            if (i == 0 || topRowSum <= halfSize)
+            if (i == 0 || topRowSum <= halfSize || topRowSum < CityPlan.EstateSizes.Skip(_topRow.Count).Sum())
             {
                 _topRow.Add(size);
             }

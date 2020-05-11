@@ -24,23 +24,26 @@ else if (IdentifiedPlayer == null)
 }
 else
 {
+    <Modal Show="_showWaitingMessage" Header="Waiting for next turn..." CanClose="false">
+        Waiting for players to take their turn...
+    </Modal>
     <CascadingValue Value="Game">
-        <div class="row mb-4 h-25 overflow-auto">
-            <div class="col-8">
-                <div class="row h-100">
+        <div class="row mb-4">
+            <div class="col-12 col-md-8">
+                <div class="row">
                     <div class="col border border-secondary p-0 mx-3 pointer @BlurredClass(DeckIndex.Option1)" title="Option 1" @onclick="() => SelectNumberEffectPair(DeckIndex.Option1)">
                         <DeckWithDiscard Index="1" Deck="Game.GameDeck.Deck1" Discard="Game.GameDeck.Discard1" />
                     </div>
                     <div class="col border border-secondary p-0 mx-3 pointer @BlurredClass(DeckIndex.Option2)" title="Option 2" @onclick="() => SelectNumberEffectPair(DeckIndex.Option2)">
                         <DeckWithDiscard Index="2" Deck="Game.GameDeck.Deck2" Discard="Game.GameDeck.Discard2" />
                     </div>
-                    <div class="col border border-secondary p-0 mx-3 pointer @BlurredClass(DeckIndex.Option3)" title="Option 3" @onclick="() => SelectNumberEffectPair(DeckIndex.Option3)" >
+                    <div class="col border border-secondary p-0 mx-3 pointer @BlurredClass(DeckIndex.Option3)" title="Option 3" @onclick="() => SelectNumberEffectPair(DeckIndex.Option3)">
                         <DeckWithDiscard Index="3" Deck="Game.GameDeck.Deck3" Discard="Game.GameDeck.Discard3" />
                     </div>
                 </div>
             </div>
-            <div class="col-4">
-                <div class="row" title="City Plans">
+            <div class="col-8 col-md-4 mx-auto mx=md-0 mt-2 mt-md-0">
+                <div class="row h-100" title="City Plans">
                     <CityPlanCard CityPlan="Game.Plans.Plan1" />
                     <CityPlanCard CityPlan="Game.Plans.Plan2" />
                     <CityPlanCard CityPlan="Game.Plans.Plan3" />
@@ -51,7 +54,7 @@ else
             <TabControl>
                 <TabContent>
                     <TabPage Title="@IdentifiedPlayer.Name">
-                        <PlayerSheet Player="IdentifiedPlayer" @ref="_playerSheet" />
+                        <PlayerSheet Player="IdentifiedPlayer" OnActionTaken="PlayerActionTaken" @ref="_playerSheet" />
                     </TabPage>
                     @foreach (var player in Game.Players.Where(p => p.Name != IdentifiedPlayer.Name))
                     {
@@ -71,12 +74,12 @@ else
 
     public Game Game { get; private set; }
     public Player IdentifiedPlayer { get; set; }
-
     public NumberEffectPair SelectedNumberEffectPair { get; set; }
 
-    private bool _urlWrong = false;
-
     private PlayerSheet _playerSheet;
+
+    private bool _urlWrong = false;
+    private bool _showWaitingMessage = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -121,6 +124,13 @@ else
         }
 
         _playerSheet.SelectedHouseChanged(null, null, null);
+    }
+
+    private void PlayerActionTaken()
+    {
+        SelectedNumberEffectPair = null;
+        _showWaitingMessage = true;
+        StateHasChanged();
     }
 
     private string BlurredClass(DeckIndex index)

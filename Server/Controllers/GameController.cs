@@ -69,8 +69,8 @@ namespace WelcomeTo.Server.Controllers
         {
             _gameRepository.ModifyGame(json.GetStringProperty("GameId"), game =>
             {
-                var dbPlayerInfo = game.Players.Single(p => p.Name == json.GetStringProperty("Name"));
                 var newPlayerInfo = json.GetObjectProperty<Player>("Player");
+                var dbPlayerInfo = game.Players.Single(p => p.Name == newPlayerInfo.Name);
                 dbPlayerInfo.Board = newPlayerInfo.Board;
                 dbPlayerInfo.ScoreSheet = newPlayerInfo.ScoreSheet;
             });
