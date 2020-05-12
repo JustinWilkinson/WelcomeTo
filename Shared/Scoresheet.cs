@@ -38,10 +38,11 @@ namespace WelcomeTo.Shared
         public int GetTempAgencyPoints(Game game, string playerName)
         {
             var ranking = game.Players
+                .Where(p => p.ScoreSheet.TempAgenciesUsed > 0)
                 .GroupBy(p => p.ScoreSheet.TempAgenciesUsed)
                 .OrderByDescending(g => g.Key)
                 .Select((group, index) => new { Names = group.Select(player => player.Name), Ranking = index + 1 })
-                .Single(x => x.Names.Contains(playerName)).Ranking;
+                .SingleOrDefault(x => x.Names.Contains(playerName))?.Ranking ?? int.MaxValue;
 
             if (ranking == 1)
             {

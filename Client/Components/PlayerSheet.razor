@@ -65,16 +65,17 @@
         if (SelectedHouse != null)
         {
             var street = Player.Board.GetStreet(SelectedHouse.Street);
-            street.Houses[SelectedHouse.Index].Number = SelectedHouse.Number;
+            var house = street.Houses[SelectedHouse.Index];
+            house.Number = SelectedHouse.Number;
 
-            if (SelectedBisHouse != null)
+            if (SelectedNumberEffectPair.Effect == CardType.Bis && SelectedBisHouse != null)
             {
                 var bisHouse = Player.Board.GetStreet(SelectedBisHouse.Street).Houses[SelectedBisHouse.Index];
                 bisHouse.Number = SelectedBisHouse.Number;
                 bisHouse.IsBis = true;
                 Player.ScoreSheet.BisPoints.First(x => !x.IsCovered).IsCovered = true;
             }
-            else if (SelectedPark != null)
+            else if (SelectedNumberEffectPair.Effect == CardType.Park && SelectedPark != null)
             {
                 street.Parks.Single(x => x.Points == SelectedPark.Points).IsCovered = true;
                 switch (street.Position)
@@ -93,6 +94,11 @@
             else if (SelectedNumberEffectPair.Effect == CardType.TempAgency)
             {
                 Player.ScoreSheet.TempAgenciesUsed++;
+            }
+            else if (SelectedNumberEffectPair.Effect == CardType.Pool && house.Pool == PoolType.Unbuilt)
+            {
+                house.Pool = PoolType.Built;
+                Player.ScoreSheet.PoolPoints.First(x => !x.IsCovered).IsCovered = true;
             }
 
             await Http.PostAsync("api/Game/UpdatePlayerSheet", new { GameId = Game.Id, Player = Player });

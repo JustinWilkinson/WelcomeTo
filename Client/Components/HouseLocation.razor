@@ -2,7 +2,7 @@
     <div class="card h-100 bg-transparent border-0">
         <div class="card-header pt-1 pb-0 pl-2 pr-2 text-center bg-transparent border-0">
             <div class="garden">
-                @if (House.Pool == PoolType.Built)
+                @if (House.Pool == PoolType.Built || House.Pool == PoolType.Unbuilt && SelectedNumberEffectPair?.Effect == CardType.Pool && IsSelectedHouse)
                 {
                     <div class="bg-primary rounded w-75 h-100 float-right"></div>
                 }
@@ -22,7 +22,7 @@
                     else
                     {
                         var possibleHouseNumbers = GetPossibileHouseNumbers();
-                        if (OnSelectedStreet && PlayerSheet.SelectedHouse.Index == House.Index)
+                        if (IsSelectedHouse)
                         {
                             <select class="form-control py-0 rounded-0 centered-select" @onchange="OnHouseSelected">
                                 <option value="-1">Select</option>
@@ -113,6 +113,7 @@
     public House House { get; set; }
 
     private bool OnSelectedStreet => PlayerSheet.SelectedHouse != null && PlayerSheet.SelectedHouse.Street == Street.Position;
+    private bool IsSelectedHouse => OnSelectedStreet && PlayerSheet.SelectedHouse.Index == House.Index;
 
     private string GetHouseClass()
     {
