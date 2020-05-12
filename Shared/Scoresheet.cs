@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using WelcomeTo.Shared.Enumerations;
 
 namespace WelcomeTo.Shared
 {
     public class ScoreSheet
     {
-        public List<RealEstateValueTableCell> RealEstateValueTableCell { get; set; }
+        public Dictionary<RealEstateSize, List<PointsListItem>> RealEstateValuesTable { get; set; }
 
         public List<PointsListItem> PoolPoints { get; set; }
 

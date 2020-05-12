@@ -123,6 +123,10 @@
             {
                 Player.Board.GetStreet(SelectedFenceHouse.Street).Houses[SelectedFenceHouse.Index].FenceBuilt = true;
             }
+            else if (SelectedNumberEffectPair.Effect == CardType.RealEstateValue)
+            {
+
+            }
 
             await Http.PostAsync("api/Game/UpdatePlayerSheet", new { GameId = Game.Id, Player = Player });
             SelectedHouseChanged(null);

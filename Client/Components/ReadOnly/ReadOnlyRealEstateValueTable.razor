@@ -1,0 +1,47 @@
+﻿<table class="table table-bordered mb-0">
+    <thead>
+        <tr>
+            <th class="text-center align-middle" colspan="6">Real Estate Value</th>
+        </tr>
+        <tr>
+            <th class="text-center align-middle">1 House</th>
+            <th class="text-center align-middle">2 Houses</th>
+            <th class="text-center align-middle">3 Houses</th>
+            <th class="text-center align-middle">4 Houses</th>
+            <th class="text-center align-middle">5 Houses</th>
+            <th class="text-center align-middle">6 Houses</th>
+        </tr>
+    </thead>
+    <tbody class="table-body-reduced">
+        @for (var i = 0; i < CellValues.Values.Max(v => v.Count); i++)
+        {
+            <tr>
+                @foreach (RealEstateSize size in Enum.GetValues(typeof(RealEstateSize)))
+                {
+                    <PointsListItemTableCell Item="@GetCellValue(size, i)" />
+                }
+            </tr>
+        }
+    </tbody>
+    <tfoot>
+        <tr>
+            <td class="text-center align-middle">x...</td>
+            <td class="text-center align-middle">x...</td>
+            <td class="text-center align-middle">x...</td>
+            <td class="text-center align-middle">x...</td>
+            <td class="text-center align-middle">x...</td>
+            <td class="text-center align-middle">x...</td>
+        </tr>
+    </tfoot>
+</table>
+
+@code {
+    [Parameter]
+    public Dictionary<RealEstateSize, List<PointsListItem>> CellValues { get; set; }
+
+    private PointsListItem GetCellValue(RealEstateSize size, int index)
+    {
+        var column = CellValues[size];
+        return column.Count > index ? column[index] : null;
+    }
+}

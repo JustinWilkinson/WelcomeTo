@@ -16,6 +16,8 @@ namespace WelcomeTo.Server.Configuration
 
         public Dictionary<StreetPosition, List<int>> ParkPoints { get; set; }
 
+        public Dictionary<RealEstateSize, List<int>> RealEstateSizes { get; set; }
+
         public IEnumerable<int> PoolPoints { get; set; }
 
         public IEnumerable<int> TempAgencyPoints { get; set; }

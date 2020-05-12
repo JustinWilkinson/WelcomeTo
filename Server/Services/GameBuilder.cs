@@ -23,6 +23,7 @@ namespace WelcomeTo.Server.Services
         private readonly Dictionary<CardType, List<int>> _cardDistribution;
         private readonly Dictionary<StreetPosition, List<bool>> _poolPositions;
         private readonly Dictionary<StreetPosition, List<int>> _parkPoints;
+        private readonly Dictionary<RealEstateSize, List<int>> _realEstateSizeValues;
 
         private readonly IEnumerable<int> _poolPoints;
         private readonly IEnumerable<int> _tempAgencyPoints;
@@ -40,6 +41,7 @@ namespace WelcomeTo.Server.Services
             _cardDistribution = options.Value.CardDistribution;
             _poolPositions = options.Value.PoolPositions;
             _parkPoints = options.Value.ParkPoints;
+            _realEstateSizeValues = options.Value.RealEstateSizes;
             _poolPoints = options.Value.PoolPoints;
             _tempAgencyPoints = options.Value.TempAgencyPoints;
             _bisPoints = options.Value.BisPoints;
@@ -88,8 +90,8 @@ namespace WelcomeTo.Server.Services
         };
 
         public ScoreSheet StartingScoreSheet => new ScoreSheet 
-        { 
-            RealEstateValueTableCell = new List<RealEstateValueTableCell>(),
+        {
+            RealEstateValuesTable = _realEstateSizeValues.ToDictionary(s => s.Key, s => s.Value.Select(points => new PointsListItem { Points = points, IsCovered = false }).ToList()),
             PoolPoints = _poolPoints.Select(points => new PointsListItem { Points = points, IsCovered = false }).ToList(),
             TempAgencyPoints = _tempAgencyPoints.ToList(),
             BisPoints = _bisPoints.Select(points => new PointsListItem { Points = points, IsCovered = false}).ToList(),
