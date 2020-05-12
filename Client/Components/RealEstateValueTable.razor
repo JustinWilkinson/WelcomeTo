@@ -18,7 +18,23 @@
             <tr>
                 @foreach (RealEstateSize size in Enum.GetValues(typeof(RealEstateSize)))
                 {
-                    <PointsListItemTableCell Item="@GetCellValue(size, i)" />
+                    var cellValue = GetCellValue(size, i);
+                    if (cellValue != null && IsEditable(cellValue, size))
+                    {
+                        var index = i;
+                        if (IsSelectedCell(size, index))
+                        {
+                            <td class="text-center align-middle pointer" @onclick="() => SelectCellValue(size, index)"><span class="oi oi-circle-x"></span></td>
+                        }
+                        else
+                        {
+                            <td class="text-center align-middle pointer" @onclick="() => SelectCellValue(size, index)">@cellValue.Points</td>
+                        }
+                    }
+                    else
+                    {
+                        <PointsListItemTableCell Item="cellValue" />
+                    }
                 }
             </tr>
         }
@@ -35,7 +51,13 @@
     </tfoot>
 </table>
 
-@code {
+@code{
+    [CascadingParameter]
+    public PlayerSheet PlayerSheet { get; set; }
+
+    [CascadingParameter]
+    public NumberEffectPair SelectedNumberEffectPair { get; set; }
+
     [Parameter]
     public Dictionary<RealEstateSize, List<PointsListItem>> CellValues { get; set; }
 
@@ -43,5 +65,24 @@
     {
         var column = CellValues[size];
         return column.Count > index ? column[index] : null;
+    }
+
+    private bool IsEditable(PointsListItem item, RealEstateSize size)
+    {
+        if (SelectedNumberEffectPair?.Effect == CardType.RealEstateValue && !item.IsCovered)
+        {
+            var optionsLeftInList = CellValues[size].Where(c => c != null && !c.IsCovered).ToList();
+            return optionsLeftInList.Count > 1 && optionsLeftInList[0].Points == item.Points;
+        }
+
+        return false;
+    }
+
+    private bool IsSelectedCell(RealEstateSize size, int index) => PlayerSheet.SelectedRealEstateValue != null && PlayerSheet.SelectedRealEstateValue.Size == size && PlayerSheet.SelectedRealEstateValue.Index == index;
+
+    private void SelectCellValue(RealEstateSize size, int index)
+    {
+        var selection = !IsSelectedCell(size, index) ? new SelectedRealEstateValue { Size = size, Index = index } : null;
+        PlayerSheet.SelectedRealEstateValueChanged(selection);
     }
 }

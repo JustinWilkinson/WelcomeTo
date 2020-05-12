@@ -1,7 +1,7 @@
-﻿<td class="text-center align-middle">
-    @if (Item != null)
-    {
-        if (Item.IsCovered)
+﻿@if (Item != null)
+{
+    <td class="text-center align-middle">
+        @if (Item.IsCovered)
         {
             <span class="oi oi-circle-x"></span>
         }
@@ -9,9 +9,12 @@
         {
             <span>@Item.Points</span>
         }
-    }
-</td>
-
+    </td>
+}
+else
+{
+    <td class="table-secondary"></td>
+}
 
 @code{
     [Parameter]

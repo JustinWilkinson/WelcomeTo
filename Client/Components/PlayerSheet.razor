@@ -42,6 +42,7 @@
     public SelectedHouse SelectedBisHouse { get; set; }
     public SelectedHouse SelectedFenceHouse { get; set; }
     public Park SelectedPark { get; set; }
+    public SelectedRealEstateValue SelectedRealEstateValue { get; set; }
 
     public void SelectedHouseChanged(SelectedHouse house)
     {
@@ -49,6 +50,7 @@
         SelectedBisHouseChanged(null, false);
         SelectedParkChanged(null, false);
         SelectedFenceChanged(null, false);
+        SelectedRealEstateValueChanged(null, false);
         StateHasChanged();
     }
 
@@ -73,6 +75,15 @@
     public void SelectedFenceChanged(SelectedHouse fencedHouse, bool runStateHasChanged = true)
     {
         SelectedFenceHouse = fencedHouse;
+        if (runStateHasChanged)
+        {
+            StateHasChanged();
+        }
+    }
+
+    public void SelectedRealEstateValueChanged(SelectedRealEstateValue realEstateValue, bool runStateHasChanged = true)
+    {
+        SelectedRealEstateValue = realEstateValue;
         if (runStateHasChanged)
         {
             StateHasChanged();
@@ -123,12 +134,12 @@
             {
                 Player.Board.GetStreet(SelectedFenceHouse.Street).Houses[SelectedFenceHouse.Index].FenceBuilt = true;
             }
-            else if (SelectedNumberEffectPair.Effect == CardType.RealEstateValue)
+            else if (SelectedNumberEffectPair.Effect == CardType.RealEstateValue && SelectedRealEstateValue != null)
             {
-
+                Player.ScoreSheet.RealEstateValuesTable[SelectedRealEstateValue.Size][SelectedRealEstateValue.Index].IsCovered = true;
             }
 
-            await Http.PostAsync("api/Game/UpdatePlayerSheet", new { GameId = Game.Id, Player = Player });
+            await Http.PostAsync("api/Game/UpdatePlayerSheet", new { GameId = Game.Id, Player = JsonConvert.SerializeObject(Player) });
             SelectedHouseChanged(null);
             OnActionTaken?.Invoke();
         }
