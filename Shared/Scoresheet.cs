@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace WelcomeTo.Shared
 {
@@ -12,8 +13,6 @@ namespace WelcomeTo.Shared
 
         public List<PointsListItem> RefusalPoints { get; set; }
 
-        public int TempAgenciesUsed { get; set; }
-
         public int Plan1 { get; set; }
 
         public int Plan2{ get; set; }
@@ -26,16 +25,42 @@ namespace WelcomeTo.Shared
 
         public int BottomParks { get; set; }
 
-        public int Pools { get; set; }
+        public int Pools => PoolPoints.First(x => !x.IsCovered).Points;
 
-        public int TempAgency { get; set; }
+        public int TempAgenciesUsed { get; set; }
 
         public int RealEstateValue { get; set; }
 
-        public int Bis { get; set; }
+        public int Bis => BisPoints.First(x => !x.IsCovered).Points;
 
-        public int Refusals { get; set; }
+        public int Refusals => RefusalPoints.First(x => !x.IsCovered).Points;
 
-        public int Total => Plan1 + Plan2 + Plan3 + TopParks + MiddleParks + BottomParks + TempAgency + RealEstateValue - Bis - Refusals;
+        public int GetTempAgencyPoints(Game game, string playerName)
+        {
+            var ranking = game.Players
+                .GroupBy(p => p.ScoreSheet.TempAgenciesUsed)
+                .OrderByDescending(g => g.Key)
+                .Select((group, index) => new { Names = group.Select(player => player.Name), Ranking = index + 1 })
+                .Single(x => x.Names.Contains(playerName)).Ranking;
+
+            if (ranking == 1)
+            {
+                return 7;
+            }
+            else if (ranking == 2)
+            {
+                return 4;
+            }
+            else if (ranking == 3)
+            {
+                return 1;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        public int GetTotal(Game game, string playerName) => Plan1 + Plan2 + Plan3 + TopParks + MiddleParks + BottomParks + GetTempAgencyPoints(game, playerName) + RealEstateValue - Bis - Refusals;
     }
 }

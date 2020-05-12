@@ -59,7 +59,7 @@
                 }
                 else
                 {
-                    <li class="list-group-item list-group-item-danger text-dark">@value</li>
+                    <li class="list-group-item list-group-item-danger text-dark">@value.Points</li>
                 }
             }
         </ul>
@@ -163,7 +163,7 @@
                     <td class="text-center align-middle">@ScoreSheet.MiddleParks</td>
                     <td class="text-center align-middle">@ScoreSheet.BottomParks</td>
                     <td class="text-center align-middle">@ScoreSheet.Pools</td>
-                    <td class="text-center align-middle">@ScoreSheet.TempAgency</td>
+                    <td class="text-center align-middle">@ScoreSheet.GetTempAgencyPoints(Parent.Game, Parent.Player.Name)</td>
                     <td class="text-center align-middle">@ScoreSheet.RealEstateValue</td>
                     <td class="text-center text-white align-middle bg-danger">@ScoreSheet.Bis</td>
                     <td class="text-center text-white align-middle bg-danger">@ScoreSheet.Refusals</td>
@@ -172,7 +172,7 @@
             <tfoot>
                 <tr class="table-secondary">
                     <td class="font-weight-bold text-center align-middle">Total: </td>
-                    <td colspan="10" class="font-weight-bold text-left align-middle">@ScoreSheet.Total</td>
+                    <td colspan="10" class="font-weight-bold text-left align-middle">@ScoreSheet.GetTotal(Parent.Game, Parent.Player.Name)</td>
                 </tr>
             </tfoot>
         </table>
@@ -180,6 +180,9 @@
 </div>
 
 @code{
+    [CascadingParameter]
+    public ReadOnlyPlayerSheet Parent { get; set; }
+
     [Parameter]
     public ScoreSheet ScoreSheet { get; set; }
 

@@ -72,10 +72,23 @@
                 var bisHouse = Player.Board.GetStreet(SelectedBisHouse.Street).Houses[SelectedBisHouse.Index];
                 bisHouse.Number = SelectedBisHouse.Number;
                 bisHouse.IsBis = true;
+                Player.ScoreSheet.BisPoints.First(x => !x.IsCovered).IsCovered = true;
             }
             else if (SelectedPark != null)
             {
                 street.Parks.Single(x => x.Points == SelectedPark.Points).IsCovered = true;
+                switch (street.Position)
+                {
+                    case StreetPosition.Top:
+                        Player.ScoreSheet.TopParks += SelectedPark.Points;
+                        break;
+                    case StreetPosition.Middle:
+                        Player.ScoreSheet.MiddleParks += SelectedPark.Points;
+                        break;
+                    case StreetPosition.Bottom:
+                        Player.ScoreSheet.BottomParks += SelectedPark.Points;
+                        break;
+                }
             }
             else if (SelectedNumberEffectPair.Effect == CardType.TempAgency)
             {

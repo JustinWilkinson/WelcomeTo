@@ -90,7 +90,7 @@ namespace WelcomeTo.Server.Services
             RealEstateValueTableCell = new List<RealEstateValueTableCell>(),
             BisPoints = _bisPoints.Select(points => new PointsListItem { Points = points, IsCovered = false}).ToList(),
             PoolPoints = _poolPoints.Select(points => new PointsListItem { Points = points, IsCovered = false }).ToList(),
-            RefusalPoints = _refusalPoints.Select(points => new PointsListItem { Points = points, IsCovered = false }).ToList()
+            RefusalPoints = _refusalPoints.Select(points => new PointsListItem { Points = points, IsCovered = false }).ToList(),
         };
 
         private GameDeck GetGameDeck()
