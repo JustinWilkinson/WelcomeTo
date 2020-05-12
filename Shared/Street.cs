@@ -9,6 +9,6 @@ namespace WelcomeTo.Shared
 
         public List<House> Houses { get; set; }
 
-        public List<int> ParkPoints { get; set; }
+        public List<Park> Parks { get; set; }
     }
 }

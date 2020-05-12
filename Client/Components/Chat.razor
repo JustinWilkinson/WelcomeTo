@@ -50,7 +50,7 @@ else
     {
         if (!firstRender)
         {
-            await JSRuntime.InvokeVoidAsync("cryptonyms.scrollToBottomOfElement", Id);
+            await JSRuntime.InvokeVoidAsync("welcomeTo.scrollToBottomOfElement", Id);
         }
     }
 
@@ -58,7 +58,7 @@ else
     {
         if (e.Key == "Escape")
         {
-            await JSRuntime.InvokeVoidAsync("cryptonyms.blurElement", Id);
+            await JSRuntime.InvokeVoidAsync("welcomeTo.blurElement", Id);
         }
         else if (e.Key == "Enter")
         {
@@ -75,7 +75,7 @@ else
             await Task.WhenAll(
                 Http.PutAsync("api/Message/AddMessage", new { MessageBoardId = ChatId, GameMessage = chatMessage }),
                 HubCommunicator.SendGameMessageAsync(ChatId, chatMessage));
-            await JSRuntime.InvokeVoidAsync("cryptonyms.scrollToBottomOfElement", Id);
+            await JSRuntime.InvokeVoidAsync("welcomeTo.scrollToBottomOfElement", Id);
             _newMessage = null;
         }
     }

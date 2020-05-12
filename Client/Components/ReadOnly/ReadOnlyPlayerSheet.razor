@@ -1,18 +1,23 @@
-﻿<div class="container-fluid grass-background p-2">
-    <TabControl>
-        <TabContent>
-            <TabPage Title="Board">
-                <ReadOnlyPlayerBoard Board="Player.Board" />
-            </TabPage>
-            <TabPage Title="Score Sheet">
-                <ReadOnlyScoreSheet ScoreSheet="Player.ScoreSheet" />
-            </TabPage>
-        </TabContent>
-    </TabControl>
-</div>
+﻿<CascadingValue Value="this">
+    <div class="container-fluid grass-background p-2">
+        <TabControl>
+            <TabContent>
+                <TabPage Title="Board">
+                    <ReadOnlyPlayerBoard Board="Player.Board" />
+                </TabPage>
+                <TabPage Title="Score Sheet">
+                    <ReadOnlyScoreSheet ScoreSheet="Player.ScoreSheet" />
+                </TabPage>
+            </TabContent>
+        </TabControl>
+    </div>
+</CascadingValue>
 
 
 @code{
+    [CascadingParameter]
+    public Game Game { get; set; }
+
     [Parameter]
     public Player Player { get; set; }
 }

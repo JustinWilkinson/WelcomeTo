@@ -1,4 +1,6 @@
-﻿namespace WelcomeTo.Shared
+﻿using WelcomeTo.Shared.Enumerations;
+
+namespace WelcomeTo.Shared
 {
     public class Board
     {
@@ -9,5 +11,13 @@
         public Street MiddleStreet { get; set; }
 
         public Street BottomStreet { get; set; }
+
+        public Street GetStreet(StreetPosition street) => street switch
+        {
+            StreetPosition.Top => TopStreet,
+            StreetPosition.Middle => MiddleStreet,
+            StreetPosition.Bottom => BottomStreet,
+            _ => null
+        };
     }
 }

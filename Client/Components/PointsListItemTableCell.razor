@@ -1,0 +1,22 @@
+﻿@if (Item != null)
+{
+    <td class="text-center align-middle">
+        @if (Item.IsCovered)
+        {
+            <span class="oi oi-circle-x"></span>
+        }
+        else
+        {
+            <span>@Item.Points</span>
+        }
+    </td>
+}
+else
+{
+    <td class="table-secondary"></td>
+}
+
+@code{
+    [Parameter]
+    public PointsListItem Item { get; set; }
+}

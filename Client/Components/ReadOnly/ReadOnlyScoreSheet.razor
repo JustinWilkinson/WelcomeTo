@@ -1,69 +1,71 @@
-﻿<div class="container-fluid">
-    <div class="row bg-light mb-2">
-        <table class="table table-bordered mb-0">
-            <thead>
-                <tr>
-                    <th class="text-center align-middle">1 House</th>
-                    <th class="text-center align-middle">2 Houses</th>
-                    <th class="text-center align-middle">3 Houses</th>
-                    <th class="text-center align-middle">4 Houses</th>
-                    <th class="text-center align-middle">5 Houses</th>
-                    <th class="text-center align-middle">6 Houses</th>
-                </tr>
-            </thead>
+﻿<div class="container-fluid mt-1">
+    <Modal Show="_showPoolScoreCard" CanClose="true" Header="Pools" OnPopupClosed="() => _showPoolScoreCard = false">
+        <div class="text-center mb-3">
+            <img src="/images/pool.png" style="height: 10vh;" />
+        </div>
+        <table class="table table-bordered mb-0 font-weight-bold">
             <tbody>
-                <tr>
-                    <td class="text-center align-middle">1</td>
-                    <td class="text-center align-middle">2</td>
-                    <td class="text-center align-middle">3</td>
-                    <td class="text-center align-middle">4</td>
-                    <td class="text-center align-middle">5</td>
-                    <td class="text-center align-middle">6</td>
-                </tr>
-                <tr>
-                    <td class="text-center align-middle">2</td>
-                    <td class="text-center align-middle">3</td>
-                    <td class="text-center align-middle">4</td>
-                    <td class="text-center align-middle">5</td>
-                    <td class="text-center align-middle">6</td>
-                    <td class="text-center align-middle">7</td>
-                </tr>
-                <tr>
-                    <td class="text-center align-middle"></td>
-                    <td class="text-center align-middle">4</td>
-                    <td class="text-center align-middle">5</td>
-                    <td class="text-center align-middle">6</td>
-                    <td class="text-center align-middle">7</td>
-                    <td class="text-center align-middle">8</td>
-                </tr>
-                <tr>
-                    <td class="text-center align-middle"></td>
-                    <td class="text-center align-middle"></td>
-                    <td class="text-center align-middle">6</td>
-                    <td class="text-center align-middle">7</td>
-                    <td class="text-center align-middle">8</td>
-                    <td class="text-center align-middle">10</td>
-                </tr>
-                <tr>
-                    <td class="text-center align-middle"></td>
-                    <td class="text-center align-middle"></td>
-                    <td class="text-center align-middle"></td>
-                    <td class="text-center align-middle">9</td>
-                    <td class="text-center align-middle">10</td>
-                    <td class="text-center align-middle">12</td>
-                </tr>
+                @for (var i = 0; i < ScoreSheet.PoolPoints.Count - 1; i += 2)
+                {
+                    <tr>
+                        <PointsListItemTableCell Item="ScoreSheet.PoolPoints[i]" />
+                        <PointsListItemTableCell Item="ScoreSheet.PoolPoints[i + 1]" />
+                    </tr>
+                }
             </tbody>
-            <tfoot>
-                <tr>
-                    <td class="text-center align-middle">x...</td>
-                    <td class="text-center align-middle">x...</td>
-                    <td class="text-center align-middle">x...</td>
-                    <td class="text-center align-middle">x...</td>
-                    <td class="text-center align-middle">x...</td>
-                    <td class="text-center align-middle">x...</td>
-                </tr>
-            </tfoot>
         </table>
+    </Modal>
+    <Modal Show="_showTempAgencyScoreCard" CanClose="true" Header="Temp Agencies" OnPopupClosed="() => _showTempAgencyScoreCard = false">
+        <div class="text-center mb-3">
+            <img src="/images/barrier.png" style="height: 10vh;" />
+        </div>
+        <div class="text-center font-weight-bold mb-3">
+            @ScoreSheet.TempAgenciesUsed Agencies used.
+        </div>
+        <ul>
+            <li>The player with the most temp agencies used scores 7 points.</li>
+            <li>The player with the second most temp agencies used scores 4 points.</li>
+            <li>The player with the third most temp agencies used scores 1 point.</li>
+        </ul>
+    </Modal>
+    <Modal Show="_showBisScoreCard" CanClose="true" Header="Bis" OnPopupClosed="() => _showBisScoreCard = false">
+        <div class="text-center mb-3">
+            <img src="/images/mailbox.png" style="height: 10vh;" />
+        </div>
+        <table class="table table-bordered mb-0 table-danger font-weight-bold">
+            <tbody>
+                @for (var i = 0; i < ScoreSheet.BisPoints.Count - 1; i += 2)
+                {
+                    <tr>
+                        <PointsListItemTableCell Item="ScoreSheet.BisPoints[i]" />
+                        <PointsListItemTableCell Item="ScoreSheet.BisPoints[i + 1]" />
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </Modal>
+    <Modal Show="_showRefusalsScoreCard" CanClose="true" Header="Refusals" OnPopupClosed="() => _showRefusalsScoreCard = false">
+        <div class="text-center mb-3">
+            <img src="/images/refused.png" style="height: 10vh;" />
+        </div>
+        <ul class="list-group text-center font-weight-bold">
+            @foreach (var value in ScoreSheet.RefusalPoints)
+            {
+                if (value.IsCovered)
+                {
+                    <li class="list-group-item list-group-item-danger text-dark">
+                        <span class="oi oi-circle-x"></span>
+                    </li>
+                }
+                else
+                {
+                    <li class="list-group-item list-group-item-danger text-dark">@value.Points</li>
+                }
+            }
+        </ul>
+    </Modal>
+    <div class="row bg-light mb-2">
+        <ReadOnlyRealEstateValueTable CellValues="ScoreSheet.RealEstateValuesTable" />
     </div>
     <div class="row bg-light">
         <table class="table table-bordered mb-0">
@@ -71,11 +73,11 @@
                 <tr>
                     <th class="text-center align-middle" colspan="3">Plans</th>
                     <th class="text-center align-middle" colspan="3">Parks</th>
-                    <th class="text-center align-middle" rowspan="2">Pools</th>
-                    <th class="text-center align-middle" rowspan="2">Temp Agency</th>
-                    <th class="text-center align-middle" rowspan="2">Estate Value</th>
-                    <th class="text-center text-white align-middle bg-danger" rowspan="2">Bis</th>
-                    <th class="text-center text-white align-middle bg-danger" rowspan="2">Refusals</th>
+                    <th class="text-center align-middle pointer" rowspan="2" title="Click to show detail." @onclick="() => _showPoolScoreCard = true">Pools</th>
+                    <th class="text-center align-middle pointer" rowspan="2" title="Click to show detail." @onclick="() => _showTempAgencyScoreCard  = true">Temp Agency</th>
+                    <th class="text-center align-middle" rowspan="2">Real Estate Value</th>
+                    <th class="text-center text-white align-middle bg-danger pointer" rowspan="2" title="Click to show detail." @onclick="() => _showBisScoreCard  = true">Bis</th>
+                    <th class="text-center text-white align-middle bg-danger pointer" rowspan="2" title="Click to show detail." @onclick="() => _showRefusalsScoreCard  = true">Refusals</th>
                 </tr>
                 <tr>
                     <th class="text-center align-middle">No. 1</th>
@@ -95,8 +97,8 @@
                     <td class="text-center align-middle">@ScoreSheet.MiddleParks</td>
                     <td class="text-center align-middle">@ScoreSheet.BottomParks</td>
                     <td class="text-center align-middle">@ScoreSheet.Pools</td>
-                    <td class="text-center align-middle">@ScoreSheet.TempAgency</td>
-                    <td class="text-center align-middle">@ScoreSheet.EstateValue</td>
+                    <td class="text-center align-middle">@ScoreSheet.GetTempAgencyPoints(Parent.Game, Parent.Player.Name)</td>
+                    <td class="text-center align-middle">@ScoreSheet.RealEstateValue</td>
                     <td class="text-center text-white align-middle bg-danger">@ScoreSheet.Bis</td>
                     <td class="text-center text-white align-middle bg-danger">@ScoreSheet.Refusals</td>
                 </tr>
@@ -104,7 +106,7 @@
             <tfoot>
                 <tr class="table-secondary">
                     <td class="font-weight-bold text-center align-middle">Total: </td>
-                    <td colspan="10" class="font-weight-bold text-left align-middle">@ScoreSheet.Total</td>
+                    <td colspan="10" class="font-weight-bold text-left align-middle">@ScoreSheet.GetTotal(Parent.Game, Parent.Player.Name)</td>
                 </tr>
             </tfoot>
         </table>
@@ -112,6 +114,14 @@
 </div>
 
 @code{
+    [CascadingParameter]
+    public ReadOnlyPlayerSheet Parent { get; set; }
+
     [Parameter]
     public ScoreSheet ScoreSheet { get; set; }
+
+    private bool _showPoolScoreCard { get; set; }
+    private bool _showTempAgencyScoreCard { get; set; }
+    private bool _showBisScoreCard { get; set; }
+    private bool _showRefusalsScoreCard { get; set; }
 }

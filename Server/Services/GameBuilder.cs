@@ -23,10 +23,17 @@ namespace WelcomeTo.Server.Services
         private readonly Dictionary<CardType, List<int>> _cardDistribution;
         private readonly Dictionary<StreetPosition, List<bool>> _poolPositions;
         private readonly Dictionary<StreetPosition, List<int>> _parkPoints;
+        private readonly Dictionary<RealEstateSize, List<int>> _realEstateSizeValues;
+
+        private readonly IEnumerable<int> _poolPoints;
+        private readonly IEnumerable<int> _tempAgencyPoints;
+        private readonly IEnumerable<int> _bisPoints;
+        private readonly IEnumerable<int> _refusalPoints;
 
         private readonly List<CityPlan> _cityPlans1 = new List<CityPlan>();
         private readonly List<CityPlan> _cityPlans2 = new List<CityPlan>();
         private readonly List<CityPlan> _cityPlans3 = new List<CityPlan>();
+
         private readonly Random _random = new Random();
 
         public GameBuilder(IOptions<ApplicationOptions> options)
@@ -34,6 +41,12 @@ namespace WelcomeTo.Server.Services
             _cardDistribution = options.Value.CardDistribution;
             _poolPositions = options.Value.PoolPositions;
             _parkPoints = options.Value.ParkPoints;
+            _realEstateSizeValues = options.Value.RealEstateSizes;
+            _poolPoints = options.Value.PoolPoints;
+            _tempAgencyPoints = options.Value.TempAgencyPoints;
+            _bisPoints = options.Value.BisPoints;
+            _refusalPoints = options.Value.RefusalPoints;
+            _bisPoints = options.Value.BisPoints;
             foreach (var cityPlan in options.Value.CityPlans)
             {
                 switch (cityPlan.Type)
@@ -71,12 +84,19 @@ namespace WelcomeTo.Server.Services
 
         public Board StartingBoard => new Board
         {
-            TopStreet = GetStreet(StreetPosition.Top),
-            MiddleStreet = GetStreet(StreetPosition.Middle),
-            BottomStreet = GetStreet(StreetPosition.Bottom)
+            TopStreet = BuildStreet(StreetPosition.Top),
+            MiddleStreet = BuildStreet(StreetPosition.Middle),
+            BottomStreet = BuildStreet(StreetPosition.Bottom)
         };
 
-        public ScoreSheet StartingScoreSheet => new ScoreSheet { RealEstateValueTableCell = new List<RealEstateValueTableCell>() };
+        public ScoreSheet StartingScoreSheet => new ScoreSheet 
+        {
+            RealEstateValuesTable = _realEstateSizeValues.ToDictionary(s => s.Key, s => s.Value.Select(points => new PointsListItem { Points = points, IsCovered = false }).ToList()),
+            PoolPoints = _poolPoints.Select(points => new PointsListItem { Points = points, IsCovered = false }).ToList(),
+            TempAgencyPoints = _tempAgencyPoints.ToList(),
+            BisPoints = _bisPoints.Select(points => new PointsListItem { Points = points, IsCovered = false}).ToList(),
+            RefusalPoints = _refusalPoints.Select(points => new PointsListItem { Points = points, IsCovered = false }).ToList()
+        };
 
         private GameDeck GetGameDeck()
         {
@@ -95,12 +115,12 @@ namespace WelcomeTo.Server.Services
             return deck;
         }
 
-        private Street GetStreet(StreetPosition position)
+        private Street BuildStreet(StreetPosition position)
         {
             return new Street
             {
                 Position = position,
-                ParkPoints = _parkPoints[position],
+                Parks = _parkPoints[position].Select(p => new Park { Points = p, IsCovered = false }).ToList(),
                 Houses = _poolPositions[position].Select((hasPool, index) => new House { Index = index, Pool = hasPool ? PoolType.Unbuilt : PoolType.None }).ToList()
             };
         }

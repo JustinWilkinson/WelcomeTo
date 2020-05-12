@@ -1,0 +1,88 @@
+﻿<table class="table table-bordered mb-0">
+    <thead>
+        <tr>
+            <th class="text-center align-middle" colspan="6">Real Estate Value</th>
+        </tr>
+        <tr>
+            <th class="text-center align-middle">1 House</th>
+            <th class="text-center align-middle">2 Houses</th>
+            <th class="text-center align-middle">3 Houses</th>
+            <th class="text-center align-middle">4 Houses</th>
+            <th class="text-center align-middle">5 Houses</th>
+            <th class="text-center align-middle">6 Houses</th>
+        </tr>
+    </thead>
+    <tbody class="table-body-reduced">
+        @for (var i = 0; i < CellValues.Values.Max(v => v.Count); i++)
+        {
+            <tr>
+                @foreach (RealEstateSize size in Enum.GetValues(typeof(RealEstateSize)))
+                {
+                    var cellValue = GetCellValue(size, i);
+                    if (cellValue != null && IsEditable(cellValue, size))
+                    {
+                        var index = i;
+                        if (IsSelectedCell(size, index))
+                        {
+                            <td class="text-center align-middle pointer" @onclick="() => SelectCellValue(size, index)"><span class="oi oi-circle-x"></span></td>
+                        }
+                        else
+                        {
+                            <td class="text-center align-middle pointer" @onclick="() => SelectCellValue(size, index)">@cellValue.Points</td>
+                        }
+                    }
+                    else
+                    {
+                        <PointsListItemTableCell Item="cellValue" />
+                    }
+                }
+            </tr>
+        }
+    </tbody>
+    <tfoot>
+        <tr>
+            <td class="text-center align-middle">x...</td>
+            <td class="text-center align-middle">x...</td>
+            <td class="text-center align-middle">x...</td>
+            <td class="text-center align-middle">x...</td>
+            <td class="text-center align-middle">x...</td>
+            <td class="text-center align-middle">x...</td>
+        </tr>
+    </tfoot>
+</table>
+
+@code{
+    [CascadingParameter]
+    public PlayerSheet PlayerSheet { get; set; }
+
+    [CascadingParameter]
+    public NumberEffectPair SelectedNumberEffectPair { get; set; }
+
+    [Parameter]
+    public Dictionary<RealEstateSize, List<PointsListItem>> CellValues { get; set; }
+
+    private PointsListItem GetCellValue(RealEstateSize size, int index)
+    {
+        var column = CellValues[size];
+        return column.Count > index ? column[index] : null;
+    }
+
+    private bool IsEditable(PointsListItem item, RealEstateSize size)
+    {
+        if (SelectedNumberEffectPair?.Effect == CardType.RealEstateValue && !item.IsCovered)
+        {
+            var optionsLeftInList = CellValues[size].Where(c => c != null && !c.IsCovered).ToList();
+            return optionsLeftInList.Count > 1 && optionsLeftInList[0].Points == item.Points;
+        }
+
+        return false;
+    }
+
+    private bool IsSelectedCell(RealEstateSize size, int index) => PlayerSheet.SelectedRealEstateValue != null && PlayerSheet.SelectedRealEstateValue.Size == size && PlayerSheet.SelectedRealEstateValue.Index == index;
+
+    private void SelectCellValue(RealEstateSize size, int index)
+    {
+        var selection = !IsSelectedCell(size, index) ? new SelectedRealEstateValue { Size = size, Index = index } : null;
+        PlayerSheet.SelectedRealEstateValueChanged(selection);
+    }
+}

@@ -4,7 +4,7 @@
     <div class="container-fluid grass-background p-2">
         <TabControl>
             <ExtraTabHeaderContent>
-                @if (SelectedHouseIndex.HasValue)
+                @if (SelectedHouse != null)
                 {
                     <button class="btn btn-primary ml-auto" @onclick="UpdatePlayerSheetAsync">Confirm Action</button>
                 }
@@ -38,38 +38,110 @@
     [Parameter]
     public Action OnActionTaken { get; set; }
 
-    public StreetPosition? SelectedHouseStreet { get; set; }
-    public int? SelectedHouseIndex { get; set; }
+    public SelectedHouse SelectedHouse { get; set; }
+    public SelectedHouse SelectedBisHouse { get; set; }
+    public SelectedHouse SelectedFenceHouse { get; set; }
+    public Park SelectedPark { get; set; }
+    public SelectedRealEstateValue SelectedRealEstateValue { get; set; }
 
-    public int? SelectedHouseNumber { get; set; }
-
-    public void SelectedHouseChanged(StreetPosition? street, int? selectedHouseIndex, int? selectedHouseNumber)
+    public void SelectedHouseChanged(SelectedHouse house)
     {
-        SelectedHouseStreet = street;
-        SelectedHouseIndex = selectedHouseIndex;
-        SelectedHouseNumber = selectedHouseNumber;
+        SelectedHouse = house;
+        SelectedBisHouseChanged(null, false);
+        SelectedParkChanged(null, false);
+        SelectedFenceChanged(null, false);
+        SelectedRealEstateValueChanged(null, false);
         StateHasChanged();
+    }
+
+    public void SelectedBisHouseChanged(SelectedHouse house, bool runStateHasChanged = true)
+    {
+        SelectedBisHouse = house;
+        if (runStateHasChanged)
+        {
+            StateHasChanged();
+        }
+    }
+
+    public void SelectedParkChanged(Park park, bool runStateHasChanged = true)
+    {
+        SelectedPark = park;
+        if (runStateHasChanged)
+        {
+            StateHasChanged();
+        }
+    }
+
+    public void SelectedFenceChanged(SelectedHouse fencedHouse, bool runStateHasChanged = true)
+    {
+        SelectedFenceHouse = fencedHouse;
+        if (runStateHasChanged)
+        {
+            StateHasChanged();
+        }
+    }
+
+    public void SelectedRealEstateValueChanged(SelectedRealEstateValue realEstateValue, bool runStateHasChanged = true)
+    {
+        SelectedRealEstateValue = realEstateValue;
+        if (runStateHasChanged)
+        {
+            StateHasChanged();
+        }
     }
 
     private async Task UpdatePlayerSheetAsync()
     {
-        if (SelectedHouseStreet != null && SelectedHouseIndex != null && SelectedHouseNumber != null)
+        if (SelectedHouse != null)
         {
-            var street = SelectedHouseStreet switch
-            {
-                StreetPosition.Top => Player.Board.TopStreet,
-                StreetPosition.Middle => Player.Board.TopStreet,
-                StreetPosition.Bottom => Player.Board.TopStreet,
-                _ => null
-            };
+            var street = Player.Board.GetStreet(SelectedHouse.Street);
+            var house = street.Houses[SelectedHouse.Index];
+            house.Number = SelectedHouse.Number;
 
-            if (street != null)
+            if (SelectedNumberEffectPair.Effect == CardType.Bis && SelectedBisHouse != null)
             {
-                street.Houses[SelectedHouseIndex.Value].Number = SelectedHouseNumber.Value;
-                await Http.PostAsync("api/Game/UpdatePlayerSheet", new { GameId = Game.Id, Player = Player });
-                SelectedHouseChanged(null, null, null);
-                OnActionTaken?.Invoke();
+                var bisHouse = Player.Board.GetStreet(SelectedBisHouse.Street).Houses[SelectedBisHouse.Index];
+                bisHouse.Number = SelectedBisHouse.Number;
+                bisHouse.IsBis = true;
+                Player.ScoreSheet.BisPoints.First(x => !x.IsCovered).IsCovered = true;
             }
+            else if (SelectedNumberEffectPair.Effect == CardType.Park && SelectedPark != null)
+            {
+                street.Parks.Single(x => x.Points == SelectedPark.Points).IsCovered = true;
+                switch (street.Position)
+                {
+                    case StreetPosition.Top:
+                        Player.ScoreSheet.TopParks += SelectedPark.Points;
+                        break;
+                    case StreetPosition.Middle:
+                        Player.ScoreSheet.MiddleParks += SelectedPark.Points;
+                        break;
+                    case StreetPosition.Bottom:
+                        Player.ScoreSheet.BottomParks += SelectedPark.Points;
+                        break;
+                }
+            }
+            else if (SelectedNumberEffectPair.Effect == CardType.TempAgency)
+            {
+                Player.ScoreSheet.TempAgenciesUsed++;
+            }
+            else if (SelectedNumberEffectPair.Effect == CardType.Pool && house.Pool == PoolType.Unbuilt)
+            {
+                house.Pool = PoolType.Built;
+                Player.ScoreSheet.PoolPoints.First(x => !x.IsCovered).IsCovered = true;
+            }
+            else if (SelectedNumberEffectPair.Effect == CardType.Fence && SelectedFenceHouse != null)
+            {
+                Player.Board.GetStreet(SelectedFenceHouse.Street).Houses[SelectedFenceHouse.Index].FenceBuilt = true;
+            }
+            else if (SelectedNumberEffectPair.Effect == CardType.RealEstateValue && SelectedRealEstateValue != null)
+            {
+                Player.ScoreSheet.RealEstateValuesTable[SelectedRealEstateValue.Size][SelectedRealEstateValue.Index].IsCovered = true;
+            }
+
+            await Http.PostAsync("api/Game/UpdatePlayerSheet", new { GameId = Game.Id, Player = JsonConvert.SerializeObject(Player) });
+            SelectedHouseChanged(null);
+            OnActionTaken?.Invoke();
         }
     }
 }
