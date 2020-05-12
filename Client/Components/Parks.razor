@@ -4,7 +4,9 @@
         @foreach (var park in _coveredParks)
         {
             <div class="col-2 text-muted text-center mr-auto">
-                <div class="rounded-circle bg-warning"><span class="oi oi-circle-x"></span></div>
+                <div class="rounded-circle bg-warning">
+                    <span class="oi oi-circle-x"></span>
+                </div>
             </div>
         }
         @if (_uncoveredParks.Any())
@@ -21,7 +23,9 @@
                 else if (PlayerSheet.SelectedPark.Points == firstUncoveredPark.Points)
                 {
                     <div class="col-2 text-muted text-center mr-auto pointer" @onclick="() => PlayerSheet.SelectedParkChanged(null)">
-                        <div class="rounded-circle bg-warning"><span class="oi oi-circle-x"></span></div>
+                        <div class="rounded-circle bg-warning">
+                            <span class="oi oi-circle-x"></span>
+                        </div>
                     </div>
                 }
             }

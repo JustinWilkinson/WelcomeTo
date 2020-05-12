@@ -24,9 +24,14 @@ namespace WelcomeTo.Server.Services
         private readonly Dictionary<StreetPosition, List<bool>> _poolPositions;
         private readonly Dictionary<StreetPosition, List<int>> _parkPoints;
 
+        private readonly IEnumerable<int> _poolPoints;
+        private readonly IEnumerable<int> _bisPoints;
+        private readonly IEnumerable<int> _refusalPoints;
+
         private readonly List<CityPlan> _cityPlans1 = new List<CityPlan>();
         private readonly List<CityPlan> _cityPlans2 = new List<CityPlan>();
         private readonly List<CityPlan> _cityPlans3 = new List<CityPlan>();
+
         private readonly Random _random = new Random();
 
         public GameBuilder(IOptions<ApplicationOptions> options)
@@ -34,6 +39,10 @@ namespace WelcomeTo.Server.Services
             _cardDistribution = options.Value.CardDistribution;
             _poolPositions = options.Value.PoolPositions;
             _parkPoints = options.Value.ParkPoints;
+            _poolPoints = options.Value.PoolPoints;
+            _bisPoints = options.Value.BisPoints;
+            _refusalPoints = options.Value.RefusalPoints;
+            _bisPoints = options.Value.BisPoints;
             foreach (var cityPlan in options.Value.CityPlans)
             {
                 switch (cityPlan.Type)
@@ -76,7 +85,13 @@ namespace WelcomeTo.Server.Services
             BottomStreet = BuildStreet(StreetPosition.Bottom)
         };
 
-        public ScoreSheet StartingScoreSheet => new ScoreSheet { RealEstateValueTableCell = new List<RealEstateValueTableCell>() };
+        public ScoreSheet StartingScoreSheet => new ScoreSheet 
+        { 
+            RealEstateValueTableCell = new List<RealEstateValueTableCell>(),
+            BisPoints = _bisPoints.Select(points => new PointsListItem { Points = points, IsCovered = false}).ToList(),
+            PoolPoints = _poolPoints.Select(points => new PointsListItem { Points = points, IsCovered = false }).ToList(),
+            RefusalPoints = _refusalPoints.Select(points => new PointsListItem { Points = points, IsCovered = false }).ToList()
+        };
 
         private GameDeck GetGameDeck()
         {

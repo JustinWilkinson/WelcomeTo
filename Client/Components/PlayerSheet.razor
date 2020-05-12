@@ -77,6 +77,10 @@
             {
                 street.Parks.Single(x => x.Points == SelectedPark.Points).IsCovered = true;
             }
+            else if (SelectedNumberEffectPair.Effect == CardType.TempAgency)
+            {
+                Player.ScoreSheet.TempAgenciesUsed++;
+            }
 
             await Http.PostAsync("api/Game/UpdatePlayerSheet", new { GameId = Game.Id, Player = Player });
             SelectedHouseChanged(null);

@@ -6,6 +6,14 @@ namespace WelcomeTo.Shared
     {
         public List<RealEstateValueTableCell> RealEstateValueTableCell { get; set; }
 
+        public List<PointsListItem> PoolPoints { get; set; }
+
+        public List<PointsListItem> BisPoints { get; set; }
+
+        public List<PointsListItem> RefusalPoints { get; set; }
+
+        public int TempAgenciesUsed { get; set; }
+
         public int Plan1 { get; set; }
 
         public int Plan2{ get; set; }

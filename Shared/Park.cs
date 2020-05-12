@@ -1,9 +1,7 @@
 ﻿namespace WelcomeTo.Shared
 {
-    public class Park
+    public class Park : PointsListItem
     {
-        public int Points { get; set; }
 
-        public bool IsCovered { get; set; }
     }
 }
