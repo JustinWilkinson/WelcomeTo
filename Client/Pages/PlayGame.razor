@@ -25,7 +25,7 @@ else if (IdentifiedPlayer == null)
 else
 {
     <Modal Show="_showWaitingMessage" Header="Waiting for next turn..." CanClose="false">
-        Waiting for players to take their turn...
+        Waiting for @string.Join(", ", Game.Players.Select(x => x.Name).Except(Game.CurrentTurn.PlayerNamesWithActionTaken)) to take their turn...
     </Modal>
     <CascadingValue Value="Game">
         <div class="row mb-4">
@@ -54,7 +54,7 @@ else
             <TabControl>
                 <TabContent>
                     <TabPage Title="@IdentifiedPlayer.Name">
-                        <PlayerSheet Player="IdentifiedPlayer" OnActionTaken="PlayerActionTaken" @ref="_playerSheet" />
+                        <PlayerSheet Player="IdentifiedPlayer" OnActionTaken="IdentifiedPlayerActionTakenAsync" @ref="_playerSheet" />
                     </TabPage>
                     @foreach (var player in Game.Players.Where(p => p.Name != IdentifiedPlayer.Name))
                     {
@@ -102,10 +102,20 @@ else
 
     private async Task ConfigureHubAsync()
     {
-        GameHub.RegisterHandler("UpdateGame", async () =>
+        GameHub.RegisterHandler("UpdateGameAsync", async () =>
         {
             Game = await Http.GetAsync<Game>($"api/Game/Get?id={GameId}");
             StateHasChanged();
+        });
+
+        GameHub.RegisterHandler<string>("OtherPlayerActionTakenAsync", playerName =>
+        {
+            Game.CurrentTurn.PlayerNamesWithActionTaken.Add(playerName);
+            if (Game.CurrentTurn.PlayerNamesWithActionTaken.Contains(IdentifiedPlayer.Name))
+            {
+                _showWaitingMessage = Game.Players.Select(x => x.Name).Except(Game.CurrentTurn.PlayerNamesWithActionTaken).Any();
+                StateHasChanged();
+            }
         });
 
         await GameHub.StartAsync();
@@ -126,10 +136,21 @@ else
         _playerSheet.SelectedHouseChanged(null);
     }
 
-    private void PlayerActionTaken()
+    private async Task IdentifiedPlayerActionTakenAsync()
     {
         SelectedNumberEffectPair = null;
-        _showWaitingMessage = true;
+        Game = await Http.GetAsync<Game>($"api/Game/Get?id={GameId}");
+
+        if (!Game.Players.Select(x => x.Name).Except(Game.CurrentTurn.PlayerNamesWithActionTaken).Any())
+        {
+            await Http.PostAsync("NextTurn", GameId);
+            await Task.WhenAll(Http.GetAsync<Game>($"api/Game/Get?id={GameId}"), GameHub.UpdateGameAsync(GameId));
+        }
+        else
+        {
+            _showWaitingMessage = true;
+        }
+
         StateHasChanged();
     }
 

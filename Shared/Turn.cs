@@ -17,7 +17,7 @@ namespace WelcomeTo.Shared
 
         public Card EffectCard3 { get; set; }
 
-        public Dictionary<Player, bool> PlayerActionTaken { get; set; }
+        public List<string> PlayerNamesWithActionTaken { get; set; }
 
         public IEnumerable<NumberEffectPair> GetNumberEffectPairs() => new[] 
         { 

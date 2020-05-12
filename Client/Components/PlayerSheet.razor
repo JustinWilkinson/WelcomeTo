@@ -36,7 +36,7 @@
     public Player Player { get; set; }
 
     [Parameter]
-    public Action OnActionTaken { get; set; }
+    public EventCallback OnActionTaken { get; set; }
 
     public SelectedHouse SelectedHouse { get; set; }
     public SelectedHouse SelectedBisHouse { get; set; }
@@ -111,13 +111,13 @@
                 switch (street.Position)
                 {
                     case StreetPosition.Top:
-                        Player.ScoreSheet.TopParks += SelectedPark.Points;
+                        Player.ScoreSheet.TopParks = street.Parks.First(x => !x.IsCovered).Points;
                         break;
                     case StreetPosition.Middle:
-                        Player.ScoreSheet.MiddleParks += SelectedPark.Points;
+                        Player.ScoreSheet.MiddleParks = street.Parks.First(x => !x.IsCovered).Points;
                         break;
                     case StreetPosition.Bottom:
-                        Player.ScoreSheet.BottomParks += SelectedPark.Points;
+                        Player.ScoreSheet.BottomParks = street.Parks.First(x => !x.IsCovered).Points;
                         break;
                 }
             }
@@ -141,7 +141,7 @@
 
             await Http.PostAsync("api/Game/UpdatePlayerSheet", new { GameId = Game.Id, Player = JsonConvert.SerializeObject(Player) });
             SelectedHouseChanged(null);
-            OnActionTaken?.Invoke();
+            await OnActionTaken.InvokeAsync(null);
         }
     }
 }

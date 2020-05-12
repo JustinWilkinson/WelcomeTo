@@ -30,7 +30,7 @@ namespace WelcomeTo.Shared
             GameDeck.Discard1.Push(GameDeck.Deck1.Pop());
             GameDeck.Discard2.Push(GameDeck.Deck2.Pop());
             GameDeck.Discard3.Push(GameDeck.Deck3.Pop());
-            
+
             CurrentTurn = new Turn
             {
                 EffectCard1 = GameDeck.Discard1.Peek(),
@@ -38,7 +38,8 @@ namespace WelcomeTo.Shared
                 EffectCard3 = GameDeck.Discard3.Peek(),
                 HouseNumberCard1 = GameDeck.Deck1.Peek(),
                 HouseNumberCard2 = GameDeck.Deck2.Peek(),
-                HouseNumberCard3 = GameDeck.Deck3.Peek()
+                HouseNumberCard3 = GameDeck.Deck3.Peek(),
+                PlayerNamesWithActionTaken = new List<string>()
             };
         }
     }

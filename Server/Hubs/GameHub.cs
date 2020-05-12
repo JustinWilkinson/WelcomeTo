@@ -13,5 +13,7 @@ namespace WelcomeTo.Server.Hubs
         public async Task UpdateGameAsync(string gameId) => await Clients.OthersInGroup(gameId).SendAsync("UpdateGame");
 
         public async Task SendGameMessageAsync(string gameId, GameMessage chatMessage) => await Clients.OthersInGroup(gameId).SendAsync(gameId, chatMessage);
+
+        public async Task OtherPlayerActionTakenAsync(string gameId, string playerName) => await Clients.OthersInGroup(gameId).SendAsync(playerName);
     }
 }

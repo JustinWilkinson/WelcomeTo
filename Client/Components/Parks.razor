@@ -9,18 +9,18 @@
                 </div>
             </div>
         }
-        @if (_uncoveredParks.Any())
+        @for (var i = 0; i < _uncoveredParks.Count; i++)
         {
-            var firstUncoveredPark = _uncoveredParks.First();
-            if (PlayerSheet.SelectedNumberEffectPair?.Effect == CardType.Park && PlayerSheet.SelectedHouse?.Street == Street.Position)
+            var park = _uncoveredParks[i];
+            if (i == 0 && _uncoveredParks.Count > 1 && PlayerSheet.SelectedNumberEffectPair?.Effect == CardType.Park && PlayerSheet.SelectedHouse?.Street == Street.Position)
             {
                 if (PlayerSheet.SelectedPark == null)
                 {
-                    <div class="col-2 text-muted text-center mr-auto pointer" @onclick="() => PlayerSheet.SelectedParkChanged(firstUncoveredPark)">
-                        <div class="rounded-circle bg-warning">@firstUncoveredPark.Points</div>
+                    <div class="col-2 text-muted text-center mr-auto pointer" @onclick="() => PlayerSheet.SelectedParkChanged(park)">
+                        <div class="rounded-circle bg-warning">@park.Points</div>
                     </div>
                 }
-                else if (PlayerSheet.SelectedPark.Points == firstUncoveredPark.Points)
+                else if (PlayerSheet.SelectedPark.Points == park.Points)
                 {
                     <div class="col-2 text-muted text-center mr-auto pointer" @onclick="() => PlayerSheet.SelectedParkChanged(null)">
                         <div class="rounded-circle bg-warning">
@@ -28,15 +28,14 @@
                         </div>
                     </div>
                 }
+                else
+                {
+                    <div class="col-2 text-muted text-center mr-auto">
+                        <div class="rounded-circle bg-warning">@park.Points</div>
+                    </div>
+                }
             }
             else
-            {
-                <div class="col-2 text-muted text-center mr-auto">
-                    <div class="rounded-circle bg-warning">@firstUncoveredPark.Points</div>
-                </div>
-            }
-
-            foreach (var park in _uncoveredParks.Skip(1))
             {
                 <div class="col-2 text-muted text-center mr-auto">
                     <div class="rounded-circle bg-warning">@park.Points</div>
