@@ -71,9 +71,9 @@ namespace WelcomeTo.Server.Services
 
         public Board StartingBoard => new Board
         {
-            TopStreet = GetStreet(StreetPosition.Top),
-            MiddleStreet = GetStreet(StreetPosition.Middle),
-            BottomStreet = GetStreet(StreetPosition.Bottom)
+            TopStreet = BuildStreet(StreetPosition.Top),
+            MiddleStreet = BuildStreet(StreetPosition.Middle),
+            BottomStreet = BuildStreet(StreetPosition.Bottom)
         };
 
         public ScoreSheet StartingScoreSheet => new ScoreSheet { RealEstateValueTableCell = new List<RealEstateValueTableCell>() };
@@ -95,12 +95,12 @@ namespace WelcomeTo.Server.Services
             return deck;
         }
 
-        private Street GetStreet(StreetPosition position)
+        private Street BuildStreet(StreetPosition position)
         {
             return new Street
             {
                 Position = position,
-                ParkPoints = _parkPoints[position],
+                Parks = _parkPoints[position].Select(p => new Park { Points = p, IsCovered = false }).ToList(),
                 Houses = _poolPositions[position].Select((hasPool, index) => new House { Index = index, Pool = hasPool ? PoolType.Unbuilt : PoolType.None }).ToList()
             };
         }

@@ -22,12 +22,12 @@ namespace WelcomeTo.Shared
 
         public int TempAgency { get; set; }
 
-        public int EstateValue { get; set; }
+        public int RealEstateValue { get; set; }
 
         public int Bis { get; set; }
 
         public int Refusals { get; set; }
 
-        public int Total => Plan1 + Plan2 + Plan3 + TopParks + MiddleParks + BottomParks + TempAgency + EstateValue - Bis - Refusals;
+        public int Total => Plan1 + Plan2 + Plan3 + TopParks + MiddleParks + BottomParks + TempAgency + RealEstateValue - Bis - Refusals;
     }
 }

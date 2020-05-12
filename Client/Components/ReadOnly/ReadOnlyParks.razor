@@ -1,16 +1,25 @@
-﻿@if (Points != null && Points.Count > 0)
+﻿@if (Street.Parks != null && Street.Parks.Count > 0)
 {
     <div class="row">
-        @foreach (var value in Points)
+        @foreach (var park in Street.Parks)
         {
-            <div class="col-2 text-muted text-center mr-auto">
-                <div class="rounded-circle bg-warning">@value</div>
-            </div>
+            if (park.IsCovered)
+            {
+                <div class="col-2 text-muted text-center mr-auto">
+                    <div class="rounded-circle bg-warning"><span class="oi oi-circle-x"></span></div>
+                </div>
+            }
+            else
+            {
+                <div class="col-2 text-muted text-center mr-auto">
+                    <div class="rounded-circle bg-warning">@park.Points</div>
+                </div>
+            }
         }
     </div>
 }
 
 @code {
     [Parameter]
-    public List<int> Points { get; set; }
+    public Street Street { get; set; }
 }

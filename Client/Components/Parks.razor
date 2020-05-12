@@ -1,16 +1,65 @@
-﻿@if (Points != null && Points.Count > 0)
+﻿@if (Street.Parks != null && Street.Parks.Count > 0)
 {
     <div class="row">
-        @foreach (var value in Points)
+        @foreach (var park in _coveredParks)
         {
             <div class="col-2 text-muted text-center mr-auto">
-                <div class="rounded-circle bg-warning">@value</div>
+                <div class="rounded-circle bg-warning"><span class="oi oi-circle-x"></span></div>
             </div>
+        }
+        @if (_uncoveredParks.Any())
+        {
+            var firstUncoveredPark = _uncoveredParks.First();
+            if (PlayerSheet.SelectedNumberEffectPair?.Effect == CardType.Park && PlayerSheet.SelectedHouse?.Street == Street.Position)
+            {
+                if (PlayerSheet.SelectedPark == null)
+                {
+                    <div class="col-2 text-muted text-center mr-auto pointer" @onclick="() => PlayerSheet.SelectedParkChanged(firstUncoveredPark)">
+                        <div class="rounded-circle bg-warning">@firstUncoveredPark.Points</div>
+                    </div>
+                }
+                else if (PlayerSheet.SelectedPark.Points == firstUncoveredPark.Points)
+                {
+                    <div class="col-2 text-muted text-center mr-auto pointer" @onclick="() => PlayerSheet.SelectedParkChanged(null)">
+                        <div class="rounded-circle bg-warning"><span class="oi oi-circle-x"></span></div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-2 text-muted text-center mr-auto">
+                    <div class="rounded-circle bg-warning">@firstUncoveredPark.Points</div>
+                </div>
+            }
+
+            foreach (var park in _uncoveredParks.Skip(1))
+            {
+                <div class="col-2 text-muted text-center mr-auto">
+                    <div class="rounded-circle bg-warning">@park.Points</div>
+                </div>
+            }
         }
     </div>
 }
 
 @code {
+    [CascadingParameter]
+    public PlayerSheet PlayerSheet { get; set; }
+
     [Parameter]
-    public List<int> Points { get; set; }
+    public Street Street { get; set; }
+
+    private List<Park> _coveredParks = new List<Park>();
+    private List<Park> _uncoveredParks = new List<Park>();
+
+    protected override void OnParametersSet()
+    {
+        _coveredParks.Clear();
+        _uncoveredParks.Clear();
+
+        foreach (var park in Street.Parks)
+        {
+            (park.IsCovered ? _coveredParks : _uncoveredParks).Add(park);
+        }
+    }
 }
