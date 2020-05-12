@@ -18,6 +18,8 @@ namespace WelcomeTo.Server.Configuration
 
         public IEnumerable<int> PoolPoints { get; set; }
 
+        public IEnumerable<int> TempAgencyPoints { get; set; }
+
         public IEnumerable<int> BisPoints { get; set; }
 
         public IEnumerable<int> RefusalPoints { get; set; }

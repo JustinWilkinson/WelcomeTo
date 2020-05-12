@@ -25,6 +25,7 @@ namespace WelcomeTo.Server.Services
         private readonly Dictionary<StreetPosition, List<int>> _parkPoints;
 
         private readonly IEnumerable<int> _poolPoints;
+        private readonly IEnumerable<int> _tempAgencyPoints;
         private readonly IEnumerable<int> _bisPoints;
         private readonly IEnumerable<int> _refusalPoints;
 
@@ -40,6 +41,7 @@ namespace WelcomeTo.Server.Services
             _poolPositions = options.Value.PoolPositions;
             _parkPoints = options.Value.ParkPoints;
             _poolPoints = options.Value.PoolPoints;
+            _tempAgencyPoints = options.Value.TempAgencyPoints;
             _bisPoints = options.Value.BisPoints;
             _refusalPoints = options.Value.RefusalPoints;
             _bisPoints = options.Value.BisPoints;
@@ -88,9 +90,10 @@ namespace WelcomeTo.Server.Services
         public ScoreSheet StartingScoreSheet => new ScoreSheet 
         { 
             RealEstateValueTableCell = new List<RealEstateValueTableCell>(),
-            BisPoints = _bisPoints.Select(points => new PointsListItem { Points = points, IsCovered = false}).ToList(),
             PoolPoints = _poolPoints.Select(points => new PointsListItem { Points = points, IsCovered = false }).ToList(),
-            RefusalPoints = _refusalPoints.Select(points => new PointsListItem { Points = points, IsCovered = false }).ToList(),
+            TempAgencyPoints = _tempAgencyPoints.ToList(),
+            BisPoints = _bisPoints.Select(points => new PointsListItem { Points = points, IsCovered = false}).ToList(),
+            RefusalPoints = _refusalPoints.Select(points => new PointsListItem { Points = points, IsCovered = false }).ToList()
         };
 
         private GameDeck GetGameDeck()

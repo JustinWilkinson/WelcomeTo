@@ -9,6 +9,8 @@ namespace WelcomeTo.Shared
 
         public List<PointsListItem> PoolPoints { get; set; }
 
+        public List<int> TempAgencyPoints { get; set; }
+
         public List<PointsListItem> BisPoints { get; set; }
 
         public List<PointsListItem> RefusalPoints { get; set; }
@@ -37,29 +39,14 @@ namespace WelcomeTo.Shared
 
         public int GetTempAgencyPoints(Game game, string playerName)
         {
-            var ranking = game.Players
+            var index = game.Players
                 .Where(p => p.ScoreSheet.TempAgenciesUsed > 0)
                 .GroupBy(p => p.ScoreSheet.TempAgenciesUsed)
                 .OrderByDescending(g => g.Key)
-                .Select((group, index) => new { Names = group.Select(player => player.Name), Ranking = index + 1 })
-                .SingleOrDefault(x => x.Names.Contains(playerName))?.Ranking ?? int.MaxValue;
+                .Select((group, index) => new { Names = group.Select(player => player.Name), Index = index })
+                .SingleOrDefault(x => x.Names.Contains(playerName))?.Index;
 
-            if (ranking == 1)
-            {
-                return 7;
-            }
-            else if (ranking == 2)
-            {
-                return 4;
-            }
-            else if (ranking == 3)
-            {
-                return 1;
-            }
-            else
-            {
-                return 0;
-            }
+            return index.HasValue && index.Value < TempAgencyPoints.Count ? TempAgencyPoints[index.Value] : 0;
         }
 
         public int GetTotal(Game game, string playerName) => Plan1 + Plan2 + Plan3 + TopParks + MiddleParks + BottomParks + GetTempAgencyPoints(game, playerName) + RealEstateValue - Bis - Refusals;
