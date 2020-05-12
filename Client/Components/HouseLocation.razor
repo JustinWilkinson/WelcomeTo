@@ -1,5 +1,7 @@
-﻿<div class="col-1 @GetHouseClass()">
-    <div class="card h-100 bg-transparent border-0">
+﻿@inject IJSRuntime JSRuntime
+
+<div class="col-1 @GetHouseClass()" @onclick="e => OnFenceSelected(e)" @ref="_element">
+    <div class="card h-100 bg-transparent border-0" onclick="event.stopPropagation();">
         <div class="card-header pt-1 pb-0 pl-2 pr-2 text-center bg-transparent border-0">
             <div class="garden">
                 @if (House.Pool == PoolType.Built || House.Pool == PoolType.Unbuilt && SelectedNumberEffectPair?.Effect == CardType.Pool && IsSelectedHouse)
@@ -115,6 +117,17 @@
     private bool OnSelectedStreet => PlayerSheet.SelectedHouse != null && PlayerSheet.SelectedHouse.Street == Street.Position;
     private bool IsSelectedHouse => OnSelectedStreet && PlayerSheet.SelectedHouse.Index == House.Index;
 
+    private ElementReference _element;
+    private ElementBoundingRectangle _boundingRectangle;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender && _boundingRectangle == null)
+        {
+            _boundingRectangle = await JSRuntime.InvokeAsync<ElementBoundingRectangle>("welcomeTo.getBoundingClientRectangle", _element);
+        }
+    }
+
     private string GetHouseClass()
     {
         var houseClass = "house";
@@ -123,9 +136,13 @@
         {
             houseClass += " house-first";
         }
-        if (House.FenceBuilt)
+        if (House.FenceBuilt || (OnSelectedStreet && PlayerSheet.SelectedFenceHouse?.Index == House.Index))
         {
             houseClass += " house-fenced";
+        }
+        if (SelectedNumberEffectPair?.Effect == CardType.Fence && OnSelectedStreet)
+        {
+            houseClass += " pointer";
         }
 
         return houseClass;
@@ -204,15 +221,31 @@
 
     private void OnHouseSelected(ChangeEventArgs e)
     {
-        var selectedNumber = Convert.ToInt32(e.Value);
-        var selectedHouse = selectedNumber >= 0 ? new SelectedHouse { Street = Street.Position, Index = House.Index, Number = selectedNumber } : null;
-        PlayerSheet.SelectedHouseChanged(selectedHouse);
+        if (SelectedNumberEffectPair != null)
+        {
+            var selectedNumber = Convert.ToInt32(e.Value);
+            var selectedHouse = selectedNumber >= 0 ? new SelectedHouse { Street = Street.Position, Index = House.Index, Number = selectedNumber } : null;
+            PlayerSheet.SelectedHouseChanged(selectedHouse);
+        }
     }
 
     private void OnBisHouseSelected(ChangeEventArgs e)
     {
-        var selectedNumber = Convert.ToInt32(e.Value);
-        var selectedHouse = selectedNumber >= 0 ? new SelectedHouse { Street = Street.Position, Index = House.Index, Number = selectedNumber } : null;
-        PlayerSheet.SelectedBisHouseChanged(selectedHouse);
+        if (OnSelectedStreet && SelectedNumberEffectPair?.Effect == CardType.Bis)
+        {
+            var selectedNumber = Convert.ToInt32(e.Value);
+            var selectedHouse = selectedNumber >= 0 ? new SelectedHouse { Street = Street.Position, Index = House.Index, Number = selectedNumber } : null;
+            PlayerSheet.SelectedBisHouseChanged(selectedHouse);
+        }
+    }
+
+    private void OnFenceSelected(MouseEventArgs e)
+    {
+        if (OnSelectedStreet && SelectedNumberEffectPair?.Effect == CardType.Fence)
+        {
+            var oldSelection = PlayerSheet.SelectedFenceHouse;
+            var newSelection = oldSelection != null && oldSelection.Street == Street.Position && oldSelection.Index == House.Index ? null : new SelectedHouse { Street = Street.Position, Index = House.Index };
+            PlayerSheet.SelectedFenceChanged(newSelection);
+        }
     }
 }

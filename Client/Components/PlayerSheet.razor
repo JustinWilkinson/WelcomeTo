@@ -40,24 +40,43 @@
 
     public SelectedHouse SelectedHouse { get; set; }
     public SelectedHouse SelectedBisHouse { get; set; }
+    public SelectedHouse SelectedFenceHouse { get; set; }
     public Park SelectedPark { get; set; }
 
     public void SelectedHouseChanged(SelectedHouse house)
     {
         SelectedHouse = house;
-        SelectedBisHouseChanged(null);
+        SelectedBisHouseChanged(null, false);
+        SelectedParkChanged(null, false);
+        SelectedFenceChanged(null, false);
+        StateHasChanged();
     }
 
-    public void SelectedBisHouseChanged(SelectedHouse house)
+    public void SelectedBisHouseChanged(SelectedHouse house, bool runStateHasChanged = true)
     {
         SelectedBisHouse = house;
-        StateHasChanged();
+        if (runStateHasChanged)
+        {
+            StateHasChanged();
+        }
     }
 
-    public void SelectedParkChanged(Park park)
+    public void SelectedParkChanged(Park park, bool runStateHasChanged = true)
     {
         SelectedPark = park;
-        StateHasChanged();
+        if (runStateHasChanged)
+        {
+            StateHasChanged();
+        }
+    }
+
+    public void SelectedFenceChanged(SelectedHouse fencedHouse, bool runStateHasChanged = true)
+    {
+        SelectedFenceHouse = fencedHouse;
+        if (runStateHasChanged)
+        {
+            StateHasChanged();
+        }
     }
 
     private async Task UpdatePlayerSheetAsync()
@@ -99,6 +118,10 @@
             {
                 house.Pool = PoolType.Built;
                 Player.ScoreSheet.PoolPoints.First(x => !x.IsCovered).IsCovered = true;
+            }
+            else if (SelectedNumberEffectPair.Effect == CardType.Fence && SelectedFenceHouse != null)
+            {
+                Player.Board.GetStreet(SelectedFenceHouse.Street).Houses[SelectedFenceHouse.Index].FenceBuilt = true;
             }
 
             await Http.PostAsync("api/Game/UpdatePlayerSheet", new { GameId = Game.Id, Player = Player });

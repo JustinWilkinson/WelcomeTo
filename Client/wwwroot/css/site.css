@@ -217,12 +217,17 @@ app {
         padding: 0;
     }
 
+        .house > div {
+            cursor: initial;
+        }
+
     .house-first {
         border-left: solid white;
     }
 
     .house-fenced {
         border-right-style: solid;
+        cursor: initial;
     }
 
     .horizontal-road {
