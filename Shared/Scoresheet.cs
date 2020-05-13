@@ -33,8 +33,6 @@ namespace WelcomeTo.Shared
 
         public int TempAgenciesUsed { get; set; }
 
-        public int RealEstateValue { get; set; }
-
         public int Bis => BisPoints.First(x => !x.IsCovered).Points;
 
         public int Refusals => RefusalPoints.First(x => !x.IsCovered).Points;
@@ -77,6 +75,20 @@ namespace WelcomeTo.Shared
             };
         }
 
-        public int GetTotal(Game game, string playerName) => Plan1 + Plan2 + Plan3 + TopParks + MiddleParks + BottomParks + Pools + GetTempAgencyPoints(game, playerName) + RealEstateValue - Bis - Refusals;
+        public int GetRealEstateValuePoints(Board board)
+        {
+            var estates = board.GetEstates();
+            var points = 0;
+            for (var i = 1; i <= 6; i++)
+            {
+                points += RealEstateValuesTable[(RealEstateSize)i].First(x => !x.IsCovered).Points * estates.Where(e => e.HouseIndices.Count == i).Count();
+            }
+            return points;
+        }
+
+        public int GetTotal(Game game, Player player)
+        {
+            return Plan1 + Plan2 + Plan3 + TopParks + MiddleParks + BottomParks + Pools + GetTempAgencyPoints(game, player.Name) + GetRealEstateValuePoints(player.Board) - Bis - Refusals;
+        }
     }
 }

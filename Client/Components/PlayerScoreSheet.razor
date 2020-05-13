@@ -98,7 +98,7 @@
                     <td class="text-center align-middle">@ScoreSheet.BottomParks</td>
                     <td class="text-center align-middle">@ScoreSheet.Pools</td>
                     <td class="text-center align-middle">@ScoreSheet.GetTempAgencyPoints(Parent.Game, Parent.Player.Name)</td>
-                    <td class="text-center align-middle">@ScoreSheet.RealEstateValue</td>
+                    <td class="text-center align-middle">@ScoreSheet.GetRealEstateValuePoints(Parent.Player.Board)</td>
                     <td class="text-center text-white align-middle bg-danger">@ScoreSheet.Bis</td>
                     <td class="text-center text-white align-middle bg-danger">@ScoreSheet.Refusals</td>
                 </tr>
@@ -106,7 +106,7 @@
             <tfoot>
                 <tr class="table-secondary">
                     <td class="font-weight-bold text-center align-middle">Total: </td>
-                    <td colspan="10" class="font-weight-bold text-left align-middle">@ScoreSheet.GetTotal(Parent.Game, Parent.Player.Name)</td>
+                    <td colspan="10" class="font-weight-bold text-left align-middle">@ScoreSheet.GetTotal(Parent.Game, Parent.Player)</td>
                 </tr>
             </tfoot>
         </table>

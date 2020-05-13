@@ -22,12 +22,12 @@ namespace WelcomeTo.Shared
             _ => null
         };
 
-        public List<Estate> GetNonFinalEstates()
+        public List<Estate> GetEstates(bool includeFinal = true)
         {
-            var allNonFinalEstates = TopStreet.GetEstates();
-            allNonFinalEstates.AddRange(MiddleStreet.GetEstates());
-            allNonFinalEstates.AddRange(BottomStreet.GetEstates());
-            return allNonFinalEstates.Where(e => !e.IsFinal).ToList();
+            var allEstates = TopStreet.GetEstates();
+            allEstates.AddRange(MiddleStreet.GetEstates());
+            allEstates.AddRange(BottomStreet.GetEstates());
+            return (includeFinal ? allEstates : allEstates.Where(e => !e.IsFinal)).ToList();
         }
     }
 }
