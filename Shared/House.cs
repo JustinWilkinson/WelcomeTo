@@ -12,7 +12,7 @@ namespace WelcomeTo.Shared
 
         public bool FenceBuilt { get; set; }
 
-        public bool InEstate { get; set; }
+        public bool InFinalEstate { get; set; }
 
         public bool IsBis { get; set; }
     }

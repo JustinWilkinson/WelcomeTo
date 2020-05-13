@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using WelcomeTo.Shared.Enumerations;
 
@@ -49,6 +50,14 @@ namespace WelcomeTo.Shared
 
             return index.HasValue && index.Value < TempAgencyPoints.Count ? TempAgencyPoints[index.Value] : 0;
         }
+
+        public int GetCityPlanPoints(PlanType planType) => planType switch
+        {
+            PlanType.No1 => Plan1,
+            PlanType.No2 => Plan2,
+            PlanType.No3 => Plan3,
+            _ => throw new ArgumentException($"Unrecognized plan type '{planType}'.")
+        };
 
         public int GetTotal(Game game, string playerName) => Plan1 + Plan2 + Plan3 + TopParks + MiddleParks + BottomParks + GetTempAgencyPoints(game, playerName) + RealEstateValue - Bis - Refusals;
     }

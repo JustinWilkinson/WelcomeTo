@@ -1,4 +1,5 @@
-﻿using WelcomeTo.Shared.Enumerations;
+﻿using System.Collections.Generic;
+using WelcomeTo.Shared.Enumerations;
 
 namespace WelcomeTo.Shared
 {
@@ -19,5 +20,13 @@ namespace WelcomeTo.Shared
             StreetPosition.Bottom => BottomStreet,
             _ => null
         };
+
+        public List<Estate> GetNonFinalEstates()
+        {
+            var allNonFinalEstates = TopStreet.GetEstates(false);
+            allNonFinalEstates.AddRange(MiddleStreet.GetEstates(false));
+            allNonFinalEstates.AddRange(BottomStreet.GetEstates(false));
+            return allNonFinalEstates;
+        }
     }
 }
