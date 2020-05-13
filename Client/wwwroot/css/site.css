@@ -353,5 +353,5 @@ tbody.table-body-reduced > tr > td {
 }
 
 .glow {
-    box-shadow: 0px 0px 5px #5cb85c;
+    box-shadow: 0 0 1em #5cb85c;
 }
