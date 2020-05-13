@@ -108,7 +108,14 @@ else
         GameHub.RegisterHandler("UpdateGame", async () =>
         {
             _game = await Http.GetAsync<Game>($"api/Game/Get?id={GameId}");
-            StateHasChanged();
+            if (_game.StartedAtUtc.HasValue)
+            {
+                NavigationManager.NavigateTo($"PlayGame/{GameId}");
+            }
+            else
+            {
+                StateHasChanged();
+            }
         });
 
         await GameHub.StartAsync();

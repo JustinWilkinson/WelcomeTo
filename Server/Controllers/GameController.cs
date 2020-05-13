@@ -45,16 +45,23 @@ namespace WelcomeTo.Server.Controllers
         }
 
         [HttpPost("NextTurn")]
-        public void StartNextTurn(JsonElement gameIdJson) => _gameRepository.ModifyGame(gameIdJson.GetString(), game => game.StartNextTurn());
+        public string StartNextTurn(JsonElement gameIdJson)
+        {
+            return _gameRepository.ModifyGame(gameIdJson.GetString(), game =>
+            {
+                game.StartNextTurn();
+                return game.Serialize();
+            });
+        }
 
         [HttpPost("Join")]
-        public Player Join(JsonElement gameIdJson)
+        public string Join(JsonElement gameIdJson)
         {
             return _gameRepository.ModifyGame(gameIdJson.GetString(), game =>
             {
                 var player = new Player { Name = $"Player {game.Players.Count}", Board = _gameBuilder.StartingBoard, ScoreSheet = _gameBuilder.StartingScoreSheet };
                 game.Players.Add(player);
-                return player;
+                return player.Serialize();
             });
         }
 
