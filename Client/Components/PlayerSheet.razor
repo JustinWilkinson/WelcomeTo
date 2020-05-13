@@ -45,10 +45,15 @@
     public void SelectedHouseChanged(SelectedHouse house)
     {
         SelectedHouse = house;
-        SelectedBisHouseChanged(null, false);
         SelectedParkChanged(null, false);
         SelectedFenceChanged(null, false);
-        SelectedRealEstateValueChanged(null, false);
+        SelectedBisHouseChanged(null, false);
+
+        if (house == null)
+        {
+            SelectedRealEstateValueChanged(null, false);
+        }
+
         StateHasChanged();
     }
 
