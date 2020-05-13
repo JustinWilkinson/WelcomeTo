@@ -127,7 +127,7 @@
         {
             houseClass += " house-fenced";
         }
-        if (SelectedNumberEffectPair?.Effect == CardType.Fence && OnSelectedStreet)
+        if (SelectedNumberEffectPair?.Effect == CardType.Fence && OnSelectedStreet && !House.InFinalEstate)
         {
             houseClass += " pointer";
         }
@@ -228,7 +228,7 @@
 
     private void OnFenceSelected(MouseEventArgs e)
     {
-        if (OnSelectedStreet && SelectedNumberEffectPair?.Effect == CardType.Fence)
+        if (OnSelectedStreet && SelectedNumberEffectPair?.Effect == CardType.Fence && !House.InFinalEstate)
         {
             var oldSelection = PlayerSheet.SelectedFenceHouse;
             var newSelection = oldSelection != null && oldSelection.Street == Street.Position && oldSelection.Index == House.Index ? null : new SelectedHouse { Street = Street.Position, Index = House.Index };
