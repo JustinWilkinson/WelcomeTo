@@ -230,6 +230,11 @@ app {
         cursor: initial;
     }
 
+    .house-in-final-estate {
+        border-top-color: black;
+        cursor: initial;
+    }
+
     .horizontal-road {
         height: 2vh;
     }

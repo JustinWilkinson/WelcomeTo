@@ -131,6 +131,10 @@
         {
             houseClass += " pointer";
         }
+        if (House.InFinalEstate)
+        {
+            houseClass += " house-in-final-estate";
+        }
 
         return houseClass;
     }
