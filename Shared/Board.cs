@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using WelcomeTo.Shared.Enumerations;
 
 namespace WelcomeTo.Shared
@@ -23,10 +24,10 @@ namespace WelcomeTo.Shared
 
         public List<Estate> GetNonFinalEstates()
         {
-            var allNonFinalEstates = TopStreet.GetEstates(false);
-            allNonFinalEstates.AddRange(MiddleStreet.GetEstates(false));
-            allNonFinalEstates.AddRange(BottomStreet.GetEstates(false));
-            return allNonFinalEstates;
+            var allNonFinalEstates = TopStreet.GetEstates();
+            allNonFinalEstates.AddRange(MiddleStreet.GetEstates());
+            allNonFinalEstates.AddRange(BottomStreet.GetEstates());
+            return allNonFinalEstates.Where(e => !e.IsFinal).ToList();
         }
     }
 }

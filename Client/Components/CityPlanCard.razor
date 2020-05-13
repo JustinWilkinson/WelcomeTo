@@ -107,19 +107,22 @@
 
     private async Task CompleteCityPlanCard()
     {
-        var estates = IdentifiedPlayer.Board.GetNonFinalEstates();
-        foreach (var estateSize in CityPlan.EstateSizes)
+        if (_canBeCompletedByIdentifiedPlayer)
         {
-            var estateToMarkAsFinal = estates.First(e => e.HouseIndices.Count == estateSize);
-            estateToMarkAsFinal.IsFinal = true;
-            var street = IdentifiedPlayer.Board.GetStreet(estateToMarkAsFinal.Street);
-            foreach (var houseIndex in estateToMarkAsFinal.HouseIndices)
+            var estates = IdentifiedPlayer.Board.GetNonFinalEstates();
+            foreach (var estateSize in CityPlan.EstateSizes)
             {
-                street.Houses[houseIndex].InFinalEstate = true;
+                var estateToMarkAsFinal = estates.First(e => e.HouseIndices.Count == estateSize);
+                estateToMarkAsFinal.IsFinal = true;
+                var street = IdentifiedPlayer.Board.GetStreet(estateToMarkAsFinal.Street);
+                foreach (var houseIndex in estateToMarkAsFinal.HouseIndices)
+                {
+                    street.Houses[houseIndex].InFinalEstate = true;
+                }
             }
-        }
 
-        IdentifiedPlayer.ScoreSheet.SetCityPlanPoints(CityPlan.Type, _completedByAnyPlayer ? CityPlan.BasicPoints : CityPlan.FirstPoints);
-        await Http.PostAsync("api/Game/UpdatePlayerSheet", new { GameId = Game.Id, Player = JsonConvert.SerializeObject(IdentifiedPlayer), ActionTaken = false });
+            IdentifiedPlayer.ScoreSheet.SetCityPlanPoints(CityPlan.Type, _completedByAnyPlayer ? CityPlan.BasicPoints : CityPlan.FirstPoints);
+            await Http.PostAsync("api/Game/UpdatePlayerSheet", new { GameId = Game.Id, Player = JsonConvert.SerializeObject(IdentifiedPlayer), ActionTaken = false });
+        }
     }
 }

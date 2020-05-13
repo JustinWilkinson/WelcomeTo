@@ -12,20 +12,29 @@ namespace WelcomeTo.Shared
 
         public List<Park> Parks { get; set; }
 
-        public List<Estate> GetEstates(bool includeFinal = true)
+        public List<Estate> GetEstates()
         {
             var estates = new List<Estate>();
             var currentHousesInEstate = new List<int>();
-            foreach (var house in Houses.Where(h => (!h.InFinalEstate || h.InFinalEstate && includeFinal)))
+            for (int i = 0; i < Houses.Count; i++)
             {
-                currentHousesInEstate.Add(house.Index);
-                if (house.FenceBuilt)
+                var house = Houses[i];
+                if (house.Number.HasValue)
                 {
-                    estates.Add(new Estate { HouseIndices = currentHousesInEstate, Street = Position, IsFinal = house.InFinalEstate });
+                    currentHousesInEstate.Add(house.Index);
+
+                    if (house.FenceBuilt || i == Houses.Count - 1)
+                    {
+                        estates.Add(new Estate { HouseIndices = new List<int>(currentHousesInEstate), Street = Position, IsFinal = house.InFinalEstate });
+                        currentHousesInEstate.Clear();
+                    }
+                }
+                else
+                {
                     currentHousesInEstate.Clear();
                 }
             }
-            return estates;
+            return estates.Where(e => e.HouseIndices.Count >=1 && e.HouseIndices.Count <= 6).ToList();
         }
     }
 }
