@@ -194,16 +194,19 @@
             }
         }
 
-        var houseToTheRight = Street.Houses.SingleOrDefault(x => x.Index == House.Index + 1);
-        if (houseToTheRight != null)
+        if (!House.FenceBuilt)
         {
-            if (houseToTheRight.Number.HasValue)
+            var houseToTheRight = Street.Houses.SingleOrDefault(x => x.Index == House.Index + 1);
+            if (houseToTheRight != null)
             {
-                yield return houseToTheRight.Number.Value;
-            }
-            else if (OnSelectedStreet && PlayerSheet.SelectedHouse.Index == houseToTheRight.Index)
-            {
-                yield return PlayerSheet.SelectedHouse.Number;
+                if (houseToTheRight.Number.HasValue)
+                {
+                    yield return houseToTheRight.Number.Value;
+                }
+                else if (OnSelectedStreet && PlayerSheet.SelectedHouse.Index == houseToTheRight.Index)
+                {
+                    yield return PlayerSheet.SelectedHouse.Number;
+                }
             }
         }
 
@@ -215,7 +218,7 @@
         if (!House.FenceBuilt && OnSelectedStreet && SelectedNumberEffectPair?.Effect == CardType.Fence && !House.InFinalEstate)
         {
             var houseToTheRight = Street.Houses.SingleOrDefault(x => x.Index == House.Index + 1);
-            if (!(houseToTheRight != null && houseToTheRight.Number == House.Number))
+            if (houseToTheRight == null || !houseToTheRight.Number.HasValue || houseToTheRight.Number != House.Number)
             {
                 return true;
             }
