@@ -72,15 +72,21 @@ namespace WelcomeTo.Server.Controllers
         }
 
         [HttpPost("UpdatePlayerSheet")]
-        public void UpdatePlayerSheet(JsonElement json)
+        public string UpdatePlayerSheet(JsonElement json)
         {
-            _gameRepository.ModifyGame(json.GetStringProperty("GameId"), game =>
+            return _gameRepository.ModifyGame(json.GetStringProperty("GameId"), game =>
             {
                 var newPlayerInfo = json.GetObjectProperty<Player>("Player");
                 var dbPlayerInfo = game.Players.Single(p => p.Name == newPlayerInfo.Name);
                 dbPlayerInfo.Board = newPlayerInfo.Board;
                 dbPlayerInfo.ScoreSheet = newPlayerInfo.ScoreSheet;
-                game.CurrentTurn.PlayerNamesWithActionTaken.Add(dbPlayerInfo.Name);
+
+                if (json.GetBooleanProperty("ActionTaken"))
+                {
+                    game.CurrentTurn.PlayerNamesWithActionTaken.Add(dbPlayerInfo.Name);
+                }
+
+                return game.Serialize();
             });
         }
 

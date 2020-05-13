@@ -1,7 +1,7 @@
 ﻿using Cloudcrate.AspNetCore.Blazor.Browser.Storage;
-using WelcomeTo.Client.Services.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using WelcomeTo.Client.Services.SignalR;
 
 namespace WelcomeTo.Client.Services
 {

@@ -1,6 +1,4 @@
-﻿@inject IHttpService Http 
-
-<CascadingValue Value="this">
+﻿<CascadingValue Value="this">
     <div class="container-fluid grass-background p-2">
         <TabControl>
             <ExtraTabHeaderContent>
@@ -47,10 +45,15 @@
     public void SelectedHouseChanged(SelectedHouse house)
     {
         SelectedHouse = house;
-        SelectedBisHouseChanged(null, false);
         SelectedParkChanged(null, false);
         SelectedFenceChanged(null, false);
-        SelectedRealEstateValueChanged(null, false);
+        SelectedBisHouseChanged(null, false);
+
+        if (house == null)
+        {
+            SelectedRealEstateValueChanged(null, false);
+        }
+
         StateHasChanged();
     }
 
@@ -139,7 +142,6 @@
                 Player.ScoreSheet.RealEstateValuesTable[SelectedRealEstateValue.Size][SelectedRealEstateValue.Index].IsCovered = true;
             }
 
-            await Http.PostAsync("api/Game/UpdatePlayerSheet", new { GameId = Game.Id, Player = JsonConvert.SerializeObject(Player) });
             SelectedHouseChanged(null);
             await OnActionTaken.InvokeAsync(null);
         }

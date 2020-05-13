@@ -51,7 +51,7 @@
                         }
                         else
                         {
-                            var possibleBisNumbers = SelectedNumberEffectPair != null && SelectedNumberEffectPair.Effect == CardType.Bis ? GetBisNumbers() : null;
+                            var possibleBisNumbers = SelectedNumberEffectPair != null && PlayerSheet.SelectedHouse != null && SelectedNumberEffectPair.Effect == CardType.Bis ? GetBisNumbers() : null;
                             if (possibleBisNumbers != null && possibleBisNumbers.Any())
                             {
                                 if (PlayerSheet.SelectedBisHouse != null && PlayerSheet.SelectedBisHouse.Street == Street.Position && PlayerSheet.SelectedBisHouse.Index == House.Index)
@@ -127,9 +127,13 @@
         {
             houseClass += " house-fenced";
         }
-        if (SelectedNumberEffectPair?.Effect == CardType.Fence && OnSelectedStreet)
+        if (CanBuildFence())
         {
             houseClass += " pointer";
+        }
+        if (House.InFinalEstate)
+        {
+            houseClass += " house-in-final-estate";
         }
 
         return houseClass;
@@ -190,20 +194,37 @@
             }
         }
 
-        var houseToTheRight = Street.Houses.SingleOrDefault(x => x.Index == House.Index + 1);
-        if (houseToTheRight != null)
+        if (!House.FenceBuilt)
         {
-            if (houseToTheRight.Number.HasValue)
+            var houseToTheRight = Street.Houses.SingleOrDefault(x => x.Index == House.Index + 1);
+            if (houseToTheRight != null)
             {
-                yield return houseToTheRight.Number.Value;
-            }
-            else if (OnSelectedStreet && PlayerSheet.SelectedHouse.Index == houseToTheRight.Index)
-            {
-                yield return PlayerSheet.SelectedHouse.Number;
+                if (houseToTheRight.Number.HasValue)
+                {
+                    yield return houseToTheRight.Number.Value;
+                }
+                else if (OnSelectedStreet && PlayerSheet.SelectedHouse.Index == houseToTheRight.Index)
+                {
+                    yield return PlayerSheet.SelectedHouse.Number;
+                }
             }
         }
 
         yield break;
+    }
+
+    private bool CanBuildFence()
+    {
+        if (!House.FenceBuilt && OnSelectedStreet && SelectedNumberEffectPair?.Effect == CardType.Fence && !House.InFinalEstate)
+        {
+            var houseToTheRight = Street.Houses.SingleOrDefault(x => x.Index == House.Index + 1);
+            if (houseToTheRight == null || !houseToTheRight.Number.HasValue || houseToTheRight.Number != House.Number)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private void OnHouseSelected(ChangeEventArgs e)
@@ -228,7 +249,7 @@
 
     private void OnFenceSelected(MouseEventArgs e)
     {
-        if (OnSelectedStreet && SelectedNumberEffectPair?.Effect == CardType.Fence)
+        if (CanBuildFence())
         {
             var oldSelection = PlayerSheet.SelectedFenceHouse;
             var newSelection = oldSelection != null && oldSelection.Street == Street.Position && oldSelection.Index == House.Index ? null : new SelectedHouse { Street = Street.Position, Index = House.Index };

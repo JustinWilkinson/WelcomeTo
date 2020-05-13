@@ -1,5 +1,5 @@
 ﻿<div class="col">
-    <div class="card border-rounded card-background h-100">
+    <div class="card border-rounded card-background h-100@(_canBeCompletedByIdentifiedPlayer ? " glow pointer" : "")" @onclick="CompleteCityPlanCard" title="@(_canBeCompletedByIdentifiedPlayer ? "Click to complete city plan" : "")">
         <div class="card-header">
             <div class="float-left text-center">
                 <img class="house-image" src="/images/house.png" draggable="false" />
@@ -41,7 +41,14 @@
         <div class="card-footer">
             <div class="float-left text-center">
                 <div class="rounded-circle bg-dark text-warning pl-2 pr-2">
-                    @CityPlan.FirstPoints
+                    @if (_completedByAnyPlayer)
+                    {
+                        <span class="oi oi-circle-x"></span>
+                    }
+                    else
+                    {
+                        <span>@CityPlan.FirstPoints</span>
+                    }
                 </div>
             </div>
             <div class="float-right text-center">
@@ -54,11 +61,22 @@
 </div>
 
 @code{
+    [CascadingParameter]
+    public Game Game { get; set; }
+
     [Parameter]
     public CityPlan CityPlan { get; set; }
 
+    [Parameter]
+    public Player IdentifiedPlayer { get; set; }
+
+    [Parameter]
+    public EventCallback OnCompleted { get; set; }
+
     private List<int> _topRow = new List<int>();
     private List<int> _bottomRow = new List<int>();
+    private bool _completedByAnyPlayer;
+    private bool _canBeCompletedByIdentifiedPlayer;
 
     protected override void OnInitialized()
     {
@@ -80,5 +98,32 @@
         }
 
         _bottomRow.AddRange(CityPlan.EstateSizes.Skip(_topRow.Count));
+    }
+
+    protected override void OnParametersSet()
+    {
+        _completedByAnyPlayer = Game.Players.Any(p => p.ScoreSheet.GetCityPlanPoints(CityPlan.Type) == CityPlan.FirstPoints);
+        _canBeCompletedByIdentifiedPlayer = IdentifiedPlayer.ScoreSheet.GetCityPlanPoints(CityPlan.Type) == 0 && !CityPlan.EstateSizes.Except(IdentifiedPlayer.Board.GetNonFinalEstates().Select(x => x.HouseIndices.Count)).Any();
+    }
+
+    private async Task CompleteCityPlanCard()
+    {
+        if (_canBeCompletedByIdentifiedPlayer)
+        {
+            var estates = IdentifiedPlayer.Board.GetNonFinalEstates();
+            foreach (var estateSize in CityPlan.EstateSizes)
+            {
+                var estateToMarkAsFinal = estates.First(e => e.HouseIndices.Count == estateSize);
+                estateToMarkAsFinal.IsFinal = true;
+                var street = IdentifiedPlayer.Board.GetStreet(estateToMarkAsFinal.Street);
+                foreach (var houseIndex in estateToMarkAsFinal.HouseIndices)
+                {
+                    street.Houses[houseIndex].InFinalEstate = true;
+                }
+            }
+
+            IdentifiedPlayer.ScoreSheet.SetCityPlanPoints(CityPlan.Type, _completedByAnyPlayer ? CityPlan.BasicPoints : CityPlan.FirstPoints);
+            await OnCompleted.InvokeAsync(null);
+        }
     }
 }

@@ -230,6 +230,11 @@ app {
         cursor: initial;
     }
 
+    .house-in-final-estate {
+        border-top-color: black;
+        cursor: initial;
+    }
+
     .horizontal-road {
         height: 2vh;
     }
@@ -345,4 +350,8 @@ app {
 
 tbody.table-body-reduced > tr > td {
     padding: 0.5em;
+}
+
+.glow {
+    box-shadow: 0 0 1em #5cb85c;
 }

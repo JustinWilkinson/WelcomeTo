@@ -1,8 +1,8 @@
 ﻿using Cloudcrate.AspNetCore.Blazor.Browser.Storage;
-using WelcomeTo.Client.Services;
 using Microsoft.JSInterop;
 using Moq;
 using NUnit.Framework;
+using WelcomeTo.Client.Services;
 
 namespace WelcomeTo.Test.Client.Services
 {

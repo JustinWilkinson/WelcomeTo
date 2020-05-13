@@ -44,9 +44,9 @@ else
             </div>
             <div class="col-8 col-md-4 mx-auto mx=md-0 mt-2 mt-md-0">
                 <div class="row h-100" title="City Plans">
-                    <CityPlanCard CityPlan="Game.Plans.Plan1" />
-                    <CityPlanCard CityPlan="Game.Plans.Plan2" />
-                    <CityPlanCard CityPlan="Game.Plans.Plan3" />
+                    <CityPlanCard CityPlan="Game.Plans.Plan1" IdentifiedPlayer="IdentifiedPlayer" OnCompleted="PlayerCompletedCityPlanAsync" />
+                    <CityPlanCard CityPlan="Game.Plans.Plan2" IdentifiedPlayer="IdentifiedPlayer" OnCompleted="PlayerCompletedCityPlanAsync" />
+                    <CityPlanCard CityPlan="Game.Plans.Plan3" IdentifiedPlayer="IdentifiedPlayer" OnCompleted="PlayerCompletedCityPlanAsync" />
                 </div>
             </div>
         </div>
@@ -145,13 +145,12 @@ else
     private async Task IdentifiedPlayerActionTakenAsync()
     {
         SelectedNumberEffectPair = null;
-        Game = await Http.GetAsync<Game>($"api/Game/Get?id={GameId}");
 
+        Game = await Http.PostAsync<Game>("api/Game/UpdatePlayerSheet", new { GameId = Game.Id, Player = JsonConvert.SerializeObject(IdentifiedPlayer), ActionTaken = true });
         if (!Game.Players.Select(x => x.Name).Except(Game.CurrentTurn.PlayerNamesWithActionTaken).Any())
         {
             Game = await Http.PostAsync<Game>("api/Game/NextTurn", GameId);
             await GameHub.UpdateGameAsync(GameId);
-            StateHasChanged();
         }
         else
         {
@@ -161,8 +160,11 @@ else
         StateHasChanged();
     }
 
-    private string BlurredClass(DeckIndex index)
+    private async Task PlayerCompletedCityPlanAsync()
     {
-        return (SelectedNumberEffectPair == null || SelectedNumberEffectPair.DeckIndex == index) ? "" : "blurred";
+        await Http.PostAsync<Game>("api/Game/UpdatePlayerSheet", new { GameId = Game.Id, Player = JsonConvert.SerializeObject(IdentifiedPlayer), ActionTaken = false });
+        StateHasChanged();
     }
+
+    private string BlurredClass(DeckIndex index) => (SelectedNumberEffectPair == null || SelectedNumberEffectPair.DeckIndex == index) ? "" : "blurred";
 }
