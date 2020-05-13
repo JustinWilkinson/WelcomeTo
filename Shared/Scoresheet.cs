@@ -59,6 +59,24 @@ namespace WelcomeTo.Shared
             _ => throw new ArgumentException($"Unrecognized plan type '{planType}'.")
         };
 
-        public int GetTotal(Game game, string playerName) => Plan1 + Plan2 + Plan3 + TopParks + MiddleParks + BottomParks + GetTempAgencyPoints(game, playerName) + RealEstateValue - Bis - Refusals;
+        public void SetCityPlanPoints(PlanType planType, int points)
+        {
+            switch (planType)
+            {
+                case PlanType.No1:
+                    Plan1 = points;
+                    break;
+                case PlanType.No2:
+                    Plan2 = points;
+                    break;
+                case PlanType.No3:
+                    Plan3 = points;
+                    break;
+                default:
+                    throw new ArgumentException($"Unrecognized plan type '{planType}'.");
+            };
+        }
+
+        public int GetTotal(Game game, string playerName) => Plan1 + Plan2 + Plan3 + TopParks + MiddleParks + BottomParks + Pools + GetTempAgencyPoints(game, playerName) + RealEstateValue - Bis - Refusals;
     }
 }

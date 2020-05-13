@@ -1,5 +1,7 @@
-﻿<div class="col">
-    <div class="card border-rounded card-background h-100@(_canBeCompletedByIdentifiedPlayer ? " glow pointer" : "")">
+﻿@inject IHttpService Http
+
+<div class="col">
+    <div class="card border-rounded card-background h-100@(_canBeCompletedByIdentifiedPlayer ? " glow pointer" : "")" @onclick="CompleteCityPlanCard">
         <div class="card-header">
             <div class="float-left text-center">
                 <img class="house-image" src="/images/house.png" draggable="false" />
@@ -101,5 +103,23 @@
     {
         _completedByAnyPlayer = Game.Players.Any(p => p.ScoreSheet.GetCityPlanPoints(CityPlan.Type) == CityPlan.FirstPoints);
         _canBeCompletedByIdentifiedPlayer = IdentifiedPlayer.ScoreSheet.GetCityPlanPoints(CityPlan.Type) == 0 && !CityPlan.EstateSizes.Except(IdentifiedPlayer.Board.GetNonFinalEstates().Select(x => x.HouseIndices.Count)).Any();
+    }
+
+    private async Task CompleteCityPlanCard()
+    {
+        var estates = IdentifiedPlayer.Board.GetNonFinalEstates();
+        foreach (var estateSize in CityPlan.EstateSizes)
+        {
+            var estateToMarkAsFinal = estates.First(e => e.HouseIndices.Count == estateSize);
+            estateToMarkAsFinal.IsFinal = true;
+            var street = IdentifiedPlayer.Board.GetStreet(estateToMarkAsFinal.Street);
+            foreach (var houseIndex in estateToMarkAsFinal.HouseIndices)
+            {
+                street.Houses[houseIndex].InFinalEstate = true;
+            }
+        }
+
+        IdentifiedPlayer.ScoreSheet.SetCityPlanPoints(CityPlan.Type, _completedByAnyPlayer ? CityPlan.BasicPoints : CityPlan.FirstPoints);
+        await Http.PostAsync("api/Game/UpdatePlayerSheet", new { GameId = Game.Id, Player = JsonConvert.SerializeObject(IdentifiedPlayer), ActionTaken = false });
     }
 }

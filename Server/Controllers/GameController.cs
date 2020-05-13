@@ -80,7 +80,11 @@ namespace WelcomeTo.Server.Controllers
                 var dbPlayerInfo = game.Players.Single(p => p.Name == newPlayerInfo.Name);
                 dbPlayerInfo.Board = newPlayerInfo.Board;
                 dbPlayerInfo.ScoreSheet = newPlayerInfo.ScoreSheet;
-                game.CurrentTurn.PlayerNamesWithActionTaken.Add(dbPlayerInfo.Name);
+
+                if (json.GetBooleanProperty("ActionTaken"))
+                {
+                    game.CurrentTurn.PlayerNamesWithActionTaken.Add(dbPlayerInfo.Name);
+                }
             });
         }
 

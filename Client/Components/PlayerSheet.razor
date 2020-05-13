@@ -139,7 +139,7 @@
                 Player.ScoreSheet.RealEstateValuesTable[SelectedRealEstateValue.Size][SelectedRealEstateValue.Index].IsCovered = true;
             }
 
-            await Http.PostAsync("api/Game/UpdatePlayerSheet", new { GameId = Game.Id, Player = JsonConvert.SerializeObject(Player) });
+            await Http.PostAsync("api/Game/UpdatePlayerSheet", new { GameId = Game.Id, Player = JsonConvert.SerializeObject(Player), ActionTaken = true });
             SelectedHouseChanged(null);
             await OnActionTaken.InvokeAsync(null);
         }
