@@ -32,13 +32,13 @@ else
             <div class="col-12 col-md-8">
                 <div class="row">
                     <div class="col border border-secondary p-0 mx-3 pointer @BlurredClass(DeckIndex.Option1)" title="Option 1" @onclick="() => SelectNumberEffectPair(DeckIndex.Option1)">
-                        <DeckWithDiscard Index="1" Deck="Game.GameDeck.Deck1" Discard="Game.GameDeck.Discard1" />
+                        <CardPair Index="1" HouseNumberCard="Game.CurrentTurn.HouseNumberCard1" EffectCard="Game.CurrentTurn.EffectCard1" />
                     </div>
                     <div class="col border border-secondary p-0 mx-3 pointer @BlurredClass(DeckIndex.Option2)" title="Option 2" @onclick="() => SelectNumberEffectPair(DeckIndex.Option2)">
-                        <DeckWithDiscard Index="2" Deck="Game.GameDeck.Deck2" Discard="Game.GameDeck.Discard2" />
+                        <CardPair Index="2" HouseNumberCard="Game.CurrentTurn.HouseNumberCard2" EffectCard="Game.CurrentTurn.EffectCard2" />
                     </div>
                     <div class="col border border-secondary p-0 mx-3 pointer @BlurredClass(DeckIndex.Option3)" title="Option 3" @onclick="() => SelectNumberEffectPair(DeckIndex.Option3)">
-                        <DeckWithDiscard Index="3" Deck="Game.GameDeck.Deck3" Discard="Game.GameDeck.Discard3" />
+                        <CardPair Index="3" HouseNumberCard="Game.CurrentTurn.HouseNumberCard3" EffectCard="Game.CurrentTurn.EffectCard3" />
                     </div>
                 </div>
             </div>
@@ -97,18 +97,24 @@ else
             {
                 await ConfigureHubAsync();
             }
+
+            if (Game.CurrentTurn.PlayerNamesWithActionTaken.Contains(IdentifiedPlayer.Name) && Game.Players.Select(x => x.Name).Except(Game.CurrentTurn.PlayerNamesWithActionTaken).Any())
+            {
+                _showWaitingMessage = true;
+            }
         }
     }
 
     private async Task ConfigureHubAsync()
     {
-        GameHub.RegisterHandler("UpdateGameAsync", async () =>
+        GameHub.RegisterHandler("UpdateGame", async () =>
         {
             Game = await Http.GetAsync<Game>($"api/Game/Get?id={GameId}");
+            _showWaitingMessage = false;
             StateHasChanged();
         });
 
-        GameHub.RegisterHandler<string>("OtherPlayerActionTakenAsync", playerName =>
+        GameHub.RegisterHandler<string>("OtherPlayerActionTaken", playerName =>
         {
             Game.CurrentTurn.PlayerNamesWithActionTaken.Add(playerName);
             if (Game.CurrentTurn.PlayerNamesWithActionTaken.Contains(IdentifiedPlayer.Name))
@@ -143,8 +149,11 @@ else
 
         if (!Game.Players.Select(x => x.Name).Except(Game.CurrentTurn.PlayerNamesWithActionTaken).Any())
         {
-            await Http.PostAsync("NextTurn", GameId);
-            await Task.WhenAll(Http.GetAsync<Game>($"api/Game/Get?id={GameId}"), GameHub.UpdateGameAsync(GameId));
+            Console.WriteLine(JsonConvert.SerializeObject(Game.CurrentTurn));
+            Game = await Http.PostAsync<Game>("api/Game/NextTurn", GameId);
+            Console.WriteLine(JsonConvert.SerializeObject(Game.CurrentTurn));
+            await GameHub.UpdateGameAsync(GameId);
+            StateHasChanged();
         }
         else
         {

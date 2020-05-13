@@ -1,5 +1,5 @@
 ﻿<div class="row">
-    @if (Deck.Count == 0)
+    @if (HouseNumberCard == null)
     {
         <CardTemplate>
             <div class="d-flex justify-content-center h-100">
@@ -15,12 +15,12 @@
             <img class="card-img" src="/images/house.png" style="height: 60%;" draggable="false" />
             <div class="d-flex justify-content-center" style="height: 40%;">
                 <div class="align-self-center justify-content-center">
-                    <h1 class="mb-0 bubblegum-font">@Deck.Peek().HouseNumber</h1>
+                    <h1 class="mb-0 bubblegum-font">@HouseNumberCard.HouseNumber</h1>
                 </div>
             </div>
         </CardTemplate>
     }
-    @if (Discard.Count == 0)
+    @if (EffectCard == null)
     {
         <CardTemplate>
             <div class="d-flex justify-content-center h-100">
@@ -35,7 +35,7 @@
         <CardTemplate BodyClass="card-background-effect">
             <div class="d-flex justify-content-center h-100">
                 <div class="align-self-center justify-content-center">
-                    <img class="card-img" src="/images/@GetEffectImage(Discard.Peek().Type)" draggable="false" />
+                    <img class="card-img" src="/images/@GetEffectImage(EffectCard.Type)" draggable="false" />
                 </div>
             </div>
         </CardTemplate>
@@ -47,10 +47,10 @@
     public int Index { get; set; }
 
     [Parameter]
-    public Stack<Card> Deck { get; set; }
+    public Card HouseNumberCard { get; set; }
 
     [Parameter]
-    public Stack<Card> Discard { get; set; }
+    public Card EffectCard { get; set; }
 
     private string GetEffectImage(CardType type)
     {
