@@ -89,12 +89,12 @@ namespace WelcomeTo.Server.Services
             BottomStreet = BuildStreet(StreetPosition.Bottom)
         };
 
-        public ScoreSheet StartingScoreSheet => new ScoreSheet 
+        public ScoreSheet StartingScoreSheet => new ScoreSheet
         {
             RealEstateValuesTable = _realEstateSizeValues.ToDictionary(s => s.Key, s => s.Value.Select(points => new PointsListItem { Points = points, IsCovered = false }).ToList()),
             PoolPoints = _poolPoints.Select(points => new PointsListItem { Points = points, IsCovered = false }).ToList(),
             TempAgencyPoints = _tempAgencyPoints.ToList(),
-            BisPoints = _bisPoints.Select(points => new PointsListItem { Points = points, IsCovered = false}).ToList(),
+            BisPoints = _bisPoints.Select(points => new PointsListItem { Points = points, IsCovered = false }).ToList(),
             RefusalPoints = _refusalPoints.Select(points => new PointsListItem { Points = points, IsCovered = false }).ToList()
         };
 

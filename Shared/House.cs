@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using WelcomeTo.Shared.Enumerations;
+﻿using WelcomeTo.Shared.Enumerations;
 
 namespace WelcomeTo.Shared
 {

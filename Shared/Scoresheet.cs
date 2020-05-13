@@ -18,11 +18,11 @@ namespace WelcomeTo.Shared
 
         public int Plan1 { get; set; }
 
-        public int Plan2{ get; set; }
+        public int Plan2 { get; set; }
 
         public int Plan3 { get; set; }
 
-        public int TopParks{ get; set; }
+        public int TopParks { get; set; }
 
         public int MiddleParks { get; set; }
 

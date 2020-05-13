@@ -1,7 +1,7 @@
-using WelcomeTo.Client.Services;
-using WelcomeTo.Client.Services.SignalR;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using System.Threading.Tasks;
+using WelcomeTo.Client.Services;
+using WelcomeTo.Client.Services.SignalR;
 
 namespace WelcomeTo.Client
 {

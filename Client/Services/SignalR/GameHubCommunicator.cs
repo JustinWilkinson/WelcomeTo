@@ -1,7 +1,7 @@
-﻿using WelcomeTo.Shared;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 using System.Threading.Tasks;
+using WelcomeTo.Shared;
 
 namespace WelcomeTo.Client.Services.SignalR
 {

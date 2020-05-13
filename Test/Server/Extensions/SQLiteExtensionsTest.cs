@@ -1,7 +1,7 @@
-﻿using WelcomeTo.Server.Extensions;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using System.Data;
 using System.Data.SQLite;
+using WelcomeTo.Server.Extensions;
 
 namespace WelcomeTo.Test.Server.Extensions
 {
