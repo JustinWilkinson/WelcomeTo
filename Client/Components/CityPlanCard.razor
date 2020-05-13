@@ -43,7 +43,7 @@
                 <div class="rounded-circle bg-dark text-warning pl-2 pr-2">
                     @if (_completedByAnyPlayer)
                     {
-                        <span class="oi oi-circle-x"></span>
+                        <span class="oi oi-circle-x small"></span>
                     }
                     else
                     {
@@ -103,14 +103,14 @@
     protected override void OnParametersSet()
     {
         _completedByAnyPlayer = Game.Players.Any(p => p.ScoreSheet.GetCityPlanPoints(CityPlan.Type) == CityPlan.FirstPoints);
-        _canBeCompletedByIdentifiedPlayer = IdentifiedPlayer.ScoreSheet.GetCityPlanPoints(CityPlan.Type) == 0 && !CityPlan.EstateSizes.Except(IdentifiedPlayer.Board.GetNonFinalEstates().Select(x => x.HouseIndices.Count)).Any();
+        _canBeCompletedByIdentifiedPlayer = IdentifiedPlayer.ScoreSheet.GetCityPlanPoints(CityPlan.Type) == 0 && !CityPlan.EstateSizes.Except(IdentifiedPlayer.Board.GetEstates(false).Select(x => x.HouseIndices.Count)).Any();
     }
 
     private async Task CompleteCityPlanCard()
     {
         if (_canBeCompletedByIdentifiedPlayer)
         {
-            var estates = IdentifiedPlayer.Board.GetNonFinalEstates();
+            var estates = IdentifiedPlayer.Board.GetEstates(false);
             foreach (var estateSize in CityPlan.EstateSizes)
             {
                 var estateToMarkAsFinal = estates.First(e => e.HouseIndices.Count == estateSize);
