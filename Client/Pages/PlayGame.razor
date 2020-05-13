@@ -149,9 +149,7 @@ else
 
         if (!Game.Players.Select(x => x.Name).Except(Game.CurrentTurn.PlayerNamesWithActionTaken).Any())
         {
-            Console.WriteLine(JsonConvert.SerializeObject(Game.CurrentTurn));
             Game = await Http.PostAsync<Game>("api/Game/NextTurn", GameId);
-            Console.WriteLine(JsonConvert.SerializeObject(Game.CurrentTurn));
             await GameHub.UpdateGameAsync(GameId);
             StateHasChanged();
         }
