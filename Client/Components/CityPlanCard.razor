@@ -103,7 +103,7 @@
     protected override void OnParametersSet()
     {
         _completedByAnyPlayer = Game.Players.Any(p => p.ScoreSheet.GetCityPlanPoints(CityPlan.Type) == CityPlan.FirstPoints);
-        _canBeCompletedByIdentifiedPlayer = IdentifiedPlayer.ScoreSheet.GetCityPlanPoints(CityPlan.Type) == 0 && !CityPlan.EstateSizes.Without(IdentifiedPlayer.Board.GetEstates(false).Select(x => x.HouseIndices.Count)).Any();
+        _canBeCompletedByIdentifiedPlayer = !Game.CompletedAtUtc.HasValue && IdentifiedPlayer.ScoreSheet.GetCityPlanPoints(CityPlan.Type) == 0 && !CityPlan.EstateSizes.Without(IdentifiedPlayer.Board.GetEstates(false).Select(x => x.HouseIndices.Count)).Any();
     }
 
     private async Task CompleteCityPlanCard()

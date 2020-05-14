@@ -21,7 +21,7 @@ namespace WelcomeTo.Shared
 
         public Turn CurrentTurn { get; set; }
 
-        public Player Winner { get; set; }
+        public string WinnerText { get; set; }
 
         public GameDeck GameDeck { get; set; }
 
@@ -89,6 +89,52 @@ namespace WelcomeTo.Shared
             {
                 CompletedMessage = completedMessage;
                 CompletedAtUtc = DateTime.UtcNow;
+                ComputeWinner();
+            }
+        }
+
+        public void ComputeWinner()
+        {
+            var firstPlaceGroup = Players.GroupBy(p => GetPointsTotal(p)).OrderByDescending(g => g.Key).First().ToList();
+
+            if (firstPlaceGroup.Count > 1)
+            {
+                IEnumerable<(Player Player, List<Estate> Estates)> playerEstates = firstPlaceGroup.Select(p => (p, p.Board.GetEstates(true)));
+                var tieBreakGroup = playerEstates.GroupBy(p => p.Estates.Count).OrderByDescending(g => g.Key).First().ToList();
+
+                if (tieBreakGroup.Count > 1)
+                {
+                    WinnerText = HandleTieBreaker(tieBreakGroup, 1);
+                }
+                else
+                {
+                    WinnerText = $"{tieBreakGroup[0].Player.Name} wins on a tie break with {GetPointsTotal(tieBreakGroup[0].Player)} points!";
+                }
+            }
+            else
+            {
+                WinnerText = $"{firstPlaceGroup[0].Name} wins with {GetPointsTotal(firstPlaceGroup[0])} points!";
+            }
+        }
+
+        private string HandleTieBreaker(IEnumerable<(Player Player, List<Estate> Estates)> tieBreakGroup, int estateSize)
+        {
+            if (!Enum.IsDefined(typeof(RealEstateSize), estateSize))
+            {
+                return $"A winner could not be determined, {string.Join(", ", tieBreakGroup.Select(x => x.Player.Name))} all have {GetPointsTotal(tieBreakGroup.First().Player)} points and matching estate sizes!";
+            }
+            else
+            {
+                var tieBreakWinners = tieBreakGroup.GroupBy(c => c.Estates.Where(c => c.HouseIndices.Count == estateSize).Count()).OrderByDescending(g => g.Key).First().ToList();
+
+                if (tieBreakWinners.Count > 1)
+                {
+                    return HandleTieBreaker(tieBreakWinners, estateSize++);
+                }
+                else
+                {
+                    return $"{tieBreakWinners[0].Player.Name} wins on a tie break with {GetPointsTotal(tieBreakWinners[0].Player)} points and the most size {estateSize} estates!";
+                }
             }
         }
     }

@@ -24,6 +24,9 @@ else if (IdentifiedPlayer == null)
 }
 else
 {
+    <Modal Show="_showGameOverMessage" Header="Game Over!" CanClose="true">
+        @Game.CompletedMessage - @(Game.WinnerText) !
+    </Modal>
     <Modal Show="_showWaitingMessage" Header="Waiting for next turn..." CanClose="false">
         Waiting for @string.Join(", ", Game.Players.Select(x => x.Name).Except(Game.CurrentTurn.PlayerNamesWithActionTaken)) to take their turn...
     </Modal>
@@ -54,7 +57,14 @@ else
             <TabControl>
                 <TabContent>
                     <TabPage Title="@IdentifiedPlayer.Name">
-                        <PlayerSheet Player="IdentifiedPlayer" OnActionTaken="IdentifiedPlayerActionTakenAsync" @ref="_playerSheet" />
+                        @if (Game.CompletedAtUtc.HasValue)
+                        {
+                            <ReadOnlyPlayerSheet Player="IdentifiedPlayer" />
+                        }
+                        else
+                        {
+                            <PlayerSheet Player="IdentifiedPlayer" OnActionTaken="IdentifiedPlayerActionTakenAsync" @ref="_playerSheet" />
+                        }
                     </TabPage>
                     @foreach (var player in Game.Players.Where(p => p.Name != IdentifiedPlayer.Name))
                     {
@@ -79,6 +89,7 @@ else
     private PlayerSheet _playerSheet;
 
     private bool _urlWrong = false;
+    private bool _showGameOverMessage = false;
     private bool _showWaitingMessage = false;
 
     protected override async Task OnInitializedAsync()
@@ -98,7 +109,11 @@ else
                 await ConfigureHubAsync();
             }
 
-            if (Game.CurrentTurn.PlayerNamesWithActionTaken.Contains(IdentifiedPlayer.Name) && Game.Players.Select(x => x.Name).Except(Game.CurrentTurn.PlayerNamesWithActionTaken).Any())
+            if (Game.CompletedAtUtc.HasValue)
+            {
+                _showGameOverMessage = true;
+            }
+            else if (Game.CurrentTurn.PlayerNamesWithActionTaken.Contains(IdentifiedPlayer.Name) && Game.Players.Select(x => x.Name).Except(Game.CurrentTurn.PlayerNamesWithActionTaken).Any())
             {
                 _showWaitingMessage = true;
             }
@@ -110,6 +125,7 @@ else
         GameHub.RegisterHandler("UpdateGame", async () =>
         {
             Game = await Http.GetAsync<Game>($"api/Game/Get?id={GameId}");
+            _showGameOverMessage = Game.CompletedAtUtc.HasValue;
             _showWaitingMessage = false;
             StateHasChanged();
         });
@@ -130,16 +146,23 @@ else
 
     private void SelectNumberEffectPair(DeckIndex index)
     {
-        if (SelectedNumberEffectPair == null || SelectedNumberEffectPair.DeckIndex != index)
+        if (Game.CompletedAtUtc.HasValue)
         {
-            SelectedNumberEffectPair = Game.CurrentTurn.GetNumberEffectPairs().Single(x => x.DeckIndex == index);
+            _showGameOverMessage = true;
         }
         else
         {
-            SelectedNumberEffectPair = null;
-        }
+            if (SelectedNumberEffectPair == null || SelectedNumberEffectPair.DeckIndex != index)
+            {
+                SelectedNumberEffectPair = Game.CurrentTurn.GetNumberEffectPairs().Single(x => x.DeckIndex == index);
+            }
+            else
+            {
+                SelectedNumberEffectPair = null;
+            }
 
-        _playerSheet.SelectedHouseChanged(null);
+            _playerSheet.SelectedHouseChanged(null);
+        }
     }
 
     private async Task IdentifiedPlayerActionTakenAsync()

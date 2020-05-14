@@ -51,7 +51,7 @@ else
                             <td>@(game.StartedAtUtc?.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss")  ?? "Not yet started")</td>
                             <td>@(game.CompletedAtUtc?.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss") ?? "In Progress")</td>
                             <td>@(game.Players?.Count ?? 0)</td>
-                            <td>@(game.Winner?.Name ?? "Undecided")</td>
+                            <td>@(game.WinnerText ?? "Undecided")</td>
                             <td>@game.CompletedMessage</td>
                             <td>
                                 @if (!game.StartedAtUtc.HasValue)
