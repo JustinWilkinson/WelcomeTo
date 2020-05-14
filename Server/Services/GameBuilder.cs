@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using WelcomeTo.Server.Configuration;
-using WelcomeTo.Server.Extensions;
 using WelcomeTo.Shared;
 using WelcomeTo.Shared.Enumerations;
+using WelcomeTo.Shared.Extensions;
 
 namespace WelcomeTo.Server.Services
 {

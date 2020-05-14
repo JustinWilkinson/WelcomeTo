@@ -39,7 +39,7 @@
                                 }
                             </select>
                         }
-                        else if (PlayerSheet.SelectedHouse == null && possibleHouseNumbers.Any())
+                        else if (PlayerSheet.SelectedHouse == null && possibleHouseNumbers.HasContent())
                         {
                             <select class="form-control py-0 rounded-0 centered-select" @onchange="OnHouseSelected">
                                 <option value="0" selected>Select</option>
@@ -52,7 +52,7 @@
                         else
                         {
                             var possibleBisNumbers = PlayerSheet.SelectedHouse != null && SelectedNumberEffectPair?.Effect == CardType.Bis ? Street.GetPossibleBisNumbersForUnbuiltHouse(House, PlayerSheet.SelectedHouse) : null;
-                            if (possibleBisNumbers != null && possibleBisNumbers.Any())
+                            if (possibleBisNumbers.HasContent())
                             {
                                 if (PlayerSheet.SelectedBisHouse != null && PlayerSheet.SelectedBisHouse.Street == Street.Position && PlayerSheet.SelectedBisHouse.Index == House.Index)
                                 {
