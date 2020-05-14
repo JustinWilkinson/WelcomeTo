@@ -90,5 +90,30 @@ namespace WelcomeTo.Shared
                 uncoveredRefusals.First(r => !r.IsCovered).IsCovered = true;
             }
         }
+
+        public string CompletedGameMessage()
+        {
+            var lastRefusalCovered = ScoreSheet.RefusalPoints.Where(r => !r.IsCovered).Count() == 1;
+            if (lastRefusalCovered)
+            {
+                return $"{Name} has had {ScoreSheet.RefusalPoints.Count - 1} permits refused.";
+            }
+
+            var allCityPlansComplete = ScoreSheet.Plan1 > 0 && ScoreSheet.Plan2 > 0 && ScoreSheet.Plan3 > 0;
+            if (allCityPlansComplete)
+            {
+                return $"{Name} has completed all three city plans.";
+            }
+
+            foreach (StreetPosition streetPoisiton in Enum.GetValues(typeof(StreetPosition)))
+            {
+                if (!Board.GetStreet(streetPoisiton).Houses.All(h => h.Number.HasValue))
+                {
+                    return null;
+                }
+            }
+
+            return $"{Name} has built every house on their streets.";
+        }
     }
 }

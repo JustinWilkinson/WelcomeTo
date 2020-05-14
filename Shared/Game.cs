@@ -31,20 +31,25 @@ namespace WelcomeTo.Shared
 
         public void StartNextTurn()
         {
-            GameDeck.Discard1.Push(GameDeck.Deck1.Pop());
-            GameDeck.Discard2.Push(GameDeck.Deck2.Pop());
-            GameDeck.Discard3.Push(GameDeck.Deck3.Pop());
+            CheckForGameOver();
 
-            CurrentTurn = new Turn
+            if (!CompletedAtUtc.HasValue)
             {
-                EffectCard1 = GameDeck.Discard1.Peek(),
-                EffectCard2 = GameDeck.Discard2.Peek(),
-                EffectCard3 = GameDeck.Discard3.Peek(),
-                HouseNumberCard1 = GameDeck.Deck1.Peek(),
-                HouseNumberCard2 = GameDeck.Deck2.Peek(),
-                HouseNumberCard3 = GameDeck.Deck3.Peek(),
-                PlayerNamesWithActionTaken = new List<string>()
-            };
+                GameDeck.Discard1.Push(GameDeck.Deck1.Pop());
+                GameDeck.Discard2.Push(GameDeck.Deck2.Pop());
+                GameDeck.Discard3.Push(GameDeck.Deck3.Pop());
+
+                CurrentTurn = new Turn
+                {
+                    EffectCard1 = GameDeck.Discard1.Peek(),
+                    EffectCard2 = GameDeck.Discard2.Peek(),
+                    EffectCard3 = GameDeck.Discard3.Peek(),
+                    HouseNumberCard1 = GameDeck.Deck1.Peek(),
+                    HouseNumberCard2 = GameDeck.Deck2.Peek(),
+                    HouseNumberCard3 = GameDeck.Deck3.Peek(),
+                    PlayerNamesWithActionTaken = new List<string>()
+                };
+            }
         }
 
         public int GetTempAgencyPoints(Player player)
@@ -75,6 +80,16 @@ namespace WelcomeTo.Shared
                 points += player.ScoreSheet.RealEstateValuesTable[(RealEstateSize)i].First(x => !x.IsCovered).Points * estates.Where(e => e.HouseIndices.Count == i).Count();
             }
             return points;
+        }
+
+        public void CheckForGameOver()
+        {
+            var completedMessage = string.Join(", ", Players.Select(p => p.CompletedGameMessage()).Where(message => message != null));
+            if (!string.IsNullOrWhiteSpace(completedMessage))
+            {
+                CompletedMessage = completedMessage;
+                CompletedAtUtc = DateTime.UtcNow;
+            }
         }
     }
 }
