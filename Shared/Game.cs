@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using WelcomeTo.Shared.Enumerations;
 
 namespace WelcomeTo.Shared
 {
@@ -25,6 +27,8 @@ namespace WelcomeTo.Shared
 
         public CityPlans Plans { get; set; }
 
+        public List<int> TempAgencyPoints { get; set; }
+
         public void StartNextTurn()
         {
             GameDeck.Discard1.Push(GameDeck.Deck1.Pop());
@@ -41,6 +45,36 @@ namespace WelcomeTo.Shared
                 HouseNumberCard3 = GameDeck.Deck3.Peek(),
                 PlayerNamesWithActionTaken = new List<string>()
             };
+        }
+
+        public int GetTempAgencyPoints(Player player)
+        {
+            var index = Players
+                .Where(p => p.ScoreSheet.TempAgenciesUsed > 0)
+                .GroupBy(p => p.ScoreSheet.TempAgenciesUsed)
+                .OrderByDescending(g => g.Key)
+                .Select((group, index) => new { Names = group.Select(player => player.Name), Index = index })
+                .SingleOrDefault(x => x.Names.Contains(player.Name))?.Index;
+
+            return index.HasValue && index.Value < TempAgencyPoints.Count ? TempAgencyPoints[index.Value] : 0;
+        }
+
+        public int GetPointsTotal(Player player)
+        {
+            var scoreSheet = player.ScoreSheet;
+            return scoreSheet.Plan1 + scoreSheet.Plan2 + scoreSheet.Plan3 + scoreSheet.TopParks + scoreSheet.MiddleParks + scoreSheet.BottomParks + scoreSheet.Pools +
+                GetTempAgencyPoints(player) + GetRealEstateValuePoints(player) - scoreSheet.Bis - scoreSheet.Refusals;
+        }
+
+        public int GetRealEstateValuePoints(Player player)
+        {
+            var estates = player.Board.GetEstates();
+            var points = 0;
+            for (var i = 1; i <= 6; i++)
+            {
+                points += player.ScoreSheet.RealEstateValuesTable[(RealEstateSize)i].First(x => !x.IsCovered).Points * estates.Where(e => e.HouseIndices.Count == i).Count();
+            }
+            return points;
         }
     }
 }

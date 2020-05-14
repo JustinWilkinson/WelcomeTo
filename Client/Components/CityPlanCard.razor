@@ -103,7 +103,7 @@
     protected override void OnParametersSet()
     {
         _completedByAnyPlayer = Game.Players.Any(p => p.ScoreSheet.GetCityPlanPoints(CityPlan.Type) == CityPlan.FirstPoints);
-        _canBeCompletedByIdentifiedPlayer = IdentifiedPlayer.ScoreSheet.GetCityPlanPoints(CityPlan.Type) == 0 && !CityPlan.EstateSizes.Except(IdentifiedPlayer.Board.GetEstates(false).Select(x => x.HouseIndices.Count)).Any();
+        _canBeCompletedByIdentifiedPlayer = IdentifiedPlayer.ScoreSheet.GetCityPlanPoints(CityPlan.Type) == 0 && !CityPlan.EstateSizes.Without(IdentifiedPlayer.Board.GetEstates(false).Select(x => x.HouseIndices.Count)).Any();
     }
 
     private async Task CompleteCityPlanCard()
@@ -113,7 +113,7 @@
             var estates = IdentifiedPlayer.Board.GetEstates(false);
             foreach (var estateSize in CityPlan.EstateSizes)
             {
-                var estateToMarkAsFinal = estates.First(e => e.HouseIndices.Count == estateSize);
+                var estateToMarkAsFinal = estates.First(e => !e.IsFinal && e.HouseIndices.Count == estateSize);
                 estateToMarkAsFinal.IsFinal = true;
                 var street = IdentifiedPlayer.Board.GetStreet(estateToMarkAsFinal.Street);
                 foreach (var houseIndex in estateToMarkAsFinal.HouseIndices)

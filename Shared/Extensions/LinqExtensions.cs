@@ -2,10 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace WelcomeTo.Server.Extensions
+namespace WelcomeTo.Shared.Extensions
 {
+    /// <summary>
+    /// Contains helpful extensions for IEnumerables not present in System.Linq
+    /// </summary>
     public static class LinqExtensions
     {
+        /// <summary>
+        /// Checks if an IEnumerable is not null and has any elements.
+        /// </summary>
+        /// <typeparam name="T">Type of elements in the enumerable</typeparam>
+        /// <param name="enumerable">Enumerable to check for content</param>
+        /// <returns></returns>
+        public static bool HasContent<T>(this IEnumerable<T> enumerable) => enumerable != null && enumerable.Any();
+
         /// <summary>
         /// Shuffles an IEnumerable using the System.Random class.
         /// </summary>
@@ -60,6 +71,39 @@ namespace WelcomeTo.Server.Extensions
                 {
                     var remainder = index++ % receiversCount;
                     receivers[remainder].Push(value);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Returns all elements in source that are not in exclude. If an element appears in source twice and exclude once, only the first instance is excluded.
+        /// </summary>
+        /// <typeparam name="T">Type of elements in enumerable</typeparam>
+        /// <param name="source">Source enumerable</param>
+        /// <param name="exclude">Enumerables to exclude (at most once)</param>
+        /// <param name="equalityComparer">Optional equality comparer, if none is specified the default comparer is used</param>
+        public static IEnumerable<T> Without<T>(this IEnumerable<T> source, IEnumerable<T> exclude, IEqualityComparer<T> equalityComparer = null)
+        {
+            equalityComparer ??= EqualityComparer<T>.Default;
+            var exclusionList = exclude.ToList();
+            
+            foreach (var item in source)
+            {
+                var shouldReturn = true;
+
+                for (int i = 0; i < exclusionList.Count; i++)
+                {
+                    if (equalityComparer.Equals(item, exclusionList[i]))
+                    {
+                        exclusionList.RemoveAt(i);
+                        shouldReturn = false;
+                        break;
+                    }
+                }
+
+                if (shouldReturn)
+                {
+                    yield return item;
                 }
             }
         }
