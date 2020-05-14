@@ -12,5 +12,7 @@ namespace WelcomeTo.Shared
         public int FirstPoints { get; set; }
 
         public int BasicPoints { get; set; }
+
+        public bool CompletedByAnyPlayer { get; set; }
     }
 }

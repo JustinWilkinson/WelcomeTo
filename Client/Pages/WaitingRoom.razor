@@ -160,8 +160,5 @@ else
         NavigationManager.NavigateTo($"PlayGame/{GameId}");
     }
 
-    private void HostNewGame()
-    {
-        NavigationManager.NavigateTo($"WaitingRoom/{Guid.NewGuid().ToString()}", true);
-    }
+    private void HostNewGame() => NavigationManager.NavigateTo($"WaitingRoom/{Guid.NewGuid().ToString()}", true);
 }

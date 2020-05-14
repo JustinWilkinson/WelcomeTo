@@ -226,12 +226,13 @@ app {
     }
 
     .house-fenced {
-        border-right-style: solid;
+        border-right-style: solid !important;
         cursor: initial;
     }
 
     .house-in-final-estate {
-        border-top-color: black;
+        border-top-color: black !important;
+        border-right: none;
         cursor: initial;
     }
 

@@ -42,7 +42,7 @@ namespace WelcomeTo.Shared
                     currentHousesInEstate.Clear();
                 }
             }
-            return estates.Where(e => e.HouseIndices.Count >=1 && e.HouseIndices.Count <= 6).ToList();
+            return estates.Where(e => e.HouseIndices.Count >= 1 && e.HouseIndices.Count <= 6).ToList();
         }
 
         public IEnumerable<int> GetPossibileNumbersForUnbuiltHouse(House house, NumberEffectPair selectedNumberEffectPair)

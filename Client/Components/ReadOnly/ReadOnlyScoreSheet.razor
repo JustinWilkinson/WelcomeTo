@@ -118,7 +118,7 @@
     public Game Game { get; set; }
 
     [CascadingParameter]
-    public PlayerSheet Parent { get; set; }
+    public ReadOnlyPlayerSheet Parent { get; set; }
 
     [Parameter]
     public ScoreSheet ScoreSheet { get; set; }

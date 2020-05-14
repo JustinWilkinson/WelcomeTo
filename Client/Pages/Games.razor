@@ -39,7 +39,6 @@ else
                         <th>Completed</th>
                         <th>Number of Players</th>
                         <th>Winner</th>
-                        <th>Final Message</th>
                         <th>Link</th>
                     </tr>
                 </thead>
@@ -51,8 +50,7 @@ else
                             <td>@(game.StartedAtUtc?.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss")  ?? "Not yet started")</td>
                             <td>@(game.CompletedAtUtc?.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss") ?? "In Progress")</td>
                             <td>@(game.Players?.Count ?? 0)</td>
-                            <td>@(game.Winner?.Name ?? "Undecided")</td>
-                            <td>@game.CompletedMessage</td>
+                            <td>@(game.WinnerText ?? "Undecided")</td>
                             <td>
                                 @if (!game.StartedAtUtc.HasValue)
                                 {
@@ -80,10 +78,7 @@ else
 @code {
     private IEnumerable<Game> _games;
 
-    protected override async Task OnInitializedAsync()
-    {
-        _games = await Http.GetAsync<IEnumerable<Game>>("api/Game/List");
-    }
+    protected override async Task OnInitializedAsync() => _games = await Http.GetAsync<IEnumerable<Game>>("api/Game/List");
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
