@@ -78,7 +78,8 @@ namespace WelcomeTo.Server.Services
                     Plan1 = _cityPlans1[_random.Next(_cityPlans1.Count)],
                     Plan2 = _cityPlans2[_random.Next(_cityPlans2.Count)],
                     Plan3 = _cityPlans3[_random.Next(_cityPlans3.Count)]
-                }
+                },
+                TempAgencyPoints = _tempAgencyPoints.ToList()
             };
         }
 
@@ -93,7 +94,6 @@ namespace WelcomeTo.Server.Services
         {
             RealEstateValuesTable = _realEstateSizeValues.ToDictionary(s => s.Key, s => s.Value.Select(points => new PointsListItem { Points = points, IsCovered = false }).ToList()),
             PoolPoints = _poolPoints.Select(points => new PointsListItem { Points = points, IsCovered = false }).ToList(),
-            TempAgencyPoints = _tempAgencyPoints.ToList(),
             BisPoints = _bisPoints.Select(points => new PointsListItem { Points = points, IsCovered = false }).ToList(),
             RefusalPoints = _refusalPoints.Select(points => new PointsListItem { Points = points, IsCovered = false }).ToList()
         };

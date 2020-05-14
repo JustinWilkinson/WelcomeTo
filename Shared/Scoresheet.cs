@@ -11,8 +11,6 @@ namespace WelcomeTo.Shared
 
         public List<PointsListItem> PoolPoints { get; set; }
 
-        public List<int> TempAgencyPoints { get; set; }
-
         public List<PointsListItem> BisPoints { get; set; }
 
         public List<PointsListItem> RefusalPoints { get; set; }
@@ -36,18 +34,6 @@ namespace WelcomeTo.Shared
         public int Bis => BisPoints.First(x => !x.IsCovered).Points;
 
         public int Refusals => RefusalPoints.First(x => !x.IsCovered).Points;
-
-        public int GetTempAgencyPoints(Game game, string playerName)
-        {
-            var index = game.Players
-                .Where(p => p.ScoreSheet.TempAgenciesUsed > 0)
-                .GroupBy(p => p.ScoreSheet.TempAgenciesUsed)
-                .OrderByDescending(g => g.Key)
-                .Select((group, index) => new { Names = group.Select(player => player.Name), Index = index })
-                .SingleOrDefault(x => x.Names.Contains(playerName))?.Index;
-
-            return index.HasValue && index.Value < TempAgencyPoints.Count ? TempAgencyPoints[index.Value] : 0;
-        }
 
         public int GetCityPlanPoints(PlanType planType) => planType switch
         {
@@ -73,22 +59,6 @@ namespace WelcomeTo.Shared
                 default:
                     throw new ArgumentException($"Unrecognized plan type '{planType}'.");
             };
-        }
-
-        public int GetRealEstateValuePoints(Board board)
-        {
-            var estates = board.GetEstates();
-            var points = 0;
-            for (var i = 1; i <= 6; i++)
-            {
-                points += RealEstateValuesTable[(RealEstateSize)i].First(x => !x.IsCovered).Points * estates.Where(e => e.HouseIndices.Count == i).Count();
-            }
-            return points;
-        }
-
-        public int GetTotal(Game game, Player player)
-        {
-            return Plan1 + Plan2 + Plan3 + TopParks + MiddleParks + BottomParks + Pools + GetTempAgencyPoints(game, player.Name) + GetRealEstateValuePoints(player.Board) - Bis - Refusals;
         }
     }
 }

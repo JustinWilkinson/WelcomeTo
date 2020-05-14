@@ -16,21 +16,29 @@ namespace WelcomeTo.Shared
         {
             var estates = new List<Estate>();
             var currentHousesInEstate = new List<int>();
+            var fenceLeft = true;
             for (int i = 0; i < Houses.Count; i++)
             {
                 var house = Houses[i];
                 if (house.Number.HasValue)
                 {
-                    currentHousesInEstate.Add(house.Index);
-
-                    if (house.FenceBuilt || i == Houses.Count - 1)
+                    if (fenceLeft)
                     {
-                        estates.Add(new Estate { HouseIndices = new List<int>(currentHousesInEstate), Street = Position, IsFinal = house.InFinalEstate });
-                        currentHousesInEstate.Clear();
+                        currentHousesInEstate.Add(house.Index);
+                        if (house.FenceBuilt || i == Houses.Count - 1)
+                        {
+                            estates.Add(new Estate { HouseIndices = new List<int>(currentHousesInEstate), Street = Position, IsFinal = house.InFinalEstate });
+                            currentHousesInEstate.Clear();
+                        }
+                    }
+                    else
+                    {
+                        fenceLeft = house.FenceBuilt;
                     }
                 }
                 else
                 {
+                    fenceLeft = house.FenceBuilt;
                     currentHousesInEstate.Clear();
                 }
             }
