@@ -25,11 +25,11 @@ else if (IdentifiedPlayer == null)
 else
 {
     <Modal Show="_showGameOverMessage" Header="Game Over!" CanClose="true">
-        <div class="row text-center">
+        <div class="text-center">
             @Game.CompletedMessage
         </div>
-        <div class="row text-center font-weight-bold">
-            @Game.WinnerText!
+        <div class="text-center font-weight-bold">
+            @Game.WinnerText
         </div>
     </Modal>
     <Modal Show="_showWaitingMessage" Header="Waiting for next turn..." CanClose="false">
@@ -131,7 +131,6 @@ else
         {
             Game = await Http.GetAsync<Game>($"api/Game/Get?id={GameId}");
             _showGameOverMessage = Game.CompletedAtUtc.HasValue;
-            Console.WriteLine(_showGameOverMessage);
             _showWaitingMessage = false;
             StateHasChanged();
         });
@@ -179,6 +178,7 @@ else
         if (!Game.Players.Select(x => x.Name).Except(Game.CurrentTurn.PlayerNamesWithActionTaken).Any())
         {
             Game = await Http.PostAsync<Game>("api/Game/NextTurn", GameId);
+            _showGameOverMessage = Game.CompletedAtUtc.HasValue;
             await GameHub.UpdateGameAsync(GameId);
         }
         else
@@ -191,7 +191,7 @@ else
 
     private async Task PlayerCompletedCityPlanAsync()
     {
-        await Http.PostAsync<Game>("api/Game/UpdatePlayerSheet", new { GameId = Game.Id, Player = JsonConvert.SerializeObject(IdentifiedPlayer), ActionTaken = false });
+        Game = await Http.PostAsync<Game>("api/Game/UpdatePlayerSheet", new { GameId = Game.Id, Player = JsonConvert.SerializeObject(IdentifiedPlayer), ActionTaken = false });
         StateHasChanged();
     }
 
