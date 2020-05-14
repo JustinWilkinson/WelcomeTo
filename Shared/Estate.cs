@@ -7,7 +7,7 @@ namespace WelcomeTo.Shared
     {
         public StreetPosition Street { get; set; }
 
-        public List<int> HouseIndices{ get; set; }
+        public List<int> HouseIndices { get; set; }
 
         public bool IsFinal { get; set; }
     }

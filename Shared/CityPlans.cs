@@ -20,6 +20,6 @@ namespace WelcomeTo.Shared
                 PlanType.No3 => Plan3,
                 _ => throw new ArgumentException($"Unrecognized plan type {planType}"!)
             };
-        } 
+        }
     }
 }

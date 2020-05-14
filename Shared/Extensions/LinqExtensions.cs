@@ -86,7 +86,7 @@ namespace WelcomeTo.Shared.Extensions
         {
             equalityComparer ??= EqualityComparer<T>.Default;
             var exclusionList = exclude.ToList();
-            
+
             foreach (var item in source)
             {
                 var shouldReturn = true;
