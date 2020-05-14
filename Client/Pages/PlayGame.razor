@@ -32,7 +32,7 @@ else
             @Game.WinnerText
         </div>
     </Modal>
-    <Modal Show="_showWaitingMessage" Header="Waiting for next turn..." CanClose="false">
+    <Modal Show="_showWaitingMessage" Header="Waiting for next turn..." CanClose="true">
         Waiting for @string.Join(", ", Game.Players.Select(x => x.Name).Except(Game.CurrentTurn.PlayerNamesWithActionTaken)) to take their turn...
     </Modal>
     <CascadingValue Value="Game">
@@ -62,7 +62,7 @@ else
             <TabControl>
                 <TabContent>
                     <TabPage Title="@IdentifiedPlayer.Name">
-                        @if (Game.CompletedAtUtc.HasValue)
+                        @if (Game.CompletedAtUtc.HasValue || _showWaitingMessage)
                         {
                             <ReadOnlyPlayerSheet Player="IdentifiedPlayer" />
                         }
@@ -90,6 +90,7 @@ else
     public Game Game { get; private set; }
     public Player IdentifiedPlayer { get; set; }
     public NumberEffectPair SelectedNumberEffectPair { get; set; }
+    private bool WaitingForOtherPlayers => Game.CurrentTurn.PlayerNamesWithActionTaken.Contains(IdentifiedPlayer.Name);
 
     private PlayerSheet _playerSheet;
 
@@ -118,7 +119,7 @@ else
             {
                 _showGameOverMessage = true;
             }
-            else if (Game.CurrentTurn.PlayerNamesWithActionTaken.Contains(IdentifiedPlayer.Name) && Game.Players.Select(x => x.Name).Except(Game.CurrentTurn.PlayerNamesWithActionTaken).Any())
+            else if (Game.CurrentTurn.PlayerNamesWithActionTaken.Contains(IdentifiedPlayer.Name))
             {
                 _showWaitingMessage = true;
             }
@@ -131,14 +132,14 @@ else
         {
             Game = await Http.GetAsync<Game>($"api/Game/Get?id={GameId}");
             _showGameOverMessage = Game.CompletedAtUtc.HasValue;
-            _showWaitingMessage = false;
+            _showWaitingMessage = WaitingForOtherPlayers;
             StateHasChanged();
         });
 
         GameHub.RegisterHandler<string>("OtherPlayerActionTaken", playerName =>
         {
             Game.CurrentTurn.PlayerNamesWithActionTaken.Add(playerName);
-            if (Game.CurrentTurn.PlayerNamesWithActionTaken.Contains(IdentifiedPlayer.Name))
+            if (WaitingForOtherPlayers)
             {
                 _showWaitingMessage = Game.Players.Select(x => x.Name).Except(Game.CurrentTurn.PlayerNamesWithActionTaken).Any();
                 StateHasChanged();
@@ -154,6 +155,10 @@ else
         if (Game.CompletedAtUtc.HasValue)
         {
             _showGameOverMessage = true;
+        }
+        else if (WaitingForOtherPlayers)
+        {
+            _showWaitingMessage = true;
         }
         else
         {
