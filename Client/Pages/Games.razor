@@ -39,7 +39,6 @@ else
                         <th>Completed</th>
                         <th>Number of Players</th>
                         <th>Winner</th>
-                        <th>Final Message</th>
                         <th>Link</th>
                     </tr>
                 </thead>
@@ -52,7 +51,6 @@ else
                             <td>@(game.CompletedAtUtc?.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss") ?? "In Progress")</td>
                             <td>@(game.Players?.Count ?? 0)</td>
                             <td>@(game.WinnerText ?? "Undecided")</td>
-                            <td>@game.CompletedMessage</td>
                             <td>
                                 @if (!game.StartedAtUtc.HasValue)
                                 {

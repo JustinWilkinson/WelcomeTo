@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using WelcomeTo.Shared.Enumerations;
+using WelcomeTo.Shared.Extensions;
 
 namespace WelcomeTo.Shared
 {
@@ -35,9 +36,7 @@ namespace WelcomeTo.Shared
 
             if (!CompletedAtUtc.HasValue)
             {
-                GameDeck.Discard1.Push(GameDeck.Deck1.Pop());
-                GameDeck.Discard2.Push(GameDeck.Deck2.Pop());
-                GameDeck.Discard3.Push(GameDeck.Deck3.Pop());
+                GameDeck.FlipCards();
 
                 CurrentTurn = new Turn
                 {
@@ -108,7 +107,7 @@ namespace WelcomeTo.Shared
                 }
                 else
                 {
-                    WinnerText = $"{tieBreakGroup[0].Player.Name} wins on a tie break with {GetPointsTotal(tieBreakGroup[0].Player)} points!";
+                    WinnerText = $"{tieBreakGroup[0].Player.Name} wins on a tie break with {GetPointsTotal(tieBreakGroup[0].Player)} and the most estates!";
                 }
             }
             else

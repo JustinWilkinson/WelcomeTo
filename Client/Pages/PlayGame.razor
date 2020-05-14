@@ -25,7 +25,12 @@ else if (IdentifiedPlayer == null)
 else
 {
     <Modal Show="_showGameOverMessage" Header="Game Over!" CanClose="true">
-        @Game.CompletedMessage - @(Game.WinnerText) !
+        <div class="row text-center">
+            @Game.CompletedMessage
+        </div>
+        <div class="row text-center font-weight-bold">
+            @Game.WinnerText!
+        </div>
     </Modal>
     <Modal Show="_showWaitingMessage" Header="Waiting for next turn..." CanClose="false">
         Waiting for @string.Join(", ", Game.Players.Select(x => x.Name).Except(Game.CurrentTurn.PlayerNamesWithActionTaken)) to take their turn...
@@ -126,6 +131,7 @@ else
         {
             Game = await Http.GetAsync<Game>($"api/Game/Get?id={GameId}");
             _showGameOverMessage = Game.CompletedAtUtc.HasValue;
+            Console.WriteLine(_showGameOverMessage);
             _showWaitingMessage = false;
             StateHasChanged();
         });
