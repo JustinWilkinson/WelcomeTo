@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using WelcomeTo.Shared.Enumerations;
-using WelcomeTo.Shared.Extensions;
 
 namespace WelcomeTo.Shared
 {
@@ -30,8 +29,10 @@ namespace WelcomeTo.Shared
 
         public List<int> TempAgencyPoints { get; set; }
 
+        #region Turns
         public void StartNextTurn()
         {
+            MarkCompletedCityPlans();
             CheckForGameOver();
 
             if (!CompletedAtUtc.HasValue)
@@ -51,34 +52,15 @@ namespace WelcomeTo.Shared
             }
         }
 
-        public int GetTempAgencyPoints(Player player)
+        public void MarkCompletedCityPlans()
         {
-            var index = Players
-                .Where(p => p.ScoreSheet.TempAgenciesUsed > 0)
-                .GroupBy(p => p.ScoreSheet.TempAgenciesUsed)
-                .OrderByDescending(g => g.Key)
-                .Select((group, index) => new { Names = group.Select(player => player.Name), Index = index })
-                .SingleOrDefault(x => x.Names.Contains(player.Name))?.Index;
-
-            return index.HasValue && index.Value < TempAgencyPoints.Count ? TempAgencyPoints[index.Value] : 0;
-        }
-
-        public int GetPointsTotal(Player player)
-        {
-            var scoreSheet = player.ScoreSheet;
-            return scoreSheet.Plan1 + scoreSheet.Plan2 + scoreSheet.Plan3 + scoreSheet.TopParks + scoreSheet.MiddleParks + scoreSheet.BottomParks + scoreSheet.Pools +
-                GetTempAgencyPoints(player) + GetRealEstateValuePoints(player) - scoreSheet.Bis - scoreSheet.Refusals;
-        }
-
-        public int GetRealEstateValuePoints(Player player)
-        {
-            var estates = player.Board.GetEstates();
-            var points = 0;
-            for (var i = 1; i <= 6; i++)
+            foreach (PlanType planType in Enum.GetValues(typeof(PlanType)))
             {
-                points += player.ScoreSheet.RealEstateValuesTable[(RealEstateSize)i].First(x => !x.IsCovered).Points * estates.Where(e => e.HouseIndices.Count == i).Count();
+                if (!Plans[planType].CompletedByAnyPlayer && AnyPlayerCompletedPlan(planType))
+                {
+                    Plans[planType].CompletedByAnyPlayer = true;
+                }
             }
-            return points;
         }
 
         public void CheckForGameOver()
@@ -115,6 +97,42 @@ namespace WelcomeTo.Shared
                 WinnerText = $"{firstPlaceGroup[0].Name} wins with {GetPointsTotal(firstPlaceGroup[0])} points!";
             }
         }
+        #endregion
+
+        #region Scoring
+        public int GetTempAgencyPoints(Player player)
+        {
+            var index = Players
+                .Where(p => p.ScoreSheet.TempAgenciesUsed > 0)
+                .GroupBy(p => p.ScoreSheet.TempAgenciesUsed)
+                .OrderByDescending(g => g.Key)
+                .Select((group, index) => new { Names = group.Select(player => player.Name), Index = index })
+                .SingleOrDefault(x => x.Names.Contains(player.Name))?.Index;
+
+            return index.HasValue && index.Value < TempAgencyPoints.Count ? TempAgencyPoints[index.Value] : 0;
+        }
+
+        public int GetPointsTotal(Player player)
+        {
+            var scoreSheet = player.ScoreSheet;
+            return scoreSheet.Plan1 + scoreSheet.Plan2 + scoreSheet.Plan3 + scoreSheet.TopParks + scoreSheet.MiddleParks + scoreSheet.BottomParks + scoreSheet.Pools +
+                GetTempAgencyPoints(player) + GetRealEstateValuePoints(player) - scoreSheet.Bis - scoreSheet.Refusals;
+        }
+
+        public int GetRealEstateValuePoints(Player player)
+        {
+            var estates = player.Board.GetEstates();
+            var points = 0;
+            for (var i = 1; i <= 6; i++)
+            {
+                points += player.ScoreSheet.RealEstateValuesTable[(RealEstateSize)i].First(x => !x.IsCovered).Points * estates.Where(e => e.HouseIndices.Count == i).Count();
+            }
+            return points;
+        }
+        #endregion
+
+        #region Private
+        private bool AnyPlayerCompletedPlan(PlanType planType) => Players.Any(p => p.ScoreSheet.GetCityPlanPoints(planType) > 0);
 
         private string HandleTieBreaker(IEnumerable<(Player Player, List<Estate> Estates)> tieBreakGroup, int estateSize)
         {
@@ -136,5 +154,6 @@ namespace WelcomeTo.Shared
                 }
             }
         }
+        #endregion
     }
 }

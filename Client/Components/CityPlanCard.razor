@@ -41,7 +41,7 @@
         <div class="card-footer">
             <div class="float-left text-center">
                 <div class="rounded-circle bg-dark text-warning pl-2 pr-2">
-                    @if (_completedByAnyPlayer)
+                    @if (CityPlan.CompletedByAnyPlayer)
                     {
                         <span class="oi oi-circle-x small"></span>
                     }
@@ -102,7 +102,6 @@
 
     protected override void OnParametersSet()
     {
-        _completedByAnyPlayer = Game.Players.Any(p => p.ScoreSheet.GetCityPlanPoints(CityPlan.Type) == CityPlan.FirstPoints);
         _canBeCompletedByIdentifiedPlayer = !Game.CompletedAtUtc.HasValue && IdentifiedPlayer.ScoreSheet.GetCityPlanPoints(CityPlan.Type) == 0 && !CityPlan.EstateSizes.Without(IdentifiedPlayer.Board.GetEstates(false).Select(x => x.HouseIndices.Count)).Any();
     }
 
@@ -122,7 +121,7 @@
                 }
             }
 
-            IdentifiedPlayer.ScoreSheet.SetCityPlanPoints(CityPlan.Type, _completedByAnyPlayer ? CityPlan.BasicPoints : CityPlan.FirstPoints);
+            IdentifiedPlayer.ScoreSheet.SetCityPlanPoints(CityPlan.Type, CityPlan.CompletedByAnyPlayer ? CityPlan.BasicPoints : CityPlan.FirstPoints);
             await OnCompleted.InvokeAsync(null);
         }
     }
