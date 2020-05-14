@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using WelcomeTo.Shared.Enumerations;
 
 namespace WelcomeTo.Shared
@@ -12,6 +13,26 @@ namespace WelcomeTo.Shared
         public Board Board { get; set; }
 
         public ScoreSheet ScoreSheet { get; set; }
+
+        public bool CanPerformAction(Turn currentTurn)
+        {
+            foreach (var pair in currentTurn.GetNumberEffectPairs())
+            {
+                foreach (StreetPosition streetPoisiton in Enum.GetValues(typeof(StreetPosition)))
+                {
+                    var street = Board.GetStreet(streetPoisiton);
+                    foreach (var house in street.Houses)
+                    {
+                        if (street.GetPossibileNumbersForUnbuiltHouse(house, pair).Any())
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
+        }
 
         public void ProcessAction(NumberEffectPair selectedNumberEffectPair, SelectedHouse selectedHouse, SelectedHouse selectedBisHouse, SelectedHouse selectedFenceHouse, Park selectedPark, SelectedRealEstateValue selectedRealEstateValue)
         {
