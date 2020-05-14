@@ -112,7 +112,7 @@
         }
         else
         {
-            Player.ScoreSheet.RefusalPoints.First(r => !r.IsCovered).IsCovered = true;
+            Player.PassTurn();
         }
 
         await OnActionTaken.InvokeAsync(null);

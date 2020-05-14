@@ -81,5 +81,14 @@ namespace WelcomeTo.Shared
                 ScoreSheet.RealEstateValuesTable[selectedRealEstateValue.Size][selectedRealEstateValue.Index].IsCovered = true;
             }
         }
+
+        public void PassTurn()
+        {
+            var uncoveredRefusals = ScoreSheet.RefusalPoints.Where(r => !r.IsCovered).ToList();
+            if (uncoveredRefusals.Count > 1)
+            {
+                uncoveredRefusals.First(r => !r.IsCovered).IsCovered = true;
+            }
+        }
     }
 }
