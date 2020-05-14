@@ -97,51 +97,7 @@
     {
         if (SelectedHouse != null)
         {
-            var street = Player.Board.GetStreet(SelectedHouse.Street);
-            var house = street.Houses[SelectedHouse.Index];
-            house.Number = SelectedHouse.Number;
-
-            if (SelectedNumberEffectPair.Effect == CardType.Bis && SelectedBisHouse != null)
-            {
-                var bisHouse = Player.Board.GetStreet(SelectedBisHouse.Street).Houses[SelectedBisHouse.Index];
-                bisHouse.Number = SelectedBisHouse.Number;
-                bisHouse.IsBis = true;
-                Player.ScoreSheet.BisPoints.First(x => !x.IsCovered).IsCovered = true;
-            }
-            else if (SelectedNumberEffectPair.Effect == CardType.Park && SelectedPark != null)
-            {
-                street.Parks.Single(x => x.Points == SelectedPark.Points).IsCovered = true;
-                switch (street.Position)
-                {
-                    case StreetPosition.Top:
-                        Player.ScoreSheet.TopParks = street.Parks.First(x => !x.IsCovered).Points;
-                        break;
-                    case StreetPosition.Middle:
-                        Player.ScoreSheet.MiddleParks = street.Parks.First(x => !x.IsCovered).Points;
-                        break;
-                    case StreetPosition.Bottom:
-                        Player.ScoreSheet.BottomParks = street.Parks.First(x => !x.IsCovered).Points;
-                        break;
-                }
-            }
-            else if (SelectedNumberEffectPair.Effect == CardType.TempAgency)
-            {
-                Player.ScoreSheet.TempAgenciesUsed++;
-            }
-            else if (SelectedNumberEffectPair.Effect == CardType.Pool && house.Pool == PoolType.Unbuilt)
-            {
-                house.Pool = PoolType.Built;
-                Player.ScoreSheet.PoolPoints.First(x => !x.IsCovered).IsCovered = true;
-            }
-            else if (SelectedNumberEffectPair.Effect == CardType.Fence && SelectedFenceHouse != null)
-            {
-                Player.Board.GetStreet(SelectedFenceHouse.Street).Houses[SelectedFenceHouse.Index].FenceBuilt = true;
-            }
-            else if (SelectedNumberEffectPair.Effect == CardType.RealEstateValue && SelectedRealEstateValue != null)
-            {
-                Player.ScoreSheet.RealEstateValuesTable[SelectedRealEstateValue.Size][SelectedRealEstateValue.Index].IsCovered = true;
-            }
-
+            Player.ProcessAction(SelectedNumberEffectPair, SelectedHouse, SelectedBisHouse, SelectedFenceHouse, SelectedPark, SelectedRealEstateValue);
             SelectedHouseChanged(null);
             await OnActionTaken.InvokeAsync(null);
         }
