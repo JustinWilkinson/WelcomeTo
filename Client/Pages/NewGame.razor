@@ -1,0 +1,32 @@
+﻿@page "/NewGame"
+
+@inject IHttpService Http
+@inject NavigationManager NavigationManager
+
+<h3>NewGame</h3>
+
+<div class="form-group">
+    <div class="form-control">
+        <label class="col-form-label">Game Name: (Optional)</label>
+        <input type="text" class="form-control" placeholder="Enter a name for your game..." />
+    </div>
+    <div class="form-control">
+        <label class="col-form-label">Game Name: (Optional)</label>
+        <input type="checkbox" class="form-check" />
+    </div>
+    <div class="form-control">
+        <button class="btn btn-primary" @onclick="CreateGameAsync">Create Game</button>
+    </div>
+</div>
+
+@code {
+    private string _gameName;
+    private bool _privateGame;
+
+    private async Task CreateGameAsync()
+    {
+        var gameId = Guid.NewGuid().ToString();
+        await Http.PutAsync("api/Game/New", new { GameId = gameId, Name = _gameName, PrivateGame = _privateGame });
+        NavigationManager.NavigateTo($"WaitingRoom/{gameId}");
+    }
+}

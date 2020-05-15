@@ -8,7 +8,14 @@
 <h3>Waiting Room</h3>
 @if (_game == null)
 {
-    <p><em>Loading...</em></p>
+    if (_urlWrong)
+    {
+        <p>Sorry, it doesn't look like this is a valid game - please make sure your URL is correct and retry.</p>
+    }
+    else
+    {
+        <p><em>Loading...</em></p>
+    }
 }
 else if (_game.StartedAtUtc.HasValue)
 {
@@ -61,6 +68,7 @@ else
     private Game _game;
     private Player _player;
     private string _newNameValidationMessage;
+    private bool _urlWrong;
 
     protected override async Task OnInitializedAsync()
     {
@@ -70,37 +78,40 @@ else
             Storage.PlayerName = null;
         }
 
-        await ConfigureHubAsync();
         _game = await Http.GetAsync<Game>($"api/Game/Get?id={GameId}");
-        if (_game == null)
+        if (_game != null)
         {
-            await Http.PutAsync("api/Game/New", new { GameId = GameId, Name = "Unnamed Game", PrivateGame = false });
-            _game = await Http.GetAsync<Game>($"api/Game/Get?id={GameId}");
             _player = _game.Players.Single();
-        }
-        else if (_game.StartedAtUtc.HasValue)
-        {
-            return;
-        }
-        else
-        {
-            var playerName = Storage.PlayerName;
-            if (playerName == null)
+
+            if (_game.StartedAtUtc.HasValue)
             {
-                await JoinGameAsync();
+                return;
             }
             else
             {
-                _player = _game.Players.SingleOrDefault(p => p.Name == playerName);
-                if (_player == null)
+                await ConfigureHubAsync();
+                var playerName = Storage.PlayerName;
+                if (playerName == null)
                 {
-                    Storage.PlayerName = null;
                     await JoinGameAsync();
                 }
+                else
+                {
+                    _player = _game.Players.SingleOrDefault(p => p.Name == playerName);
+                    if (_player == null)
+                    {
+                        Storage.PlayerName = null;
+                        await JoinGameAsync();
+                    }
+                }
+
+                Storage.PlayerName = _player.Name;
             }
         }
-
-        Storage.PlayerName = _player.Name;
+        else
+        {
+            _urlWrong = true;
+        }
     }
 
     private async Task ConfigureHubAsync()
@@ -160,5 +171,5 @@ else
         NavigationManager.NavigateTo($"PlayGame/{GameId}");
     }
 
-    private void HostNewGame() => NavigationManager.NavigateTo($"WaitingRoom/{Guid.NewGuid().ToString()}", true);
+    private void HostNewGame() => NavigationManager.NavigateTo("NewGame");
 }

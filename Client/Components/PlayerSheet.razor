@@ -52,7 +52,7 @@
     public Park SelectedPark { get; set; }
     public SelectedRealEstateValue SelectedRealEstateValue { get; set; }
 
-    public void SelectedHouseChanged(SelectedHouse house)
+    public void SelectedHouseChanged(SelectedHouse house, bool runStateHasChanged = true)
     {
         SelectedHouse = house;
         SelectedParkChanged(null, false);
@@ -64,7 +64,10 @@
             SelectedRealEstateValueChanged(null, false);
         }
 
-        StateHasChanged();
+        if (runStateHasChanged)
+        {
+            StateHasChanged();
+        }
     }
 
     public void SelectedBisHouseChanged(SelectedHouse house, bool runStateHasChanged = true)
@@ -108,7 +111,7 @@
         if (SelectedHouse != null)
         {
             Player.ProcessAction(SelectedNumberEffectPair, SelectedHouse, SelectedBisHouse, SelectedFenceHouse, SelectedPark, SelectedRealEstateValue);
-            SelectedHouseChanged(null);
+            SelectedHouseChanged(null, false);
         }
         else
         {

@@ -13,6 +13,8 @@ namespace WelcomeTo.Shared
 
         public string CompletedMessage { get; set; }
 
+        public DateTime CreatedAtUtc { get; set; }
+
         public DateTime? StartedAtUtc { get; set; }
 
         public DateTime? CompletedAtUtc { get; set; }
@@ -65,7 +67,7 @@ namespace WelcomeTo.Shared
 
         public void CheckForGameOver()
         {
-            var completedMessage = string.Join(", ", Players.Select(p => p.CompletedGameMessage()).Where(message => message != null));
+            var completedMessage = $"{string.Join(", ", Players.Select(p => p.CompletedGameMessage()).Where(message => message != null))}.";
             if (!string.IsNullOrWhiteSpace(completedMessage))
             {
                 CompletedMessage = completedMessage;
@@ -146,7 +148,7 @@ namespace WelcomeTo.Shared
 
                 if (tieBreakWinners.Count > 1)
                 {
-                    return HandleTieBreaker(tieBreakWinners, estateSize++);
+                    return HandleTieBreaker(tieBreakWinners, ++estateSize);
                 }
                 else
                 {

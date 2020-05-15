@@ -9,7 +9,7 @@
 
 @if (Game == null)
 {
-    @if (_urlWrong)
+    if (_urlWrong)
     {
         <p>Sorry, it doesn't look like this is a valid game - please make sure your URL is correct and retry.</p>
     }
@@ -20,7 +20,7 @@
 }
 else if (IdentifiedPlayer == null)
 {
-    <p>Sorry, it doesn't look like you're part of this game. <NavLink href="@($"WaitingRoom/{Guid.NewGuid().ToString()}")" Match="NavLinkMatch.All">Click here to host a new game</NavLink></p>
+    <p>Sorry, it doesn't look like you're part of this game. <NavLink href="NewGame" Match="NavLinkMatch.All">Click here to host a new game</NavLink></p>
 }
 else
 {
@@ -90,7 +90,7 @@ else
     public Game Game { get; private set; }
     public Player IdentifiedPlayer { get; set; }
     public NumberEffectPair SelectedNumberEffectPair { get; set; }
-    private bool WaitingForOtherPlayers => Game.CurrentTurn.PlayerNamesWithActionTaken.Contains(IdentifiedPlayer.Name);
+    private bool WaitingForOtherPlayers => !Game.CompletedAtUtc.HasValue && Game.CurrentTurn.PlayerNamesWithActionTaken.Contains(IdentifiedPlayer.Name);
 
     private PlayerSheet _playerSheet;
 
@@ -113,15 +113,15 @@ else
             if (IdentifiedPlayer != null)
             {
                 await ConfigureHubAsync();
-            }
 
-            if (Game.CompletedAtUtc.HasValue)
-            {
-                _showGameOverMessage = true;
-            }
-            else if (Game.CurrentTurn.PlayerNamesWithActionTaken.Contains(IdentifiedPlayer.Name))
-            {
-                _showWaitingMessage = true;
+                if (Game.CompletedAtUtc.HasValue)
+                {
+                    _showGameOverMessage = true;
+                }
+                else if (Game.CurrentTurn.PlayerNamesWithActionTaken.Contains(IdentifiedPlayer.Name))
+                {
+                    _showWaitingMessage = true;
+                }
             }
         }
     }

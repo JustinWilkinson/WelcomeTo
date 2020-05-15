@@ -191,7 +191,7 @@ app {
     }
 }
 
-@media (min-width: 480px) and (min-height: 320px) {
+@media (min-width: 480px) {
     html, body {
         font-size: 8px;
     }
@@ -247,7 +247,7 @@ app {
 
 @media(min-width: 980px) and (min-height: 480px) {
     html, body {
-        font-size: 10px;
+        font-size: 9px;
     }
 
     .house, .street > .house, .street > .house:last-of-type {
@@ -255,13 +255,25 @@ app {
     }
 }
 
+@media(min-width: 1080px) and (min-height: 520px) {
+    html, body {
+        font-size: 10px;
+    }
+}
+
 @media(min-width: 1140px) and (min-height: 560px) {
+    html, body {
+        font-size: 11px;
+    }
+}
+
+@media(min-width: 1200px) and (min-height: 600px) {
     html, body {
         font-size: 12px;
     }
 }
 
-@media(min-width: 1200px) and (min-height: 640px) {
+@media(min-width: 1320px) and (min-height: 660px) {
     html, body {
         font-size: 13px;
     }
@@ -278,7 +290,6 @@ app {
         font-size: 15px;
     }
 }
-
 
 @media(min-width: 1700px) and (min-height: 900px) {
     html, body {
