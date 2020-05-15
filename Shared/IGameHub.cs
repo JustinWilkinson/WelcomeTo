@@ -13,5 +13,7 @@ namespace WelcomeTo.Shared
         Task SendGameMessageAsync(string gameId, GameMessage chatMessage);
 
         Task OtherPlayerActionTakenAsync(string gameId, string playerName);
+
+        Task NewGameAddedAsync();
     }
 }

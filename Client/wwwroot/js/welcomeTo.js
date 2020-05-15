@@ -46,7 +46,6 @@
             ajax: {
                 url: '/api/Game/List',
                 dataSrc: function (res) {
-                    console.log(res);
                     return res;
                 }
             },
@@ -100,6 +99,7 @@
             }
         });
     },
+    reloadGamesDataTable: () => $('#GamesTable').DataTable().ajax.reload(),
     getBoundingClientRectangle: function (element) {
         return element.getBoundingClientRect();
     }

@@ -2,6 +2,7 @@
 
 @inject IHttpService Http
 @inject NavigationManager NavigationManager
+@inject GameHubCommunicator GameHub
 
 <div class="container-fluid">
     <h3>New Game</h3>
@@ -28,10 +29,16 @@
     private string _gameName;
     private bool _privateGame;
 
+    protected override async Task OnInitializedAsync()
+    {
+        await GameHub.StartAsync();
+    }
+
     private async Task CreateGameAsync()
     {
         var gameId = Guid.NewGuid().ToString();
         await Http.PutAsync("api/Game/New", new { GameId = gameId, Name = _gameName, PrivateGame = _privateGame });
+        await GameHub.NewGameAddedAsync();
         NavigationManager.NavigateTo($"WaitingRoom/{gameId}");
     }
 }

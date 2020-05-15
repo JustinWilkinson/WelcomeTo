@@ -1,5 +1,6 @@
 ﻿@page "/Games"
 
+@inject GameHubCommunicator GameHub
 @inject IJSRuntime JSRuntime
 
 <div class="row">
@@ -45,8 +46,18 @@
 
 
 @code {
+    protected override async Task OnInitializedAsync()
+    {
+        GameHub.RegisterHandler("NewGameAdded", async () => await JSRuntime.InvokeVoidAsync("welcomeTo.reloadGamesDataTable"));
+        await GameHub.StartAsync();
+        await GameHub.AddToGroupAsync("GamesPage");
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await JSRuntime.InvokeVoidAsync("welcomeTo.initialiseGamesDataTable");
+        if (!firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("welcomeTo.initialiseGamesDataTable");
+        }
     }
 }
