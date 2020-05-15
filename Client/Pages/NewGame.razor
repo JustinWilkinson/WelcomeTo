@@ -1,0 +1,44 @@
+﻿@page "/NewGame"
+
+@inject IHttpService Http
+@inject NavigationManager NavigationManager
+@inject GameHubCommunicator GameHub
+
+<div class="container-fluid">
+    <h3>New Game</h3>
+
+    <p>Configure your game here. Note that a named game can help other players find your game in the table on the <NavLink href="Games" Match="NavLinkMatch.All">Games page</NavLink>.</p>
+    <div class="form mt-3">
+        <div class="row mb-2">
+            <div class="form-inline col-6 col-md-4">
+                <label class="col-form-label mr-3">Name: (Optional)</label>
+                <input type="text" class="col form-control" placeholder="Enter a name for your game..." @bind="_gameName" />
+            </div>
+        </div>
+        <div class="form-check-inline col-6 col-md-4 mb-3">
+            <label class="form-check-label mr-3">Make Game Private:</label>
+            <input type="checkbox" class="form-check-input custom-checkbox" @bind="_privateGame" />
+        </div>
+        <div class="form-group">
+            <button class="btn btn-primary" @onclick="CreateGameAsync">Create Game</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string _gameName;
+    private bool _privateGame;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GameHub.StartAsync();
+    }
+
+    private async Task CreateGameAsync()
+    {
+        var gameId = Guid.NewGuid().ToString();
+        await Http.PutAsync("api/Game/New", new { GameId = gameId, Name = _gameName, PrivateGame = _privateGame });
+        await GameHub.NewGameAddedAsync();
+        NavigationManager.NavigateTo($"WaitingRoom/{gameId}");
+    }
+}

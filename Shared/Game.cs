@@ -13,6 +13,8 @@ namespace WelcomeTo.Shared
 
         public string CompletedMessage { get; set; }
 
+        public DateTime CreatedAtUtc { get; set; }
+
         public DateTime? StartedAtUtc { get; set; }
 
         public DateTime? CompletedAtUtc { get; set; }
@@ -68,7 +70,7 @@ namespace WelcomeTo.Shared
             var completedMessage = string.Join(", ", Players.Select(p => p.CompletedGameMessage()).Where(message => message != null));
             if (!string.IsNullOrWhiteSpace(completedMessage))
             {
-                CompletedMessage = completedMessage;
+                CompletedMessage = $"{completedMessage}.";
                 CompletedAtUtc = DateTime.UtcNow;
                 ComputeWinner();
             }
@@ -146,7 +148,7 @@ namespace WelcomeTo.Shared
 
                 if (tieBreakWinners.Count > 1)
                 {
-                    return HandleTieBreaker(tieBreakWinners, estateSize++);
+                    return HandleTieBreaker(tieBreakWinners, ++estateSize);
                 }
                 else
                 {
