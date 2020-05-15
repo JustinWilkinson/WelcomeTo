@@ -23,5 +23,7 @@ An NUnit Test project containing tests for the solution.
 ### Docker Support
 * For hosting the application in a docker container, either:
 * Build your own container using the below commands
-  * To build the docker container run cd into the solution root folder, and run the following command: `docker build -t WelcomeTo .`
-  * The container can then be run using the following command `docker run -p 8080:80 WelcomeTo`. Here, port 8080 on the host is mapped to port 80 in the container - this can be amended to taste.
+  * To build the docker container run cd into the solution root folder, and run the following command: `docker build -t welcometo .`
+  * The container can then be run using the following command `docker run -p 8080:80 welcometo`. Here, port 8080 on the host is mapped to port 80 in the container - this can be amended to taste.
+  * Download/Pull an existing image
+  * The latest docker image is available from  [GitHub](https://github.com/JustinWilkinson/WelcomeTo/packages).
