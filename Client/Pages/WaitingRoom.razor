@@ -81,8 +81,6 @@ else
         _game = await Http.GetAsync<Game>($"api/Game/Get?id={GameId}");
         if (_game != null)
         {
-            _player = _game.Players.Single();
-
             if (_game.StartedAtUtc.HasValue)
             {
                 return;

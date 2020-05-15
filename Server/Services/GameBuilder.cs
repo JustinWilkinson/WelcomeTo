@@ -71,7 +71,7 @@ namespace WelcomeTo.Server.Services
                 Id = new Guid(id),
                 Name = name ?? "Unnamed Game",
                 CreatedAtUtc = DateTime.UtcNow,
-                Players = new List<Player> { new Player { Name = "Host", IsHost = true, Board = StartingBoard, ScoreSheet = StartingScoreSheet } },
+                Players = new List<Player>(),
                 GameDeck = GetGameDeck(),
                 CurrentTurn = new Turn(),
                 Plans = new CityPlans

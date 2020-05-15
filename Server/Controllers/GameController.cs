@@ -59,7 +59,15 @@ namespace WelcomeTo.Server.Controllers
         {
             return _gameRepository.ModifyGame(gameIdJson.GetString(), game =>
             {
-                var player = new Player { Name = $"Player {game.Players.Count}", Board = _gameBuilder.StartingBoard, ScoreSheet = _gameBuilder.StartingScoreSheet };
+                var playerCount = game.Players.Count;
+                var isHost = playerCount == 0;
+                var player = new Player 
+                { 
+                    Name = isHost ? "Host" : $"Guest {playerCount}",
+                    IsHost = isHost,
+                    Board = _gameBuilder.StartingBoard, 
+                    ScoreSheet = _gameBuilder.StartingScoreSheet 
+                };
                 game.Players.Add(player);
                 return player.Serialize();
             });

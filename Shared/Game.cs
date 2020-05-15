@@ -67,10 +67,10 @@ namespace WelcomeTo.Shared
 
         public void CheckForGameOver()
         {
-            var completedMessage = $"{string.Join(", ", Players.Select(p => p.CompletedGameMessage()).Where(message => message != null))}.";
+            var completedMessage = string.Join(", ", Players.Select(p => p.CompletedGameMessage()).Where(message => message != null));
             if (!string.IsNullOrWhiteSpace(completedMessage))
             {
-                CompletedMessage = completedMessage;
+                CompletedMessage = $"{completedMessage}.";
                 CompletedAtUtc = DateTime.UtcNow;
                 ComputeWinner();
             }
