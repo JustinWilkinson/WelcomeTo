@@ -31,6 +31,25 @@ else
         <div class="text-center font-weight-bold">
             @Game.WinnerText
         </div>
+        <div class="row">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var player in Game.Players.OrderByDescending(p => Game.GetPointsTotal(p)))
+                    {
+                        <tr>
+                            <td>@player.Name</td>
+                            <td>@Game.GetPointsTotal(player)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </Modal>
     <Modal Show="_showWaitingMessage" Header="Waiting for next turn..." CanClose="true">
         Waiting for @string.Join(", ", Game.Players.Select(x => x.Name).Except(Game.CurrentTurn.PlayerNamesWithActionTaken)) to take their turn...
