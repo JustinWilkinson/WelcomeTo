@@ -1,44 +1,69 @@
 ﻿<div class="row">
     @if (HouseNumberCard == null)
     {
-        <CardTemplate>
-            <div class="d-flex justify-content-center h-100">
-                <div class="align-self-center justify-content-center text-muted">
-                    <h2 class="mb-0 bubblegum-font">Deck @Index</h2>
+        <div class="col">
+            <div class="card border-rounded h-100">
+                <div class="card-body text-center">
+                    <div class="d-flex justify-content-center h-100">
+                        <div class="align-self-center justify-content-center text-muted">
+                            <h3 class="mb-0 bubblegum-font">Deck @Index</h3>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </CardTemplate>
+        </div>
     }
     else
     {
-        <CardTemplate BodyClass="card-background">
-            <img class="card-img" src="/images/house.png" style="height: 60%;" draggable="false" />
-            <div class="d-flex justify-content-center" style="height: 40%;">
-                <div class="align-self-center justify-content-center">
-                    <h1 class="mb-0 bubblegum-font">@HouseNumberCard.HouseNumber</h1>
+        var imageSource = $"/images/{GetEffectImage(HouseNumberCard.Type)}";
+        <div class="col">
+            <div class="card border-rounded h-100 card-background">
+                <div class="ml-auto mr-2">
+                    <img src="@imageSource" style="height: 1rem;" />
+                </div>
+                <div class="card-body text-center py-0">
+                    <div>
+                        <img class="card-img" src="/images/house.png" style="height: 60%;" draggable="false" />
+                        <div class="d-flex justify-content-center" style="height: 40%;">
+                            <div class="align-self-center justify-content-center">
+                                <h1 class="mb-0 bubblegum-font">@HouseNumberCard.HouseNumber</h1>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ml-2 mr-auto">
+                    <img src="@imageSource" style="height: 1rem;" />
                 </div>
             </div>
-        </CardTemplate>
+        </div>
     }
     @if (EffectCard == null)
     {
-        <CardTemplate>
-            <div class="d-flex justify-content-center h-100">
-                <div class="align-self-center justify-content-center text-muted">
-                    <h3 class="mb-0 bubblegum-font">Discard @Index</h3>
+        <div class="col">
+            <div class="card border-rounded h-100">
+                <div class="card-body text-center">
+                    <div class="d-flex justify-content-center h-100">
+                        <div class="align-self-center justify-content-center text-muted">
+                            <h3 class="mb-0 bubblegum-font">Discard @Index</h3>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </CardTemplate>
+        </div>
     }
     else
     {
-        <CardTemplate BodyClass="card-background-effect">
-            <div class="d-flex justify-content-center h-100">
-                <div class="align-self-center justify-content-center">
-                    <img class="card-img" src="/images/@GetEffectImage(EffectCard.Type)" draggable="false" />
+        <div class="col">
+            <div class="card border-rounded h-100">
+                <div class="card-body text-center card-background-effect">
+                    <div class="d-flex justify-content-center h-100">
+                        <div class="align-self-center justify-content-center">
+                            <img class="card-img" src="/images/@GetEffectImage(EffectCard.Type)" draggable="false" />
+                        </div>
+                    </div>
                 </div>
             </div>
-        </CardTemplate>
+        </div>
     }
 </div>
 

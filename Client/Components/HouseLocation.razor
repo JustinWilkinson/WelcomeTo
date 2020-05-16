@@ -123,7 +123,7 @@
         {
             houseClass += " house-first";
         }
-        if (House.FenceBuilt || (OnSelectedStreet && PlayerSheet.SelectedFenceHouse?.Index == House.Index))
+        if (House.FenceBuilt || (PlayerSheet.SelectedFenceHouse != null && PlayerSheet.SelectedFenceHouse.Street == Street.Position && PlayerSheet.SelectedFenceHouse.Index == House.Index))
         {
             houseClass += " house-fenced";
         }
@@ -141,7 +141,7 @@
 
     private bool CanBuildFence()
     {
-        if (!House.FenceBuilt && OnSelectedStreet && SelectedNumberEffectPair?.Effect == CardType.Fence && !House.InFinalEstate)
+        if (!House.FenceBuilt && SelectedNumberEffectPair?.Effect == CardType.Fence && !House.InFinalEstate)
         {
             var houseToTheRight = Street.Houses.SingleOrDefault(x => x.Index == House.Index + 1);
             if (houseToTheRight == null || !houseToTheRight.Number.HasValue || houseToTheRight.Number != House.Number)
@@ -178,7 +178,7 @@
         if (CanBuildFence())
         {
             var oldSelection = PlayerSheet.SelectedFenceHouse;
-            var newSelection = oldSelection != null && oldSelection.Street == Street.Position && oldSelection.Index == House.Index ? null : new SelectedHouse { Street = Street.Position, Index = House.Index };
+            var newSelection = oldSelection != null && oldSelection.Index == House.Index ? null : new SelectedHouse { Street = Street.Position, Index = House.Index };
             PlayerSheet.SelectedFenceChanged(newSelection);
         }
     }

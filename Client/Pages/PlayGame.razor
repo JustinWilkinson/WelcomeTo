@@ -31,6 +31,25 @@ else
         <div class="text-center font-weight-bold">
             @Game.WinnerText
         </div>
+        <div class="row">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var player in Game.Players.OrderByDescending(p => Game.GetPointsTotal(p)))
+                    {
+                        <tr>
+                            <td>@player.Name</td>
+                            <td>@Game.GetPointsTotal(player)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </Modal>
     <Modal Show="_showWaitingMessage" Header="Waiting for next turn..." CanClose="true">
         Waiting for @string.Join(", ", Game.Players.Select(x => x.Name).Except(Game.CurrentTurn.PlayerNamesWithActionTaken)) to take their turn...
@@ -101,7 +120,6 @@ else
     protected override async Task OnInitializedAsync()
     {
         Game = await Http.GetAsync<Game>($"api/Game/Get?id={GameId}");
-        Console.WriteLine(JsonConvert.SerializeObject(Game));
         if (Game == null)
         {
             _urlWrong = true;
@@ -180,6 +198,7 @@ else
         SelectedNumberEffectPair = null;
 
         Game = await Http.PostAsync<Game>("api/Game/UpdatePlayerSheet", new { GameId = Game.Id, Player = JsonConvert.SerializeObject(IdentifiedPlayer), ActionTaken = true });
+        await GameHub.OtherPlayerActionTakenAsync(GameId, IdentifiedPlayer.Name);
         if (!Game.Players.Select(x => x.Name).Except(Game.CurrentTurn.PlayerNamesWithActionTaken).Any())
         {
             Game = await Http.PostAsync<Game>("api/Game/NextTurn", GameId);
