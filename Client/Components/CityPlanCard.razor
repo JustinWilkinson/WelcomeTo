@@ -1,5 +1,5 @@
 ﻿<div class="col">
-    <div class="card border-rounded card-background h-100@(_canBeCompletedByIdentifiedPlayer ? " glow pointer" : "")" @onclick="CompleteCityPlanCard" title="@(_canBeCompletedByIdentifiedPlayer ? "Click to complete city plan" : "")">
+    <div class="card border-rounded card-background h-100@(_canBeCompletedByIdentifiedPlayer ? " glow pointer" : "")" @onclick="CompleteCityPlanCard" title="@GetTitle()">
         <div class="card-header">
             <div class="float-left text-center">
                 <img class="house-image" src="/images/house.png" draggable="false" />
@@ -122,6 +122,19 @@
 
             IdentifiedPlayer.ScoreSheet.SetCityPlanPoints(CityPlan.Type, CityPlan.CompletedByAnyPlayer ? CityPlan.BasicPoints : CityPlan.FirstPoints);
             await OnCompleted.InvokeAsync(null);
+        }
+    }
+
+    private string GetTitle()
+    {
+        if (_canBeCompletedByIdentifiedPlayer)
+        {
+            return "Click to complete city plan";
+        }
+        else
+        {
+            var playersWhoHaveCompleted = Game.Players.Where(p => p.ScoreSheet.GetCityPlanPoints(CityPlan.Type) > 0).Select(c => c.Name);
+            return playersWhoHaveCompleted.Any() ? $"City Plan completed by: {string.Join(", ", playersWhoHaveCompleted)}." : "No players have completed this City Plan.";
         }
     }
 }
