@@ -120,7 +120,6 @@ else
     protected override async Task OnInitializedAsync()
     {
         Game = await Http.GetAsync<Game>($"api/Game/Get?id={GameId}");
-        Console.WriteLine(JsonConvert.SerializeObject(Game));
         if (Game == null)
         {
             _urlWrong = true;
