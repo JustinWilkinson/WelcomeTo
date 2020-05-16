@@ -198,6 +198,7 @@ else
         SelectedNumberEffectPair = null;
 
         Game = await Http.PostAsync<Game>("api/Game/UpdatePlayerSheet", new { GameId = Game.Id, Player = JsonConvert.SerializeObject(IdentifiedPlayer), ActionTaken = true });
+        await GameHub.OtherPlayerActionTakenAsync(GameId, IdentifiedPlayer.Name);
         if (!Game.Players.Select(x => x.Name).Except(Game.CurrentTurn.PlayerNamesWithActionTaken).Any())
         {
             Game = await Http.PostAsync<Game>("api/Game/NextTurn", GameId);
