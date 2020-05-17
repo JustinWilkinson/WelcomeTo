@@ -28,6 +28,10 @@ namespace WelcomeTo.Shared
             {
                 var reshuffledDeck = Discard1.Concat(Discard2).Concat(Discard3).Shuffle();
                 reshuffledDeck.Distribute(Deck1, Deck2, Deck3);
+
+                Discard1.Clear();
+                Discard2.Clear();
+                Discard3.Clear();
             }
 
             Discard1.Push(discard1);

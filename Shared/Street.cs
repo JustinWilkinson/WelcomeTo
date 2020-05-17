@@ -57,7 +57,10 @@ namespace WelcomeTo.Shared
 
             if (selectedNumberEffectPair.Effect == CardType.TempAgency)
             {
-                possibilities.Add(selectedNumberEffectPair.Number - 2);
+                if (selectedNumberEffectPair.Number > 1)
+                {
+                    possibilities.Add(selectedNumberEffectPair.Number - 2);
+                }
                 possibilities.Add(selectedNumberEffectPair.Number - 1);
                 possibilities.Add(selectedNumberEffectPair.Number + 1);
                 possibilities.Add(selectedNumberEffectPair.Number + 2);
