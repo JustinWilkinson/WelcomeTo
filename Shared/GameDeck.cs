@@ -6,17 +6,17 @@ namespace WelcomeTo.Shared
 {
     public class GameDeck
     {
-        public Stack<Card> Deck1 { get; set; }
+        public List<Card> Deck1 { get; set; }
 
-        public Stack<Card> Deck2 { get; set; }
+        public List<Card> Deck2 { get; set; }
 
-        public Stack<Card> Deck3 { get; set; }
+        public List<Card> Deck3 { get; set; }
 
-        public Stack<Card> Discard1 { get; set; }
+        public List<Card> Discard1 { get; set; }
 
-        public Stack<Card> Discard2 { get; set; }
+        public List<Card> Discard2 { get; set; }
 
-        public Stack<Card> Discard3 { get; set; }
+        public List<Card> Discard3 { get; set; }
 
         public void FlipCards()
         {
@@ -34,9 +34,9 @@ namespace WelcomeTo.Shared
                 Discard3.Clear();
             }
 
-            Discard1.Push(discard1);
-            Discard2.Push(discard2);
-            Discard3.Push(discard3);
+            Discard1.Insert(0, discard1);
+            Discard2.Insert(0, discard2);
+            Discard3.Insert(0, discard3);
         }
     }
 }

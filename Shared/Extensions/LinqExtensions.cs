@@ -48,8 +48,8 @@ namespace WelcomeTo.Shared.Extensions
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="enumerable">Enumerable to distribute</param>
-        /// <param name="receivers">Stacks to push values from the Enumerable to</param>
-        public static void Distribute<T>(this IEnumerable<T> enumerable, params Stack<T>[] receivers)
+        /// <param name="receivers">Collections to add values from the Enumerable to</param>
+        public static void Distribute<T>(this IEnumerable<T> enumerable, params ICollection<T>[] receivers)
         {
             if (receivers == null)
             {
@@ -70,7 +70,7 @@ namespace WelcomeTo.Shared.Extensions
                 foreach (var value in enumerable)
                 {
                     var remainder = index++ % receiversCount;
-                    receivers[remainder].Push(value);
+                    receivers[remainder].Add(value);
                 }
             }
         }
@@ -107,5 +107,31 @@ namespace WelcomeTo.Shared.Extensions
                 }
             }
         }
+
+        /// <summary>
+        /// Adds a Pop method to a list.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        public static T Pop<T>(this IList<T> list)
+        {
+            if (list.HasContent())
+            {
+                var returnValue = list[0];
+                list.RemoveAt(0);
+                return returnValue;
+            }
+
+            return default;
+        }
+
+        /// <summary>
+        /// Adds a Peek method to a list.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        public static T Peek<T>(this IList<T> list) => list.HasContent() ? list[0] : default;
     }
 }

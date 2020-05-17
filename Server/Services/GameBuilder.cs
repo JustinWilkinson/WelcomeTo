@@ -103,12 +103,12 @@ namespace WelcomeTo.Server.Services
         {
             var deck = new GameDeck()
             {
-                Deck1 = new Stack<Card>(),
-                Deck2 = new Stack<Card>(),
-                Deck3 = new Stack<Card>(),
-                Discard1 = new Stack<Card>(),
-                Discard2 = new Stack<Card>(),
-                Discard3 = new Stack<Card>()
+                Deck1 = new List<Card>(),
+                Deck2 = new List<Card>(),
+                Deck3 = new List<Card>(),
+                Discard1 = new List<Card>(),
+                Discard2 = new List<Card>(),
+                Discard3 = new List<Card>()
             };
 
             var cards = _cardDistribution.SelectMany(x => x.Value.Select(number => new Card { Type = x.Key, HouseNumber = number })).Shuffle();
