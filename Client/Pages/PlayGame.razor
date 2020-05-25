@@ -40,7 +40,7 @@ else
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var player in Game.Players.OrderByDescending(p => Game.GetPointsTotal(p)))
+                    @foreach (var player in Game.Players.OrderByDescending(p => Game.GetPointsTotal(p)).ThenBy(p => p.Name))
                     {
                         <tr>
                             <td>@player.Name</td>
