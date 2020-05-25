@@ -16,13 +16,13 @@
             {
                 if (PlayerSheet.SelectedPark == null)
                 {
-                    <div class="col-2 text-muted text-center mr-auto pointer" @onclick="() => PlayerSheet.SelectedParkChanged(park)">
+                    <div class="col-2 text-muted text-center mr-auto pointer">
                         <div class="rounded-circle bg-warning">@park.Points</div>
                     </div>
                 }
                 else if (PlayerSheet.SelectedPark.Points == park.Points)
                 {
-                    <div class="col-2 text-muted text-center mr-auto pointer" @onclick="() => PlayerSheet.SelectedParkChanged(null)">
+                    <div class="col-2 text-muted text-center mr-auto pointer">
                         <div class="rounded-circle bg-warning">
                             <span class="oi oi-circle-x"></span>
                         </div>

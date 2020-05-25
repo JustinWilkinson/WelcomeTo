@@ -67,13 +67,21 @@
     public void SelectedHouseChanged(SelectedHouse house, bool runStateHasChanged = true)
     {
         SelectedHouse = house;
-        SelectedParkChanged(null, false);
         SelectedFenceChanged(null, false);
         SelectedBisHouseChanged(null, false);
 
         if (house == null)
         {
             SelectedRealEstateValueChanged(null, false);
+        }
+        else if (SelectedNumberEffectPair?.Effect == CardType.Park)
+        {
+            var uncoveredParksOnStreet = Player.Board.GetStreet(SelectedHouse.Street).Parks.Where(x => !x.IsCovered).ToArray();
+            var points = uncoveredParksOnStreet.Length > 1 ? uncoveredParksOnStreet[0].Points : new int?();
+            if (points.HasValue)
+            {
+                SelectedPark = new Park { Points = points.Value };
+            }
         }
 
         if (runStateHasChanged)
@@ -85,15 +93,6 @@
     public void SelectedBisHouseChanged(SelectedHouse house, bool runStateHasChanged = true)
     {
         SelectedBisHouse = house;
-        if (runStateHasChanged)
-        {
-            StateHasChanged();
-        }
-    }
-
-    public void SelectedParkChanged(Park park, bool runStateHasChanged = true)
-    {
-        SelectedPark = park;
         if (runStateHasChanged)
         {
             StateHasChanged();
