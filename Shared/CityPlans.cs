@@ -3,7 +3,7 @@ using WelcomeTo.Shared.Enumerations;
 
 namespace WelcomeTo.Shared
 {
-    public class CityPlans
+    public class CityPlans 
     {
         public CityPlan Plan1 { get; set; }
 

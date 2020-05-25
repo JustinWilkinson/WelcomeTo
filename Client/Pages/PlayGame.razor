@@ -87,7 +87,7 @@ else
                         }
                         else
                         {
-                            <PlayerSheet Player="IdentifiedPlayer" OnActionTaken="IdentifiedPlayerActionTakenAsync" @ref="_playerSheet" />
+                            <PlayerSheet Player="IdentifiedPlayer" OnActionTaken="OnActionTakenAsync" OnFinalConfirmation="OnFinalConfirmAsync" @ref="_playerSheet" />
                         }
                     </TabPage>
                     @foreach (var player in Game.Players.Where(p => p.Name != IdentifiedPlayer.Name))
@@ -193,11 +193,14 @@ else
         }
     }
 
-    private async Task IdentifiedPlayerActionTakenAsync()
+    private async Task OnActionTakenAsync()
     {
         SelectedNumberEffectPair = null;
-
         Game = await Http.PostAsync<Game>("api/Game/UpdatePlayerSheet", new { GameId = Game.Id, Player = JsonConvert.SerializeObject(IdentifiedPlayer), ActionTaken = true });
+    }
+
+    private async Task OnFinalConfirmAsync()
+    {
         await GameHub.OtherPlayerActionTakenAsync(GameId, IdentifiedPlayer.Name);
         if (!Game.Players.Select(x => x.Name).Except(Game.CurrentTurn.PlayerNamesWithActionTaken).Any())
         {
