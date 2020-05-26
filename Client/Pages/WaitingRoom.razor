@@ -30,20 +30,34 @@ else
                 <tr>
                     <th>#</th>
                     <th>Player Name</th>
+                    @if (_player.IsHost)
+                    {
+                        <th>Kick</th>
+                    }
                 </tr>
             </thead>
             <tbody>
                 @for (var i = 0; i < _game.Players.Count; i++)
                 {
+                    var playerName = _game.Players[i].Name;
                     <tr>
                         <td class="align-middle">@(i + 1)</td>
                         <td>
-                            <input class="form-control" type="text" value="@_game.Players[i].Name" disabled="@(_game.Players[i].Name != _player.Name)" @onchange="e => ChangeNameAsync(e.Value.ToString())" />
-                            @if (_newNameValidationMessage != null)
+                            <input class="form-control" type="text" value="@playerName" disabled="@(playerName != _player.Name)" @onchange="e => ChangeNameAsync(e.Value.ToString())" />
+                            @if (playerName == _player.Name && _newNameValidationMessage != null)
                             {
                                 <label class="text-danger ml-2">@_newNameValidationMessage</label>
                             }
                         </td>
+                        @if (_player.IsHost)
+                        {
+                            <td>
+                                @if (!_game.Players[i].IsHost)
+                                {
+                                    <button class="btn btn-danger ml-2" @onclick="() => KickPlayerAsync(playerName)">Kick</button>
+                                }
+                            </td>
+                        }
                     </tr>
                 }
             </tbody>
@@ -81,14 +95,21 @@ else
         _game = await Http.GetAsync<Game>($"api/Game/Get?id={GameId}");
         if (_game != null)
         {
+            var playerName = Storage.PlayerName;
             if (_game.StartedAtUtc.HasValue)
             {
-                return;
+                if (playerName != null && _game.Players.SingleOrDefault(p => p.Name == playerName) != null)
+                {
+                    NavigationManager.NavigateTo($"PlayGame/{GameId}");
+                }
+                else
+                {
+                    return;
+                }
             }
             else
             {
                 await ConfigureHubAsync();
-                var playerName = Storage.PlayerName;
                 if (playerName == null)
                 {
                     await JoinGameAsync();
@@ -123,6 +144,10 @@ else
             }
             else
             {
+                if (!_game.Players.Any(p => p.Name == Storage.PlayerName))
+                {
+                    NavigationManager.NavigateTo("KickedByHost");
+                }
                 StateHasChanged();
             }
         });
@@ -152,9 +177,8 @@ else
             }
             else
             {
-                await Task.WhenAll(
-                    Http.PostAsync("api/Game/UpdatePlayerName", new { GameId = GameId, OldName = _player.Name, NewName = newName }),
-                    GameHub.UpdateGameAsync(GameId));
+                await Http.PostAsync("api/Game/UpdatePlayerName", new { GameId = GameId, OldName = _player.Name, NewName = newName });
+                await GameHub.UpdateGameAsync(GameId);
                 _player.Name = newName;
                 Storage.PlayerName = _player.Name;
                 _newNameValidationMessage = null;
@@ -170,4 +194,10 @@ else
     }
 
     private void HostNewGame() => NavigationManager.NavigateTo("NewGame");
+
+    private async Task KickPlayerAsync(string playerName)
+    {
+        _game = await Http.PostAsync<Game>("api/Game/RemovePlayer", new { GameId = GameId, KickedPlayerName = playerName });
+        await GameHub.UpdateGameAsync(GameId);
+    }
 }

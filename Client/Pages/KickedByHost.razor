@@ -1,0 +1,16 @@
+﻿@page "/KickedByHost"
+
+@inject IBlazorTimer Timer
+@inject NavigationManager NavigationManager
+
+<h3>Kicked By Host</h3>
+
+<p>You have been kicked by the host, and will be redirected to the home page in 5 seconds.</p>
+
+@code { 
+    protected override void OnInitialized()
+    {
+        Timer.SetTimer(5000);
+        Timer.OnElapsed += () => NavigationManager.NavigateTo("");
+    }
+}
