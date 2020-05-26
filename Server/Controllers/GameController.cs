@@ -109,5 +109,15 @@ namespace WelcomeTo.Server.Controllers
 
         [HttpGet("Count")]
         public int Get() => _gameCountRepository.GetGameCount();
+
+        [HttpPost("RemovePlayer")]
+        public string RemovePlayer(JsonElement json)
+        {
+            return _gameRepository.ModifyGame(json.GetStringProperty("GameId"), game =>
+            {
+                game.Players.RemoveAt(game.Players.FindIndex(p => p.Name == json.GetStringProperty("KickedPlayerName")));
+                return game.Serialize();
+            });
+        }
     }
 }
