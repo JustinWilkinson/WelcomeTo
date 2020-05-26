@@ -1,6 +1,5 @@
 ﻿@page "/WaitingRoom/{GameId}"
 
-@inject IBlazorTimer Timer
 @inject IHttpService Http
 @inject GameStorage Storage
 @inject NavigationManager NavigationManager
@@ -17,10 +16,6 @@
     {
         <p><em>Loading...</em></p>
     }
-}
-else if (_kicked)
-{
-    <p>You have been kicked by the host, and will be redirected in 5 seconds.</p>
 }
 else if (_game.StartedAtUtc.HasValue)
 {
@@ -88,7 +83,6 @@ else
     private Player _player;
     private string _newNameValidationMessage;
     private bool _urlWrong;
-    private bool _kicked;
 
     protected override async Task OnInitializedAsync()
     {
@@ -152,9 +146,7 @@ else
             {
                 if (!_game.Players.Any(p => p.Name == Storage.PlayerName))
                 {
-                    _kicked = true;
-                    Timer.SetTimer(5000);
-                    Timer.OnElapsed += () => NavigationManager.NavigateTo("");
+                    NavigationManager.NavigateTo("KickedByHost");
                 }
                 StateHasChanged();
             }
