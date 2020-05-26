@@ -25,7 +25,7 @@ namespace WelcomeTo.Server.Jobs
         {
             try
             {
-                var gameIdsToDelete = _gameRepository.ListGames(true).Where(x => x.CompletedAtUtc.HasValue || x.StartedAtUtc < DateTime.UtcNow.AddDays(-5)).Select(x => x.Id);
+                var gameIdsToDelete = _gameRepository.ListGames(true).Where(x => x.CompletedAtUtc.HasValue || x.CreatedAtUtc < DateTime.UtcNow.AddDays(-1) && !x.StartedAtUtc.HasValue || x.StartedAtUtc < DateTime.UtcNow.AddDays(-5)).Select(x => x.Id);
                 _gameRepository.DeleteGames(gameIdsToDelete);
                 _messageRepository.DeleteMessagesForGames(gameIdsToDelete);
             }
