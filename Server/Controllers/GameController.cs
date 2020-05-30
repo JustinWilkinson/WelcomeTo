@@ -88,14 +88,14 @@ namespace WelcomeTo.Server.Controllers
                 var dbPlayerInfo = game.Players.Single(p => p.Name == newPlayerInfo.Name);
                 dbPlayerInfo.Board = newPlayerInfo.Board;
                 dbPlayerInfo.ScoreSheet = newPlayerInfo.ScoreSheet;
-
-                if (json.GetBooleanProperty("ActionTaken"))
-                {
-                    game.CurrentTurn.PlayerNamesWithActionTaken.Add(dbPlayerInfo.Name);
-                }
-
                 return game.Serialize();
             });
+        }
+
+        [HttpPost("ActionConfirmed")]
+        public void ActionTaken(JsonElement json)
+        {
+            _gameRepository.ModifyGame(json.GetStringProperty("GameId"), game => game.CurrentTurn.PlayerNamesWithActionTaken.Add(json.GetStringProperty("PlayerName")));
         }
 
         [HttpPost("Save")]

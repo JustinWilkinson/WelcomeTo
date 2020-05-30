@@ -195,11 +195,13 @@ else
     private async Task OnActionTakenAsync()
     {
         SelectedNumberEffectPair = null;
-        Game = await Http.PostAsync<Game>("api/Game/UpdatePlayerSheet", new { GameId = Game.Id, Player = JsonConvert.SerializeObject(IdentifiedPlayer), ActionTaken = true });
+        Game = await Http.PostAsync<Game>("api/Game/UpdatePlayerSheet", new { GameId = Game.Id, Player = JsonConvert.SerializeObject(IdentifiedPlayer) });
     }
 
     private async Task OnFinalConfirmAsync()
     {
+        Game.CurrentTurn.PlayerNamesWithActionTaken.Add(IdentifiedPlayer.Name);
+        await Http.PostAsync<Game>("api/Game/ActionConfirmed", new { GameId = Game.Id, PlayerName = IdentifiedPlayer.Name });
         await GameHub.OtherPlayerActionTakenAsync(GameId, IdentifiedPlayer.Name);
         if (!Game.Players.Select(x => x.Name).Except(Game.CurrentTurn.PlayerNamesWithActionTaken).Any())
         {
@@ -217,7 +219,7 @@ else
 
     private async Task PlayerCompletedCityPlanAsync()
     {
-        Game = await Http.PostAsync<Game>("api/Game/UpdatePlayerSheet", new { GameId = Game.Id, Player = JsonConvert.SerializeObject(IdentifiedPlayer), ActionTaken = false });
+        Game = await Http.PostAsync<Game>("api/Game/UpdatePlayerSheet", new { GameId = Game.Id, Player = JsonConvert.SerializeObject(IdentifiedPlayer) });
         StateHasChanged();
     }
 
