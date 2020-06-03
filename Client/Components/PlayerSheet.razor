@@ -64,6 +64,8 @@
 
     private bool _requireReconfirm = false;
 
+    protected override void OnInitialized() => CheckForReconfirmRequired();
+
     public void SelectedHouseChanged(SelectedHouse house, bool runStateHasChanged = true)
     {
         SelectedHouse = house;
@@ -131,21 +133,25 @@
                 Player.PassTurn();
             }
 
-            foreach (PlanType type in Enum.GetValues(typeof(PlanType)))
-            {
-                if (Player.ScoreSheet.GetCityPlanPoints(type) == 0 && !Game.Plans[type].EstateSizes.Without(Player.Board.GetEstates(false).Select(x => x.HouseIndices.Count)).Any())
-                {
-                    _requireReconfirm = true;
-                }
-            }
-
             await OnActionTaken.InvokeAsync(null);
         }
 
+        CheckForReconfirmRequired();
         if (isReconfirm || !_requireReconfirm)
         {
             await OnFinalConfirmation.InvokeAsync(null);
             _requireReconfirm = false;
+        }
+    }
+
+    private void CheckForReconfirmRequired()
+    {
+        foreach (PlanType type in Enum.GetValues(typeof(PlanType)))
+        {
+            if (Player.ScoreSheet.GetCityPlanPoints(type) == 0 && !Game.Plans[type].EstateSizes.Without(Player.Board.GetEstates(false).Select(x => x.HouseIndices.Count)).Any())
+            {
+                _requireReconfirm = true;
+            }
         }
     }
 }

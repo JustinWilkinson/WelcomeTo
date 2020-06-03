@@ -53,7 +53,7 @@
             paging: true,
             pageLength: 10,
             lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
-            order: [1, 0],
+            order: [[1, 'desc']],
             columns: [
                 {
                     data: 'Name',
@@ -61,7 +61,7 @@
                 },
                 {
                     data: 'CreatedAtUtc',
-                    render: data => new Date(data).toLocaleString('en-GB')
+                    render: (data, type) => type === 'display' ? new Date(data).toLocaleString('en-GB') : data
                 },
                 {
                     data: 'StartedAtUtc',

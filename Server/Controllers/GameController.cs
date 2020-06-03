@@ -44,16 +44,6 @@ namespace WelcomeTo.Server.Controllers
             });
         }
 
-        [HttpPost("NextTurn")]
-        public string StartNextTurn(JsonElement gameIdJson)
-        {
-            return _gameRepository.ModifyGame(gameIdJson.GetString(), game =>
-            {
-                game.StartNextTurn();
-                return game.Serialize();
-            });
-        }
-
         [HttpPost("Join")]
         public string Join(JsonElement gameIdJson)
         {
@@ -61,12 +51,12 @@ namespace WelcomeTo.Server.Controllers
             {
                 var playerCount = game.Players.Count;
                 var isHost = playerCount == 0;
-                var player = new Player 
-                { 
+                var player = new Player
+                {
                     Name = isHost ? "Host" : $"Guest {playerCount}",
                     IsHost = isHost,
-                    Board = _gameBuilder.StartingBoard, 
-                    ScoreSheet = _gameBuilder.StartingScoreSheet 
+                    Board = _gameBuilder.StartingBoard,
+                    ScoreSheet = _gameBuilder.StartingScoreSheet
                 };
                 game.Players.Add(player);
                 return player.Serialize();
@@ -88,18 +78,16 @@ namespace WelcomeTo.Server.Controllers
                 var dbPlayerInfo = game.Players.Single(p => p.Name == newPlayerInfo.Name);
                 dbPlayerInfo.Board = newPlayerInfo.Board;
                 dbPlayerInfo.ScoreSheet = newPlayerInfo.ScoreSheet;
+                game.CurrentTurn.PlayerNamesWithActionTaken.Add(dbPlayerInfo.Name);
+
+                if (!game.Players.Select(x => x.Name).Except(game.CurrentTurn.PlayerNamesWithActionTaken).Any())
+                {
+                    game.StartNextTurn();
+                }
+
                 return game.Serialize();
             });
         }
-
-        [HttpPost("ActionConfirmed")]
-        public void ActionTaken(JsonElement json)
-        {
-            _gameRepository.ModifyGame(json.GetStringProperty("GameId"), game => game.CurrentTurn.PlayerNamesWithActionTaken.Add(json.GetStringProperty("PlayerName")));
-        }
-
-        [HttpPost("Save")]
-        public void Save(JsonElement json) => _gameRepository.Save(json.Deserialize<Game>());
 
         [HttpGet("Get")]
         public string Get(string id) => _gameRepository.GetGame(id).Serialize();

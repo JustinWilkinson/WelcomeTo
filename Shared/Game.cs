@@ -36,9 +36,8 @@ namespace WelcomeTo.Shared
         public void StartNextTurn()
         {
             MarkCompletedCityPlans();
-            CheckForGameOver();
 
-            if (!CompletedAtUtc.HasValue)
+            if (!CheckGameOver())
             {
                 GameDeck.FlipCards();
 
@@ -66,7 +65,7 @@ namespace WelcomeTo.Shared
             }
         }
 
-        public void CheckForGameOver()
+        public bool CheckGameOver()
         {
             var completedMessage = string.Join(", ", Players.Select(p => p.CompletedGameMessage()).Where(message => message != null));
             if (!string.IsNullOrWhiteSpace(completedMessage))
@@ -74,7 +73,10 @@ namespace WelcomeTo.Shared
                 CompletedMessage = $"{completedMessage}.";
                 CompletedAtUtc = DateTime.UtcNow;
                 ComputeWinner();
+                return true;
             }
+
+            return false;
         }
 
         public void ComputeWinner()

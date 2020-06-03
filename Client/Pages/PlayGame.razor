@@ -57,22 +57,22 @@ else
         <div class="row mb-4">
             <div class="col-12 col-md-8">
                 <div class="row">
-                    <div class="col border border-secondary p-0 mx-3 pointer @BlurredClass(DeckIndex.Option1)" title="Option 1" @onclick="() => SelectNumberEffectPair(DeckIndex.Option1)">
+                    <div class="col border border-secondary p-0 mx-3 @GetOptionsClass(DeckIndex.Option1)" title="Option 1" @onclick="() => SelectNumberEffectPair(DeckIndex.Option1)">
                         <CardPair Index="1" HouseNumberCard="Game.CurrentTurn.HouseNumberCard1" EffectCard="Game.CurrentTurn.EffectCard1" />
                     </div>
-                    <div class="col border border-secondary p-0 mx-3 pointer @BlurredClass(DeckIndex.Option2)" title="Option 2" @onclick="() => SelectNumberEffectPair(DeckIndex.Option2)">
+                    <div class="col border border-secondary p-0 mx-3 @GetOptionsClass(DeckIndex.Option2)" title="Option 2" @onclick="() => SelectNumberEffectPair(DeckIndex.Option2)">
                         <CardPair Index="2" HouseNumberCard="Game.CurrentTurn.HouseNumberCard2" EffectCard="Game.CurrentTurn.EffectCard2" />
                     </div>
-                    <div class="col border border-secondary p-0 mx-3 pointer @BlurredClass(DeckIndex.Option3)" title="Option 3" @onclick="() => SelectNumberEffectPair(DeckIndex.Option3)">
+                    <div class="col border border-secondary p-0 mx-3 pointer @GetOptionsClass(DeckIndex.Option3)" title="Option 3" @onclick="() => SelectNumberEffectPair(DeckIndex.Option3)">
                         <CardPair Index="3" HouseNumberCard="Game.CurrentTurn.HouseNumberCard3" EffectCard="Game.CurrentTurn.EffectCard3" />
                     </div>
                 </div>
             </div>
             <div class="col-8 col-md-4 mx-auto mx=md-0 mt-2 mt-md-0">
                 <div class="row h-100" title="City Plans">
-                    <CityPlanCard CityPlan="Game.Plans.Plan1" IdentifiedPlayer="IdentifiedPlayer" OnCompleted="PlayerCompletedCityPlanAsync" />
-                    <CityPlanCard CityPlan="Game.Plans.Plan2" IdentifiedPlayer="IdentifiedPlayer" OnCompleted="PlayerCompletedCityPlanAsync" />
-                    <CityPlanCard CityPlan="Game.Plans.Plan3" IdentifiedPlayer="IdentifiedPlayer" OnCompleted="PlayerCompletedCityPlanAsync" />
+                    <CityPlanCard CityPlan="Game.Plans.Plan1" IdentifiedPlayer="IdentifiedPlayer" OnCompleted="StateHasChanged" />
+                    <CityPlanCard CityPlan="Game.Plans.Plan2" IdentifiedPlayer="IdentifiedPlayer" OnCompleted="StateHasChanged" />
+                    <CityPlanCard CityPlan="Game.Plans.Plan3" IdentifiedPlayer="IdentifiedPlayer" OnCompleted="StateHasChanged" />
                 </div>
             </div>
         </div>
@@ -86,7 +86,7 @@ else
                         }
                         else
                         {
-                            <PlayerSheet Player="IdentifiedPlayer" OnActionTaken="OnActionTakenAsync" OnFinalConfirmation="OnFinalConfirmAsync" @ref="_playerSheet" />
+                            <PlayerSheet Player="IdentifiedPlayer" OnActionTaken="OnActionTaken" OnFinalConfirmation="OnFinalConfirmAsync" @ref="_playerSheet" />
                         }
                     </TabPage>
                     @foreach (var player in Game.Players.Where(p => p.Name != IdentifiedPlayer.Name))
@@ -115,6 +115,7 @@ else
     private bool _urlWrong = false;
     private bool _showGameOverMessage = false;
     private bool _showWaitingMessage = false;
+    private bool _actionTakenButNotSaved = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -177,6 +178,10 @@ else
         {
             _showWaitingMessage = true;
         }
+        else if (_actionTakenButNotSaved)
+        {
+            return;
+        }
         else
         {
             if (SelectedNumberEffectPair == null || SelectedNumberEffectPair.DeckIndex != index)
@@ -192,20 +197,19 @@ else
         }
     }
 
-    private async Task OnActionTakenAsync()
+    private void OnActionTaken()
     {
         SelectedNumberEffectPair = null;
-        Game = await Http.PostAsync<Game>("api/Game/UpdatePlayerSheet", new { GameId = Game.Id, Player = JsonConvert.SerializeObject(IdentifiedPlayer) });
+        _actionTakenButNotSaved = true;
+        StateHasChanged();
     }
 
     private async Task OnFinalConfirmAsync()
     {
-        Game.CurrentTurn.PlayerNamesWithActionTaken.Add(IdentifiedPlayer.Name);
-        await Http.PostAsync<Game>("api/Game/ActionConfirmed", new { GameId = Game.Id, PlayerName = IdentifiedPlayer.Name });
+        Game = await Http.PostAsync<Game>("api/Game/UpdatePlayerSheet", new { GameId = Game.Id, Player = JsonConvert.SerializeObject(IdentifiedPlayer) });
         await GameHub.OtherPlayerActionTakenAsync(GameId, IdentifiedPlayer.Name);
-        if (!Game.Players.Select(x => x.Name).Except(Game.CurrentTurn.PlayerNamesWithActionTaken).Any())
+        if (!Game.CurrentTurn.PlayerNamesWithActionTaken.Any())
         {
-            Game = await Http.PostAsync<Game>("api/Game/NextTurn", GameId);
             _showGameOverMessage = Game.CompletedAtUtc.HasValue;
             await GameHub.UpdateGameAsync(GameId);
         }
@@ -214,14 +218,10 @@ else
             _showWaitingMessage = true;
         }
 
+        _actionTakenButNotSaved = false;
+
         StateHasChanged();
     }
 
-    private async Task PlayerCompletedCityPlanAsync()
-    {
-        Game = await Http.PostAsync<Game>("api/Game/UpdatePlayerSheet", new { GameId = Game.Id, Player = JsonConvert.SerializeObject(IdentifiedPlayer) });
-        StateHasChanged();
-    }
-
-    private string BlurredClass(DeckIndex index) => (SelectedNumberEffectPair == null || SelectedNumberEffectPair.DeckIndex == index) ? "" : "blurred";
+    private string GetOptionsClass(DeckIndex index) => $"{(_actionTakenButNotSaved || _showWaitingMessage || _showGameOverMessage ? "not-allowed" : "pointer")}{(SelectedNumberEffectPair == null || SelectedNumberEffectPair.DeckIndex == index ? "" : " blurred")}";
 }
