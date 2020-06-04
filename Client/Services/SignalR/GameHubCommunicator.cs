@@ -16,8 +16,6 @@ namespace WelcomeTo.Client.Services.SignalR
 
         public async Task RemoveFromGroupAsync(string groupId) => await _hubConnection.InvokeAsync("RemoveFromGroupAsync", groupId);
 
-        public async Task SendGameMessageAsync(string gameId, GameMessage chatMessage) => await _hubConnection.InvokeAsync("SendGameMessageAsync", gameId, chatMessage);
-
         public async Task UpdateGameAsync(string gameId) => await _hubConnection.InvokeAsync("UpdateGameAsync", gameId);
 
         public async Task OtherPlayerActionTakenAsync(string gameId, string playerName) => await _hubConnection.InvokeAsync("OtherPlayerActionTakenAsync", gameId, playerName);
