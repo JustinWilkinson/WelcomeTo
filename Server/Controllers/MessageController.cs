@@ -2,9 +2,9 @@
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Text.Json;
-using WelcomeTo.Server.Extensions;
 using WelcomeTo.Server.Repository;
 using WelcomeTo.Shared;
+using WelcomeTo.Shared.Extensions;
 
 namespace WelcomeTo.Server.Controllers
 {

@@ -3,7 +3,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Text.Json;
 
-namespace WelcomeTo.Server.Extensions
+namespace WelcomeTo.Shared.Extensions
 {
     /// <summary>
     /// Contains useful extensions to both System.Text.Json using Newtonsoft Json.

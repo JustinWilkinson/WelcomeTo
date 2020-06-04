@@ -5,6 +5,7 @@ using System.Data.SQLite;
 using System.Linq;
 using WelcomeTo.Server.Extensions;
 using WelcomeTo.Shared;
+using WelcomeTo.Shared.Extensions;
 
 namespace WelcomeTo.Server.Repository
 {
