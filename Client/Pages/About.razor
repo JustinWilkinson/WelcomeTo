@@ -35,9 +35,12 @@
         <div class="card-body">
             <p>Click the tabs below to show documentation on the relevant subject.</p>
             <div class="card border rounded">
-                <TabControl AdditionalButtonGroupClasses="card-header">
-                    <TabContent>
-                        <TabPage Title="New Games">
+                <TabControl>
+                    <TabHeader>
+                        <TabHeaderTemplate ButtonGroupClass="card-header w-100"/>
+                    </TabHeader>
+                    <TabItems>
+                        <TabItem Title="New Games">
                             <div class="card-body">
                                 <ul class="mb-0">
                                     <li>A <strong>host</strong> can create a game by navigating to the <NavLink href="NewGame" Match="NavLinkMatch.All">New Game page</NavLink> and setting up a game.</li>
@@ -47,16 +50,16 @@
                                     <li>If a user joins a game accidentally, the host can "Kick" them, ejecting the player from the waiting room.</li>
                                 </ul>
                             </div>
-                        </TabPage>
-                        <TabPage Title="Gameplay">
+                        </TabItem>
+                        <TabItem Title="Gameplay">
                             <div class="card-body">
                                 <ul class="mb-0">
                                     <li>Gameplay follows the rules of the WelcomeTo boardgame, so please ensure some familiarity!</li>
                                     <li>Actions follow a (hopefully) intuitive process using a series of clicks, starting with a click on the card/effect pair of choice.</li>
                                 </ul>
                             </div>
-                        </TabPage>
-                    </TabContent>
+                        </TabItem>
+                    </TabItems>
                 </TabControl>
             </div>
         </div>

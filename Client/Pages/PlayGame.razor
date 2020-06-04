@@ -78,8 +78,8 @@ else
         </div>
         <CascadingValue Value="SelectedNumberEffectPair">
             <TabControl>
-                <TabContent>
-                    <TabPage Title="@IdentifiedPlayer.Name">
+                <TabItems>
+                    <TabItem Title="@IdentifiedPlayer.Name">
                         @if (Game.CompletedAtUtc.HasValue || _showWaitingMessage)
                         {
                             <ReadOnlyPlayerSheet Player="IdentifiedPlayer" />
@@ -88,14 +88,14 @@ else
                         {
                             <PlayerSheet Player="IdentifiedPlayer" OnActionTaken="OnActionTaken" OnFinalConfirmation="OnFinalConfirmAsync" @ref="_playerSheet" />
                         }
-                    </TabPage>
+                    </TabItem>
                     @foreach (var player in Game.Players.Where(p => p.Name != IdentifiedPlayer.Name))
                     {
-                        <TabPage Title="@player.Name">
+                        <TabItem Title="@player.Name">
                             <ReadOnlyPlayerSheet Player="player" />
-                        </TabPage>
+                        </TabItem>
                     }
-                </TabContent>
+                </TabItems>
             </TabControl>
         </CascadingValue>
     </CascadingValue>
