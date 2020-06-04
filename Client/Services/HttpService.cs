@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using WelcomeTo.Shared.Extensions;
 
 namespace WelcomeTo.Client.Services
 {
@@ -41,7 +41,7 @@ namespace WelcomeTo.Client.Services
             var responseContent = await _client.GetStringAsync(requestUri).ConfigureAwait(false);
             try
             {
-                return JsonConvert.DeserializeObject<T>(responseContent);
+                return responseContent.Deserialize<T>();
             }
             catch
             {
@@ -83,6 +83,6 @@ namespace WelcomeTo.Client.Services
 
         private JsonContent GetJsonContent(object content) => JsonContent.Create(content ?? "null", content?.GetType() ?? typeof(string));
 
-        private async Task<T> DeserializeResponse<T>(HttpResponseMessage response) => JsonConvert.DeserializeObject<T>(await response.Content.ReadAsStringAsync());
+        private async Task<T> DeserializeResponse<T>(HttpResponseMessage response) => (await response.Content.ReadAsStringAsync()).Deserialize<T>();
     }
 }

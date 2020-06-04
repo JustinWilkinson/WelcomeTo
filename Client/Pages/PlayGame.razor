@@ -202,7 +202,7 @@ else
 
     private async Task OnFinalConfirmAsync()
     {
-        Game = await Http.PostAsync<Game>("api/Game/UpdatePlayerSheet", new { GameId = Game.Id, Player = JsonConvert.SerializeObject(IdentifiedPlayer) });
+        Game = await Http.PostAsync<Game>("api/Game/UpdatePlayerSheet", new { GameId = Game.Id, Player = IdentifiedPlayer.Serialize() });
         if (!Game.CurrentTurn.PlayerNamesWithActionTaken.Any())
         {
             _showGameOverMessage = Game.CompletedAtUtc.HasValue;
