@@ -1,9 +1,9 @@
 using NUnit.Framework;
 using System.Text.Json;
-using WelcomeTo.Server.Extensions;
+using WelcomeTo.Shared.Extensions;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
-namespace WelcomeTo.Test.Server.Extensions
+namespace WelcomeTo.Test.Shared.Extensions
 {
     [TestFixture]
     public class JsonExtensionsTest

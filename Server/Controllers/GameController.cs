@@ -3,10 +3,10 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Text.Json;
-using WelcomeTo.Server.Extensions;
 using WelcomeTo.Server.Repository;
 using WelcomeTo.Server.Services;
 using WelcomeTo.Shared;
+using WelcomeTo.Shared.Extensions;
 
 namespace WelcomeTo.Server.Controllers
 {

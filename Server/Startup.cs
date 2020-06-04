@@ -46,7 +46,6 @@ namespace WelcomeTo.Server
             // Repositories
             services.AddSingleton<IGameCountRepository, GameCountRepository>();
             services.AddSingleton<IGameRepository, GameRepository>();
-            services.AddSingleton<IMessageRepository, MessageRepository>();
 
             // Other Services
             services.AddSingleton<IGameBuilder, GameBuilder>();

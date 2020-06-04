@@ -78,8 +78,8 @@ else
         </div>
         <CascadingValue Value="SelectedNumberEffectPair">
             <TabControl>
-                <TabContent>
-                    <TabPage Title="@IdentifiedPlayer.Name">
+                <TabItems>
+                    <TabItem Title="@IdentifiedPlayer.Name">
                         @if (Game.CompletedAtUtc.HasValue || _showWaitingMessage)
                         {
                             <ReadOnlyPlayerSheet Player="IdentifiedPlayer" />
@@ -88,14 +88,14 @@ else
                         {
                             <PlayerSheet Player="IdentifiedPlayer" OnActionTaken="OnActionTaken" OnFinalConfirmation="OnFinalConfirmAsync" @ref="_playerSheet" />
                         }
-                    </TabPage>
+                    </TabItem>
                     @foreach (var player in Game.Players.Where(p => p.Name != IdentifiedPlayer.Name))
                     {
-                        <TabPage Title="@player.Name">
+                        <TabItem Title="@player.Name">
                             <ReadOnlyPlayerSheet Player="player" />
-                        </TabPage>
+                        </TabItem>
                     }
-                </TabContent>
+                </TabItems>
             </TabControl>
         </CascadingValue>
     </CascadingValue>
@@ -108,7 +108,6 @@ else
     public Game Game { get; private set; }
     public Player IdentifiedPlayer { get; set; }
     public NumberEffectPair SelectedNumberEffectPair { get; set; }
-    private bool WaitingForOtherPlayers => !Game.CompletedAtUtc.HasValue && Game.CurrentTurn.PlayerNamesWithActionTaken.Contains(IdentifiedPlayer.Name);
 
     private PlayerSheet _playerSheet;
 
@@ -150,18 +149,15 @@ else
         {
             Game = await Http.GetAsync<Game>($"api/Game/Get?id={GameId}");
             _showGameOverMessage = Game.CompletedAtUtc.HasValue;
-            _showWaitingMessage = WaitingForOtherPlayers;
+            _showWaitingMessage = false;
             StateHasChanged();
         });
 
         GameHub.RegisterHandler<string>("OtherPlayerActionTaken", playerName =>
         {
             Game.CurrentTurn.PlayerNamesWithActionTaken.Add(playerName);
-            if (WaitingForOtherPlayers)
-            {
-                _showWaitingMessage = Game.Players.Select(x => x.Name).Except(Game.CurrentTurn.PlayerNamesWithActionTaken).Any();
-                StateHasChanged();
-            }
+            _showWaitingMessage = Game.CurrentTurn.PlayerNamesWithActionTaken.Contains(IdentifiedPlayer.Name);
+            StateHasChanged();
         });
 
         await GameHub.StartAsync();
@@ -174,7 +170,7 @@ else
         {
             _showGameOverMessage = true;
         }
-        else if (WaitingForOtherPlayers)
+        else if (Game.CurrentTurn.PlayerNamesWithActionTaken.Contains(IdentifiedPlayer.Name))
         {
             _showWaitingMessage = true;
         }
@@ -206,16 +202,17 @@ else
 
     private async Task OnFinalConfirmAsync()
     {
-        Game = await Http.PostAsync<Game>("api/Game/UpdatePlayerSheet", new { GameId = Game.Id, Player = JsonConvert.SerializeObject(IdentifiedPlayer) });
-        await GameHub.OtherPlayerActionTakenAsync(GameId, IdentifiedPlayer.Name);
+        Game = await Http.PostAsync<Game>("api/Game/UpdatePlayerSheet", new { GameId = Game.Id, Player = IdentifiedPlayer.Serialize() });
         if (!Game.CurrentTurn.PlayerNamesWithActionTaken.Any())
         {
             _showGameOverMessage = Game.CompletedAtUtc.HasValue;
+            _showWaitingMessage = false;
             await GameHub.UpdateGameAsync(GameId);
         }
         else
         {
             _showWaitingMessage = true;
+            await GameHub.OtherPlayerActionTakenAsync(GameId, IdentifiedPlayer.Name);
         }
 
         _actionTakenButNotSaved = false;
