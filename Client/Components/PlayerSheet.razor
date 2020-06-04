@@ -89,37 +89,25 @@
             }
         }
 
-        if (runStateHasChanged)
-        {
-            StateHasChanged();
-        }
+        RunStateHasChanged(runStateHasChanged);
     }
 
     public void SelectedBisHouseChanged(SelectedHouse house, bool runStateHasChanged = true)
     {
         SelectedBisHouse = house;
-        if (runStateHasChanged)
-        {
-            StateHasChanged();
-        }
+        RunStateHasChanged(runStateHasChanged);
     }
 
     public void SelectedFenceChanged(SelectedHouse fencedHouse, bool runStateHasChanged = true)
     {
         SelectedFenceHouse = fencedHouse;
-        if (runStateHasChanged)
-        {
-            StateHasChanged();
-        }
+        RunStateHasChanged(runStateHasChanged);
     }
 
     public void SelectedRealEstateValueChanged(SelectedRealEstateValue realEstateValue, bool runStateHasChanged = true)
     {
         SelectedRealEstateValue = realEstateValue;
-        if (runStateHasChanged)
-        {
-            StateHasChanged();
-        }
+        RunStateHasChanged(runStateHasChanged);
     }
 
     private async Task UpdatePlayerSheetAsync(bool isReconfirm = false)
@@ -155,6 +143,14 @@
             {
                 _requireReconfirm = true;
             }
+        }
+    }
+
+    private void RunStateHasChanged(bool run)
+    {
+        if (run)
+        {
+            StateHasChanged();
         }
     }
 }
