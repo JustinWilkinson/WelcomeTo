@@ -72,6 +72,7 @@ namespace WelcomeTo.Shared
             {
                 CompletedMessage = $"{completedMessage}.";
                 CompletedAtUtc = DateTime.UtcNow;
+                CurrentTurn.PlayerNamesWithActionTaken.Clear();
                 ComputeWinner();
                 return true;
             }

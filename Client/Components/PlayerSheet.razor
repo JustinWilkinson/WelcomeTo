@@ -67,8 +67,6 @@
 
     private bool _requireReconfirm = false;
 
-    protected override void OnInitialized() => CheckForReconfirmRequired();
-
     public void SelectedHouseChanged(SelectedHouse house, bool runStateHasChanged = true)
     {
         SelectedHouse = house;
