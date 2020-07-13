@@ -142,7 +142,7 @@ app {
     }
 
     .sidebar {
-        width: 200px;
+        width: 150px;
         height: 100vh;
         position: sticky;
         top: 0;
@@ -168,7 +168,13 @@ app {
     }
 }
 
-@media (min-width: 1540px){
+@media (min-width: 1600px){
+    .sidebar {
+        width: 200px;
+    }
+}
+
+@media (min-width: 1900px) {
     .sidebar {
         width: 250px;
     }
@@ -193,7 +199,7 @@ app {
 
 @media (min-width: 480px) {
     html, body {
-        font-size: 8px;
+        font-size: 6px;
     }
 
     .adjustable-font-size-small {
@@ -245,9 +251,10 @@ app {
     }
 }
 
-@media(min-width: 980px) and (min-height: 480px) {
+/* Targets smaller landscape tablets */
+@media (min-width: 768px) and (min-height: 480px) {
     html, body {
-        font-size: 9px;
+        font-size: 8px;
     }
 
     .house, .street > .house, .street > .house:last-of-type {
@@ -255,43 +262,29 @@ app {
     }
 }
 
-@media(min-width: 1080px) and (min-height: 520px) {
+/* Targets large landscape tablets */
+@media(min-width: 1100px) and (min-height: 580px) {
     html, body {
         font-size: 10px;
     }
 }
 
-@media(min-width: 1140px) and (min-height: 560px) {
-    html, body {
-        font-size: 11px;
-    }
-}
-
-@media(min-width: 1200px) and (min-height: 600px) {
+/* Targets smaller laptops and 1920x100 screen with OS-Zoom 150% */
+@media (min-width: 1280px) and (min-height: 720px){
     html, body {
         font-size: 12px;
     }
 }
 
-@media(min-width: 1320px) and (min-height: 660px) {
-    html, body {
-        font-size: 13px;
-    }
-}
-
-@media(min-width: 1440px) and (min-height: 720px) {
+/* Targets 1920x1080 screen with OS-Zoom 125% (common for larger laptops etc) */
+@media (min-width: 1540px) and (min-height: 860px) {
     html, body {
         font-size: 14px;
     }
 }
 
-@media(min-width: 1540px) and (min-height: 800px) {
-    html, body {
-        font-size: 15px;
-    }
-}
-
-@media(min-width: 1700px) and (min-height: 900px) {
+/* Targets large monitors with no OS-Zoom */
+@media (min-width: 1900px) and (min-height: 920px) {
     html, body {
         font-size: 16px;
     }
