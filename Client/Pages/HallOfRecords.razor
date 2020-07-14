@@ -6,7 +6,7 @@
     <div class="col-11">
         <h1>Hall Of Records</h1>
         <div class="row pl-3">
-            <p>The hall of fame shows the top 10 scores ever recorded, the hall of shame shows the lowest 10 scores.</p>
+            <p>The hall of fame shows the top 5 scores ever recorded, the hall of shame shows the lowest 5 scores.</p>
         </div>
     </div>
 </div>
@@ -25,14 +25,14 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var record in _hallOfShame)
+                @foreach (var record in _hallOfFame)
                 {
                     <tr>
                         <td>@record.Position</td>
                         <td>@record.Game</td>
                         <td>@record.Player</td>
                         <td>@record.Score</td>
-                        <td>@record.Date.ToLocalTime()</td>
+                        <td>@record.Date.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss")</td>
                     </tr>
                 }
             </tbody>
@@ -74,7 +74,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var records = await Http.GetAsync<IEnumerable<Record>>("api/Record/List");
-        records.ForEach(r => (r.Type == RecordType.Fame ? _hallOfFame : _hallOfShame).Add(r));
+        (await Http.GetAsync<IEnumerable<Record>>("api/Record/List"))?.ForEach(r => (r.Type == RecordType.Fame ? _hallOfFame : _hallOfShame).Add(r));
     }
 }
