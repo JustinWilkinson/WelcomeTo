@@ -42,25 +42,12 @@ namespace WelcomeTo.Server.Repository
             {
                 lock (_cacheLock)
                 {
-                    if (ExecuteScalar("SELECT COUNT(*) AS Count FROM Records", Convert.ToInt32) == 0)
-                    {
-                        var now = DateTime.UtcNow;
-                        for (var i = 1; i <= RECORD_COUNT; i++)
-                        {
-                            _fame.Add(new Record { Type = RecordType.Fame, Position = i, Date = now });
-                            _shame.Add(new Record { Type = RecordType.Shame, Position = i, Date = now });
-                        }
-                        UpdateRecords();
-                    }
-                    else
-                    {
-                        Execute("SELECT * FROM Records", DeserializeColumn<IEnumerable<Record>>("RecordsJson")).Single().ForEach(r => (r.Type == RecordType.Fame ? _fame : _shame).Add(r));
-                    }
+                    Execute("SELECT * FROM Records", DeserializeColumn<IEnumerable<Record>>("RecordsJson")).SingleOrDefault()?.ForEach(r => (r.Type == RecordType.Fame ? _fame : _shame).Add(r));
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred initialising the Game Count Repository");
+                _logger.LogError(ex, "An error occurred initialising the Record Repository");
                 throw;
             }
 
@@ -93,7 +80,7 @@ namespace WelcomeTo.Server.Repository
                     foreach (var player in game.Players)
                     {
                         var score = game.GetPointsTotal(player);
-                        if (CheckForFameRecord(game, player, score, now) || CheckForShameRecord(game, player, score, now))
+                        if (CheckForFameRecord(game.Name, player.Name, score, now) | CheckForShameRecord(game.Name, player.Name, score, now)) // Use bitwise OR, want to always check both.
                         {
                             _unsavedChanges = true;
                             OrderRecords();
@@ -130,71 +117,69 @@ namespace WelcomeTo.Server.Repository
             }
         }
 
-        private bool CheckForFameRecord(Game game, Player player, int score, DateTime now)
+        private bool CheckForFameRecord(string gameName, string playerName, int score, DateTime now)
         {
-            for (var index = 0; index < _fame.Count; index++)
+            var beatenRecord = _fame.FirstOrDefault(r => score >= r.Score);
+            if (beatenRecord != null || _fame.Count < RECORD_COUNT)
             {
-                var record = _fame[index];
-                if (score >= record.Score)
+                var newRecord = new Record
                 {
-                    _fame.Add(new Record
-                    {
-                        Type = RecordType.Shame,
-                        Game = game.Name,
-                        Player = player.Name,
-                        Score = score,
-                        Date = now,
-                        Position = record.Position
-                    });
+                    Type = RecordType.Fame,
+                    Game = gameName,
+                    Player = playerName,
+                    Score = score,
+                    Date = now,
+                    Position = beatenRecord?.Position ?? _fame.Count + 1
+                };
 
-                    if (score != record.Score)
+                for (var i = _fame.Count - 1; i >= 0; i--)
+                {
+                    var record = _fame[i];
+                    if (record.Position > newRecord.Position || (record.Position == newRecord.Position && record.Score < newRecord.Score))
                     {
-                        for (var incrementIndex = index + 1; incrementIndex < _fame.Count; incrementIndex++)
+                        if (++record.Position > RECORD_COUNT)
                         {
-                            if (++_fame[incrementIndex].Position > RECORD_COUNT)
-                            {
-                                _fame.RemoveAt(incrementIndex);
-                            }
+                            _fame.RemoveAt(i);
                         }
                     }
-
-                    return true;
                 }
+                _fame.Add(newRecord);
+
+                return true;
             }
 
             return false;
         }
 
-        private bool CheckForShameRecord(Game game, Player player, int score, DateTime now)
+        private bool CheckForShameRecord(string gameName, string playerName, int score, DateTime now)
         {
-            for (var index = 0; index < _shame.Count; index++)
+            var beatenRecord = _shame.FirstOrDefault(r => score <= r.Score);
+            if (beatenRecord != null || _shame.Count < RECORD_COUNT)
             {
-                var record = _shame[index];
-                if (score <= record.Score)
+                var newRecord = new Record
                 {
-                    _shame.Add(new Record
-                    {
-                        Type = RecordType.Shame,
-                        Game = game.Name,
-                        Player = player.Name,
-                        Score = score,
-                        Date = now,
-                        Position = record.Position
-                    });
+                    Type = RecordType.Shame,
+                    Game = gameName,
+                    Player = playerName,
+                    Score = score,
+                    Date = now,
+                    Position = beatenRecord?.Position ?? _shame.Count + 1
+                };
 
-                    if (score != record.Score)
+                for (var i = _shame.Count - 1; i >= 0; i--)
+                {
+                    var record = _shame[i];
+                    if (record.Position > newRecord.Position || (record.Position == newRecord.Position && record.Score > newRecord.Score))
                     {
-                        for (var incrementIndex = index + 1; incrementIndex < _shame.Count; incrementIndex++)
+                        if (++record.Position > RECORD_COUNT)
                         {
-                            if (++_shame[incrementIndex].Position > RECORD_COUNT)
-                            {
-                                _shame.RemoveAt(incrementIndex);
-                            }
+                            _shame.RemoveAt(i);
                         }
                     }
-
-                    return true;
                 }
+                _shame.Add(newRecord);
+
+                return true;
             }
 
             return false;
