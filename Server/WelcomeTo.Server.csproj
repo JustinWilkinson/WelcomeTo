@@ -8,10 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="WelcomeTo.sqlite-journal" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="AspNetCoreRateLimit" Version="3.0.5" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.8" />
     <PackageReference Include="NLog" Version="4.7.2" />
@@ -27,6 +23,5 @@
     <ProjectReference Include="..\Client\WelcomeTo.Client.csproj" />
     <ProjectReference Include="..\Shared\WelcomeTo.Shared.csproj" />
   </ItemGroup>
-
 
 </Project>
