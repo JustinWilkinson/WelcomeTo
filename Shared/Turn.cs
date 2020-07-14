@@ -17,7 +17,9 @@ namespace WelcomeTo.Shared
 
         public Card EffectCard3 { get; set; }
 
-        public List<string> PlayerNamesWithActionTaken { get; set; }
+        public List<string> PlayerNamesWithActionTaken { get; set; } = new List<string>();
+
+        public List<string> ReshuffleRequesters { get; set; } = new List<string>();
 
         public IEnumerable<NumberEffectPair> GetNumberEffectPairs() => new[]
         {

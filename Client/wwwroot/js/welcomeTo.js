@@ -1,36 +1,36 @@
 ﻿window.welcomeTo = {
     setFocus: function (id) {
-        let element = document.getElementById(id);
+        const element = document.getElementById(id);
         if (element) {
             element.focus();
         }
     },
     blurElement: function (id) {
-        let element = document.getElementById(id);
+        const element = document.getElementById(id);
         if (element) {
             element.blur();
         }
     },
     scrollToBottomOfElement: function (id) {
-        let element = document.getElementById(id);
+        const element = document.getElementById(id);
         if (element) {
             element.scrollTop = element.scrollHeight;
         }
     },
     appendContent: function (id, content) {
-        let element = document.getElementById(id);
+        const element = document.getElementById(id);
         if (element) {
             element.insertAdjacentHTML('beforeend', content);
         }
     },
     replaceContent: function (id, regex, newContent) {
-        let element = document.getElementById(id);
+        const element = document.getElementById(id);
         if (element) {
             element.innerText = element.innerText.replace(new RegExp(regex), newContent);
         }
     },
     replaceAllContent: function (id, newContent) {
-        let element = document.getElementById(id);
+        const element = document.getElementById(id);
         if (element) {
             element.innerText = newContent;
         }
@@ -45,9 +45,7 @@
         $('#GamesTable').DataTable({
             ajax: {
                 url: '/api/Game/List',
-                dataSrc: function (res) {
-                    return res;
-                }
+                dataSrc: res => res
             },
             retrieve: true,
             paging: true,
@@ -100,7 +98,5 @@
         });
     },
     reloadGamesDataTable: () => $('#GamesTable').DataTable().ajax.reload(),
-    getBoundingClientRectangle: function (element) {
-        return element.getBoundingClientRect();
-    }
+    getBoundingClientRectangle: element => element.getBoundingClientRect()
 }

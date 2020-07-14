@@ -66,10 +66,7 @@ namespace WelcomeTo.Server.Controllers
         }
 
         [HttpPost("UpdatePlayerName")]
-        public void UpdatePlayerName(JsonElement json)
-        {
-            _gameRepository.ModifyGame(json.GetStringProperty("GameId"), game => game.Players.Single(p => p.Name == json.GetStringProperty("OldName")).Name = json.GetStringProperty("NewName"));
-        }
+        public void UpdatePlayerName(JsonElement json) => _gameRepository.ModifyGame(json.GetStringProperty("GameId"), game => game.Players.Single(p => p.Name == json.GetStringProperty("OldName")).Name = json.GetStringProperty("NewName"));
 
         [HttpPost("UpdatePlayerSheet")]
         public string UpdatePlayerSheet(JsonElement json)
@@ -97,6 +94,9 @@ namespace WelcomeTo.Server.Controllers
 
             return game.Serialize();
         }
+
+        [HttpPost("RequestReshuffle")]
+        public void RequestReshuffle(JsonElement json) => _gameRepository.ModifyGame(json.GetStringProperty("GameId"), game => game.CurrentTurn.ReshuffleRequesters.Add(json.GetStringProperty("RequesterName")));
 
         [HttpGet("Get")]
         public string Get(string id) => _gameRepository.GetGame(id).Serialize();

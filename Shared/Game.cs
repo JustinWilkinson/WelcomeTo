@@ -39,6 +39,11 @@ namespace WelcomeTo.Shared
 
             if (!CheckGameOver())
             {
+                if (CurrentTurn.ReshuffleRequesters.Any())
+                {
+                    GameDeck.Reshuffle();
+                }
+
                 GameDeck.FlipCards();
 
                 CurrentTurn = new Turn
@@ -48,8 +53,7 @@ namespace WelcomeTo.Shared
                     EffectCard3 = GameDeck.Discard3.Peek(),
                     HouseNumberCard1 = GameDeck.Deck1.Peek(),
                     HouseNumberCard2 = GameDeck.Deck2.Peek(),
-                    HouseNumberCard3 = GameDeck.Deck3.Peek(),
-                    PlayerNamesWithActionTaken = new List<string>()
+                    HouseNumberCard3 = GameDeck.Deck3.Peek()
                 };
             }
         }
