@@ -1,0 +1,80 @@
+﻿@page "/HallOfRecords"
+
+@inject IHttpService Http
+
+<div class="row">
+    <div class="col-11">
+        <h1>Hall Of Records</h1>
+        <div class="row pl-3">
+            <p>The hall of fame shows the top 10 scores ever recorded, the hall of shame shows the lowest 10 scores.</p>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row mb-5">
+        <h3>Hall of Fame</h3>
+        <table id="HallOfFameTable" class="table table-striped table-bordered w-100">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Game</th>
+                    <th>Player</th>
+                    <th>Score</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var record in _hallOfShame)
+                {
+                    <tr>
+                        <td>@record.Position</td>
+                        <td>@record.Game</td>
+                        <td>@record.Player</td>
+                        <td>@record.Score</td>
+                        <td>@record.Date.ToLocalTime()</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="row">
+        <h3>Hall of Shame</h3>
+        <table id="HallOfShameTable" class="table table-striped table-bordered w-100">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Game</th>
+                    <th>Player</th>
+                    <th>Score</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var record in _hallOfShame)
+                {
+                    <tr>
+                        <td>@record.Position</td>
+                        <td>@record.Game</td>
+                        <td>@record.Player</td>
+                        <td>@record.Score</td>
+                        <td>@record.Date.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+@code {
+    private List<Record> _hallOfFame = new List<Record>();
+    private List<Record> _hallOfShame = new List<Record>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var records = await Http.GetAsync<IEnumerable<Record>>("api/Record/List");
+        records.ForEach(r => (r.Type == RecordType.Fame ? _hallOfFame : _hallOfShame).Add(r));
+    }
+}

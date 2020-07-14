@@ -17,13 +17,15 @@ namespace WelcomeTo.Server.Controllers
         private readonly ILogger<GameController> _logger;
         private readonly IGameRepository _gameRepository;
         private readonly IGameCountRepository _gameCountRepository;
+        private readonly IRecordRepository _recordRepository;
         private readonly IGameBuilder _gameBuilder;
 
-        public GameController(ILogger<GameController> logger, IGameRepository gameRepository, IGameCountRepository gameCountRepository, IGameBuilder gameBuilder)
+        public GameController(ILogger<GameController> logger, IGameRepository gameRepository, IGameCountRepository gameCountRepository, IRecordRepository recordRepository, IGameBuilder gameBuilder)
         {
             _logger = logger;
             _gameRepository = gameRepository;
             _gameCountRepository = gameCountRepository;
+            _recordRepository = recordRepository;
             _gameBuilder = gameBuilder;
         }
 
@@ -72,7 +74,7 @@ namespace WelcomeTo.Server.Controllers
         [HttpPost("UpdatePlayerSheet")]
         public string UpdatePlayerSheet(JsonElement json)
         {
-            return _gameRepository.ModifyGame(json.GetStringProperty("GameId"), game =>
+            var game = _gameRepository.ModifyGame(json.GetStringProperty("GameId"), game =>
             {
                 var newPlayerInfo = json.GetObjectProperty<Player>("Player");
                 var dbPlayerInfo = game.Players.Single(p => p.Name == newPlayerInfo.Name);
@@ -85,8 +87,15 @@ namespace WelcomeTo.Server.Controllers
                     game.StartNextTurn();
                 }
 
-                return game.Serialize();
+                return game;
             });
+
+            if (game.CompletedAtUtc.HasValue)
+            {
+                _recordRepository.UpdateRecords(game);
+            }
+
+            return game.Serialize();
         }
 
         [HttpGet("Get")]
