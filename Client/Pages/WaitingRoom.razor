@@ -144,7 +144,7 @@ else
             }
             else
             {
-                if (!_game.Players.Any(p => p.Name == Storage.PlayerName))
+                if (Storage.PlayerName != null && !_game.Players.Any(p => p.Name == Storage.PlayerName))
                 {
                     NavigationManager.NavigateTo("KickedByHost");
                 }
