@@ -1,5 +1,15 @@
-﻿<div class="col">
-    <div class="card border-rounded card-background h-100@(_canBeCompletedByIdentifiedPlayer ? " glow pointer" : "")" @onclick="CompleteCityPlanCard" title="@GetTitle()">
+﻿<Modal Show="_showRequestReshuffle" Header="Congratulations!">
+    <div class="w-100">
+        You are the first player to complete this City Plan!
+    </div>
+    <div class="w-100">
+        <span class="mr-3">Would you like to request a reshuffle?</span>
+        <button type="button" class="btn btn-primary mr-2" @onclick="() => ReshuffleRequestAsync(true)">Yes</button>
+        <button type="button" class="btn btn-primary" @onclick="() => ReshuffleRequestAsync(false)">No</button>
+    </div>
+</Modal>
+<div class="col">
+    <div class="card border-rounded card-background h-100@(_canBeCompletedByIdentifiedPlayer ? " glow pointer" : "")" @onclick="CompleteCityPlanCardAsync" title="@GetTitle()">
         <div class="card-header">
             <div class="float-left text-center">
                 <img class="house-image" src="/images/house.png" draggable="false" />
@@ -71,11 +81,12 @@
     public Player IdentifiedPlayer { get; set; }
 
     [Parameter]
-    public EventCallback OnCompleted { get; set; }
+    public EventCallback<bool> OnCompleted { get; set; }
 
     private List<int> _topRow = new List<int>();
     private List<int> _bottomRow = new List<int>();
     private bool _canBeCompletedByIdentifiedPlayer;
+    private bool _showRequestReshuffle;
 
     protected override void OnInitialized()
     {
@@ -104,7 +115,7 @@
         _canBeCompletedByIdentifiedPlayer = !Game.CompletedAtUtc.HasValue && IdentifiedPlayer.ScoreSheet.GetCityPlanPoints(CityPlan.Type) == 0 && !CityPlan.EstateSizes.Without(IdentifiedPlayer.Board.GetEstates(false).Select(x => x.HouseIndices.Count)).Any();
     }
 
-    private async Task CompleteCityPlanCard()
+    private async Task CompleteCityPlanCardAsync()
     {
         if (_canBeCompletedByIdentifiedPlayer)
         {
@@ -121,8 +132,24 @@
             }
 
             IdentifiedPlayer.ScoreSheet.SetCityPlanPoints(CityPlan.Type, CityPlan.CompletedByAnyPlayer ? CityPlan.BasicPoints : CityPlan.FirstPoints);
-            await OnCompleted.InvokeAsync(null);
+
+            if (CityPlan.CompletedByAnyPlayer)
+            {
+                await OnCompleted.InvokeAsync(false);
+            }
+            else
+            {
+                _showRequestReshuffle = true;
+                StateHasChanged();
+            }
         }
+    }
+
+    private async Task ReshuffleRequestAsync(bool requestReshuffle)
+    {
+        await OnCompleted.InvokeAsync(requestReshuffle);
+        _showRequestReshuffle = false;
+        StateHasChanged();
     }
 
     private string GetTitle()

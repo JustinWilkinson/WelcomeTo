@@ -38,5 +38,19 @@ namespace WelcomeTo.Shared
             Discard2.Insert(0, discard2);
             Discard3.Insert(0, discard3);
         }
+
+        public void Reshuffle()
+        {
+            var reshuffledDeck = Discard1.Concat(Discard2).Concat(Discard3).Concat(Deck1).Concat(Deck2).Concat(Deck3).Shuffle();
+            
+            Deck1.Clear();
+            Deck2.Clear();
+            Deck3.Clear();
+            Discard1.Clear();
+            Discard2.Clear();
+            Discard3.Clear();
+
+            reshuffledDeck.Distribute(Deck1, Deck2, Deck3);
+        }
     }
 }
