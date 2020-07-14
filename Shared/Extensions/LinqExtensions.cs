@@ -133,5 +133,19 @@ namespace WelcomeTo.Shared.Extensions
         /// <param name="list"></param>
         /// <returns></returns>
         public static T Peek<T>(this IList<T> list) => list.HasContent() ? list[0] : default;
+
+        /// <summary>
+        /// Performs an action for each element in an enumerable.
+        /// </summary>
+        /// <typeparam name="T">Type of elements in the enumerable.</typeparam>
+        /// <param name="enumerable">Enumerable to iterate over.</param>
+        /// <param name="action">Action to perform on element.</param>
+        public static void ForEach<T>(this IEnumerable<T> enumerable, Action<T> action)
+        {
+            foreach (var element in enumerable)
+            {
+                action(element);
+            }
+        }
     }
 }
