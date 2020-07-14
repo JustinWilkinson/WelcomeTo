@@ -42,7 +42,14 @@ namespace WelcomeTo.Server.Repository
             {
                 lock (_cacheLock)
                 {
-                    Execute("SELECT * FROM Records", DeserializeColumn<IEnumerable<Record>>("RecordsJson")).SingleOrDefault()?.ForEach(r => (r.Type == RecordType.Fame ? _fame : _shame).Add(r));
+                    if (ExecuteScalar("SELECT COUNT(*) AS Count FROM Records", Convert.ToInt32) == 0)
+                    {
+                        Execute("INSERT INTO Records VALUES ('')");
+                    }
+                    else
+                    {
+                        Execute("SELECT * FROM Records", DeserializeColumn<IEnumerable<Record>>("RecordsJson")).SingleOrDefault()?.ForEach(r => (r.Type == RecordType.Fame ? _fame : _shame).Add(r));
+                    }
                 }
             }
             catch (Exception ex)
