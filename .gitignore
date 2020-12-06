@@ -4,6 +4,9 @@
 # Ignore client side libraries
 Client/wwwroot/lib
 
+# Ignore ServiceDependencies
+Server/Properties/ServiceDependencies
+
 # User-specific files
 *.rsuser
 *.suo
