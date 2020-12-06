@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text.Json;
 using WelcomeTo.Server.Repository;
 using WelcomeTo.Server.Services;
-using WelcomeTo.Shared;
+using WelcomeTo.Shared.Abstractions;
 using WelcomeTo.Shared.Extensions;
 
 namespace WelcomeTo.Server.Controllers
@@ -66,7 +66,20 @@ namespace WelcomeTo.Server.Controllers
         }
 
         [HttpPost("UpdatePlayerName")]
-        public void UpdatePlayerName(JsonElement json) => _gameRepository.ModifyGame(json.GetStringProperty("GameId"), game => game.Players.Single(p => p.Name == json.GetStringProperty("OldName")).Name = json.GetStringProperty("NewName"));
+        public bool UpdatePlayerName(JsonElement json)
+        {
+            return _gameRepository.ModifyGame(json.GetStringProperty("GameId"), game => 
+            {
+                var newName = json.GetStringProperty("NewName");
+                var canChangeName = !game.Players.Any(x => x.Name == newName);
+                if (canChangeName)
+                {
+                    game.Players.Single(p => p.Name == json.GetStringProperty("OldName")).Name = newName;
+                }
+
+                return canChangeName;
+            });
+        }
 
         [HttpPost("UpdatePlayerSheet")]
         public string UpdatePlayerSheet(JsonElement json)

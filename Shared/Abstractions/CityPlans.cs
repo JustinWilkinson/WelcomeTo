@@ -1,15 +1,15 @@
 ﻿using System;
 using WelcomeTo.Shared.Enumerations;
 
-namespace WelcomeTo.Shared
+namespace WelcomeTo.Shared.Abstractions
 {
-    public class CityPlans 
+    public record CityPlans 
     {
-        public CityPlan Plan1 { get; set; }
+        public CityPlan Plan1 { get; init; }
 
-        public CityPlan Plan2 { get; set; }
+        public CityPlan Plan2 { get; init; }
 
-        public CityPlan Plan3 { get; set; }
+        public CityPlan Plan3 { get; init; }
 
         public CityPlan this[PlanType planType]
         {

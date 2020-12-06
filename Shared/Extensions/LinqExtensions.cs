@@ -15,7 +15,7 @@ namespace WelcomeTo.Shared.Extensions
         /// <typeparam name="T">Type of elements in the enumerable</typeparam>
         /// <param name="enumerable">Enumerable to check for content</param>
         /// <returns></returns>
-        public static bool HasContent<T>(this IEnumerable<T> enumerable) => enumerable != null && enumerable.Any();
+        public static bool HasContent<T>(this IEnumerable<T> enumerable) => enumerable is not null && enumerable.Any();
 
         /// <summary>
         /// Shuffles an IEnumerable using the System.Random class.
@@ -51,17 +51,17 @@ namespace WelcomeTo.Shared.Extensions
         /// <param name="receivers">Collections to add values from the Enumerable to</param>
         public static void Distribute<T>(this IEnumerable<T> enumerable, params ICollection<T>[] receivers)
         {
-            if (receivers == null)
+            if (receivers is null)
             {
-                throw new ArgumentNullException("Provided receivers cannot be null!");
+                throw new ArgumentNullException(nameof(receivers), "Provided receivers cannot be null!");
             }
             else if (receivers.Length == 0)
             {
                 throw new ArgumentException("At least one receiver must be provided!");
             }
-            else if (receivers.Any(r => r == null))
+            else if (receivers.Any(r => r is null))
             {
-                throw new ArgumentNullException("Provided receivers cannot be null!");
+                throw new ArgumentNullException(nameof(receivers), "Provided receivers cannot be null!");
             }
             else
             {

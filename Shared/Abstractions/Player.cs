@@ -2,7 +2,7 @@
 using System.Linq;
 using WelcomeTo.Shared.Enumerations;
 
-namespace WelcomeTo.Shared
+namespace WelcomeTo.Shared.Abstractions
 {
     public class Player
     {
@@ -40,14 +40,14 @@ namespace WelcomeTo.Shared
             var house = street.Houses[selectedHouse.Index];
             house.Number = selectedHouse.Number;
 
-            if (selectedNumberEffectPair.Effect == CardType.Bis && selectedBisHouse != null)
+            if (selectedNumberEffectPair.Effect == CardType.Bis && selectedBisHouse is not null)
             {
                 var bisHouse = Board.GetStreet(selectedBisHouse.Street).Houses[selectedBisHouse.Index];
                 bisHouse.Number = selectedBisHouse.Number;
                 bisHouse.IsBis = true;
                 ScoreSheet.BisPoints.First(x => !x.IsCovered).IsCovered = true;
             }
-            else if (selectedNumberEffectPair.Effect == CardType.Park && selectedPark != null)
+            else if (selectedNumberEffectPair.Effect == CardType.Park && selectedPark is not null)
             {
                 street.Parks.Single(x => x.Points == selectedPark.Points).IsCovered = true;
                 switch (street.Position)
@@ -72,11 +72,11 @@ namespace WelcomeTo.Shared
                 house.Pool = PoolType.Built;
                 ScoreSheet.PoolPoints.First(x => !x.IsCovered).IsCovered = true;
             }
-            else if (selectedNumberEffectPair.Effect == CardType.Fence && selectedFenceHouse != null)
+            else if (selectedNumberEffectPair.Effect == CardType.Fence && selectedFenceHouse is not null)
             {
                 Board.GetStreet(selectedFenceHouse.Street).Houses[selectedFenceHouse.Index].FenceBuilt = true;
             }
-            else if (selectedNumberEffectPair.Effect == CardType.RealEstateValue && selectedRealEstateValue != null)
+            else if (selectedNumberEffectPair.Effect == CardType.RealEstateValue && selectedRealEstateValue is not null)
             {
                 ScoreSheet.RealEstateValuesTable[selectedRealEstateValue.Size][selectedRealEstateValue.Index].IsCovered = true;
             }

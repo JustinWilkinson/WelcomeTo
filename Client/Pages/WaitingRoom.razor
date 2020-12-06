@@ -6,7 +6,7 @@
 @inject GameHubCommunicator GameHub
 
 <h3>Waiting Room</h3>
-@if (_game == null)
+@if (_game is null)
 {
     if (_urlWrong)
     {
@@ -44,7 +44,7 @@ else
                         <td class="align-middle">@(i + 1)</td>
                         <td>
                             <input class="form-control" type="text" value="@playerName" disabled="@(playerName != _player.Name)" @onchange="e => ChangeNameAsync(e.Value.ToString())" />
-                            @if (playerName == _player.Name && _newNameValidationMessage != null)
+                            @if (playerName == _player.Name && _newNameValidationMessage is not null)
                             {
                                 <label class="text-danger ml-2">@_newNameValidationMessage</label>
                             }
@@ -93,12 +93,12 @@ else
         }
 
         _game = await Http.GetAsync<Game>($"api/Game/Get?id={GameId}");
-        if (_game != null)
+        if (_game is not null)
         {
             var playerName = Storage.PlayerName;
             if (_game.StartedAtUtc.HasValue)
             {
-                if (playerName != null && _game.Players.SingleOrDefault(p => p.Name == playerName) != null)
+                if (playerName is not null && _game.Players.SingleOrDefault(p => p.Name == playerName) is not null)
                 {
                     NavigationManager.NavigateTo($"PlayGame/{GameId}");
                 }
@@ -110,14 +110,14 @@ else
             else
             {
                 await ConfigureHubAsync();
-                if (playerName == null)
+                if (playerName is null)
                 {
                     await JoinGameAsync();
                 }
                 else
                 {
                     _player = _game.Players.SingleOrDefault(p => p.Name == playerName);
-                    if (_player == null)
+                    if (_player is null)
                     {
                         Storage.PlayerName = null;
                         await JoinGameAsync();
@@ -144,7 +144,7 @@ else
             }
             else
             {
-                if (Storage.PlayerName != null && !_game.Players.Any(p => p.Name == Storage.PlayerName))
+                if (Storage.PlayerName is not null && !_game.Players.Any(p => p.Name == Storage.PlayerName))
                 {
                     NavigationManager.NavigateTo("KickedByHost");
                 }
@@ -178,12 +178,20 @@ else
             else
             {
                 var oldName = _player.Name;
-                _game.Players.Single(x => x.Name == _player.Name).Name = newName;
-                _player.Name = newName;
-                Storage.PlayerName = newName;
-                await Http.PostAsync("api/Game/UpdatePlayerName", new { GameId = GameId, OldName = oldName, NewName = newName });
-                await GameHub.UpdateGameAsync(GameId);
-                _newNameValidationMessage = null;
+                var nameChanged = await Http.PostAsync<bool>("api/Game/UpdatePlayerName", new { GameId = GameId, OldName = oldName, NewName = newName });
+
+                if (nameChanged)
+                {
+                    _game.Players.Single(x => x.Name == _player.Name).Name = newName;
+                    _player.Name = newName;
+                    Storage.PlayerName = newName;
+                    await GameHub.UpdateGameAsync(GameId);
+                    _newNameValidationMessage = null;
+                }
+                else
+                {
+                    _newNameValidationMessage = $@"Another player just took the name: ""{newName}""!";
+                }
             }
         }
     }

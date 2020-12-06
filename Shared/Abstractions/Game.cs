@@ -4,7 +4,7 @@ using System.Linq;
 using WelcomeTo.Shared.Enumerations;
 using WelcomeTo.Shared.Extensions;
 
-namespace WelcomeTo.Shared
+namespace WelcomeTo.Shared.Abstractions
 {
     public class Game
     {
@@ -71,7 +71,7 @@ namespace WelcomeTo.Shared
 
         public bool CheckGameOver()
         {
-            var completedMessage = string.Join(", ", Players.Select(p => p.CompletedGameMessage()).Where(message => message != null));
+            var completedMessage = string.Join(", ", Players.Select(p => p.CompletedGameMessage()).Where(message => message is not null));
             if (!string.IsNullOrWhiteSpace(completedMessage))
             {
                 CompletedMessage = $"{completedMessage}.";

@@ -1,8 +1,8 @@
 ﻿using WelcomeTo.Shared.Enumerations;
 
-namespace WelcomeTo.Shared
+namespace WelcomeTo.Shared.Abstractions
 {
-    public class SelectedHouse
+    public record SelectedHouse
     {
         public StreetPosition Street { get; set; }
 

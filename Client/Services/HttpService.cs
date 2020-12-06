@@ -81,8 +81,8 @@ namespace WelcomeTo.Client.Services
 
         public async Task DeleteAsync(string requestUri) => await _client.DeleteAsync(requestUri);
 
-        private JsonContent GetJsonContent(object content) => JsonContent.Create(content ?? "null", content?.GetType() ?? typeof(string));
+        private static JsonContent GetJsonContent(object content) => JsonContent.Create(content ?? "null", content?.GetType() ?? typeof(string));
 
-        private async Task<T> DeserializeResponse<T>(HttpResponseMessage response) => (await response.Content.ReadAsStringAsync()).Deserialize<T>();
+        private static async Task<T> DeserializeResponse<T>(HttpResponseMessage response) => (await response.Content.ReadAsStringAsync()).Deserialize<T>();
     }
 }

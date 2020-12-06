@@ -2,7 +2,7 @@
 using System.Linq;
 using WelcomeTo.Shared.Enumerations;
 
-namespace WelcomeTo.Shared
+namespace WelcomeTo.Shared.Abstractions
 {
     public class Board
     {

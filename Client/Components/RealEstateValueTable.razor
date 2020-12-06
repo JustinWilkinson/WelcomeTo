@@ -19,7 +19,7 @@
                 @foreach (RealEstateSize size in Enum.GetValues(typeof(RealEstateSize)))
                 {
                     var cellValue = GetCellValue(size, i);
-                    if (cellValue != null && IsEditable(cellValue, size))
+                    if (cellValue is not null && IsEditable(cellValue, size))
                     {
                         var index = i;
                         if (IsSelectedCell(size, index))
@@ -76,14 +76,14 @@
     {
         if (SelectedNumberEffectPair?.Effect == CardType.RealEstateValue && !item.IsCovered)
         {
-            var optionsLeftInList = CellValues[size].Where(c => c != null && !c.IsCovered).ToList();
+            var optionsLeftInList = CellValues[size].Where(c => c is not null && !c.IsCovered).ToList();
             return optionsLeftInList.Count > 1 && optionsLeftInList[0].Points == item.Points;
         }
 
         return false;
     }
 
-    private bool IsSelectedCell(RealEstateSize size, int index) => PlayerSheet.SelectedRealEstateValue != null && PlayerSheet.SelectedRealEstateValue.Size == size && PlayerSheet.SelectedRealEstateValue.Index == index;
+    private bool IsSelectedCell(RealEstateSize size, int index) => PlayerSheet.SelectedRealEstateValue is not null && PlayerSheet.SelectedRealEstateValue.Size == size && PlayerSheet.SelectedRealEstateValue.Index == index;
 
     private void SelectCellValue(RealEstateSize size, int index)
     {

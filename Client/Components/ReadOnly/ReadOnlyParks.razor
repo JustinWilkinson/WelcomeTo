@@ -1,4 +1,4 @@
-﻿@if (Street.Parks != null && Street.Parks.Count > 0)
+﻿@if (Street.Parks is not null && Street.Parks.Count > 0)
 {
     <div class="row">
         @foreach (var park in Street.Parks)

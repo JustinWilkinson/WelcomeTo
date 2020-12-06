@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using WelcomeTo.Shared;
+using WelcomeTo.Shared.Abstractions;
 using WelcomeTo.Shared.Enumerations;
 
 namespace WelcomeTo.Server.Configuration

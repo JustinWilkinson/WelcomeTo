@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace WelcomeTo.Shared
+namespace WelcomeTo.Shared.Interfaces
 {
     public interface IGameHub
     {
