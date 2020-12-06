@@ -2,9 +2,9 @@
 using System.Linq;
 using WelcomeTo.Shared.Enumerations;
 
-namespace WelcomeTo.Shared
+namespace WelcomeTo.Shared.Abstractions
 {
-    public class Street
+    public record Street
     {
         public StreetPosition Position { get; set; }
 
@@ -47,7 +47,7 @@ namespace WelcomeTo.Shared
 
         public IEnumerable<int> GetPossibileNumbersForUnbuiltHouse(House house, NumberEffectPair selectedNumberEffectPair)
         {
-            if (house.Number.HasValue || selectedNumberEffectPair == null)
+            if (house.Number.HasValue || selectedNumberEffectPair is null)
             {
                 yield break;
             }
@@ -80,7 +80,7 @@ namespace WelcomeTo.Shared
 
                 foreach (var possibility in possibilities)
                 {
-                    if ((nearestHouseLeft == null || possibility > nearestHouseLeft.Number.Value) && (nearestHouseRight == null || possibility < nearestHouseRight.Number.Value))
+                    if ((nearestHouseLeft is null || possibility > nearestHouseLeft.Number.Value) && (nearestHouseRight == null || possibility < nearestHouseRight.Number.Value))
                     {
                         yield return possibility;
                     }
@@ -92,13 +92,13 @@ namespace WelcomeTo.Shared
         public IEnumerable<int> GetPossibleBisNumbersForUnbuiltHouse(House house, SelectedHouse selectedHouse)
         {
             var houseToTheLeft = Houses.SingleOrDefault(x => x.Index == house.Index - 1);
-            if (houseToTheLeft != null && !houseToTheLeft.FenceBuilt)
+            if (houseToTheLeft is not null && !houseToTheLeft.FenceBuilt)
             {
                 if (houseToTheLeft.Number.HasValue)
                 {
                     yield return houseToTheLeft.Number.Value;
                 }
-                else if (selectedHouse != null && selectedHouse.Street == Position && selectedHouse.Index == houseToTheLeft.Index)
+                else if (selectedHouse is not null && selectedHouse.Street == Position && selectedHouse.Index == houseToTheLeft.Index)
                 {
                     yield return selectedHouse.Number;
                 }
@@ -107,13 +107,13 @@ namespace WelcomeTo.Shared
             if (!house.FenceBuilt)
             {
                 var houseToTheRight = Houses.SingleOrDefault(x => x.Index == house.Index + 1);
-                if (houseToTheRight != null)
+                if (houseToTheRight is not null)
                 {
                     if (houseToTheRight.Number.HasValue)
                     {
                         yield return houseToTheRight.Number.Value;
                     }
-                    else if (selectedHouse != null && selectedHouse.Street == Position && selectedHouse.Index == houseToTheRight.Index)
+                    else if (selectedHouse is not null && selectedHouse.Street == Position && selectedHouse.Index == houseToTheRight.Index)
                     {
                         yield return selectedHouse.Number;
                     }

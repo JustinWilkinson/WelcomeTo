@@ -6,7 +6,7 @@
 @inject IJSRuntime JSRuntime
 @inject GameHubCommunicator GameHub
 
-@if (Game == null)
+@if (Game is null)
 {
     if (_urlWrong)
     {
@@ -17,7 +17,7 @@
         <p><em>Loading...</em></p>
     }
 }
-else if (IdentifiedPlayer == null)
+else if (IdentifiedPlayer is null)
 {
     <p>Sorry, it doesn't look like you're part of this game. <NavLink href="NewGame" Match="NavLinkMatch.All">Click here to host a new game</NavLink></p>
 }
@@ -127,7 +127,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         Game = await Http.GetAsync<Game>($"api/Game/Get?id={GameId}");
-        if (Game == null)
+        if (Game is null)
         {
             _urlWrong = true;
         }
@@ -135,7 +135,7 @@ else
         {
             IdentifiedPlayer = Game.Players.SingleOrDefault(x => x.Name == Storage.PlayerName);
 
-            if (IdentifiedPlayer != null)
+            if (IdentifiedPlayer is not null)
             {
                 await ConfigureHubAsync();
 
@@ -188,7 +188,7 @@ else
         }
         else
         {
-            if (SelectedNumberEffectPair == null || SelectedNumberEffectPair.DeckIndex != index)
+            if (SelectedNumberEffectPair is null || SelectedNumberEffectPair.DeckIndex != index)
             {
                 SelectedNumberEffectPair = Game.CurrentTurn.GetNumberEffectPairs().Single(x => x.DeckIndex == index);
             }
@@ -237,5 +237,5 @@ else
         StateHasChanged();
     }
 
-    private string GetOptionsClass(DeckIndex index) => $"{(_actionTakenButNotSaved || _showWaitingMessage || _showGameOverMessage ? "not-allowed" : "pointer")}{(SelectedNumberEffectPair == null || SelectedNumberEffectPair.DeckIndex == index ? "" : " blurred")}";
+    private string GetOptionsClass(DeckIndex index) => $"{(_actionTakenButNotSaved || _showWaitingMessage || _showGameOverMessage ? "not-allowed" : "pointer")}{(SelectedNumberEffectPair is null || SelectedNumberEffectPair.DeckIndex == index ? "" : " blurred")}";
 }

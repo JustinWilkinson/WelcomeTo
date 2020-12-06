@@ -2,7 +2,7 @@
 using System.Linq;
 using WelcomeTo.Shared.Extensions;
 
-namespace WelcomeTo.Shared
+namespace WelcomeTo.Shared.Abstractions
 {
     public class GameDeck
     {

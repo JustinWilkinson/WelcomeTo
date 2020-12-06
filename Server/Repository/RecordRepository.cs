@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Linq;
 using WelcomeTo.Server.Extensions;
-using WelcomeTo.Shared;
+using WelcomeTo.Shared.Abstractions;
 using WelcomeTo.Shared.Enumerations;
 using WelcomeTo.Shared.Extensions;
 
@@ -127,7 +127,7 @@ namespace WelcomeTo.Server.Repository
         private bool CheckForFameRecord(string gameName, string playerName, int score, DateTime now)
         {
             var beatenRecord = _fame.FirstOrDefault(r => score >= r.Score);
-            if (beatenRecord != null || _fame.Count < RECORD_COUNT)
+            if (beatenRecord is not null || _fame.Count < RECORD_COUNT)
             {
                 var newRecord = new Record
                 {
@@ -161,7 +161,7 @@ namespace WelcomeTo.Server.Repository
         private bool CheckForShameRecord(string gameName, string playerName, int score, DateTime now)
         {
             var beatenRecord = _shame.FirstOrDefault(r => score <= r.Score);
-            if (beatenRecord != null || _shame.Count < RECORD_COUNT)
+            if (beatenRecord is not null || _shame.Count < RECORD_COUNT)
             {
                 var newRecord = new Record
                 {

@@ -39,7 +39,7 @@
                                 }
                             </select>
                         }
-                        else if (PlayerSheet.SelectedHouse == null && possibleHouseNumbers.HasContent())
+                        else if (PlayerSheet.SelectedHouse is null && possibleHouseNumbers.HasContent())
                         {
                             <select class="form-control py-0 rounded-0 centered-select" @onchange="OnHouseSelected">
                                 <option value="0" selected>Select</option>
@@ -51,10 +51,10 @@
                         }
                         else
                         {
-                            var possibleBisNumbers = PlayerSheet.SelectedHouse != null && SelectedNumberEffectPair?.Effect == CardType.Bis ? Street.GetPossibleBisNumbersForUnbuiltHouse(House, PlayerSheet.SelectedHouse) : null;
+                            var possibleBisNumbers = PlayerSheet.SelectedHouse is not null && SelectedNumberEffectPair?.Effect == CardType.Bis ? Street.GetPossibleBisNumbersForUnbuiltHouse(House, PlayerSheet.SelectedHouse) : null;
                             if (possibleBisNumbers.HasContent())
                             {
-                                if (PlayerSheet.SelectedBisHouse != null && PlayerSheet.SelectedBisHouse.Street == Street.Position && PlayerSheet.SelectedBisHouse.Index == House.Index)
+                                if (PlayerSheet.SelectedBisHouse is not null && PlayerSheet.SelectedBisHouse.Street == Street.Position && PlayerSheet.SelectedBisHouse.Index == House.Index)
                                 {
                                     <select class="form-control py-0 rounded-0 centered-select" @onchange="OnBisHouseSelected">
                                         <option value="0">Select</option>
@@ -71,7 +71,7 @@
                                         }
                                     </select>
                                 }
-                                else if (PlayerSheet.SelectedBisHouse == null)
+                                else if (PlayerSheet.SelectedBisHouse is null)
                                 {
                                     <select class="form-control py-0 rounded-0 centered-select" @onchange="OnBisHouseSelected">
                                         <option value="0" selected>Select</option>
@@ -112,7 +112,7 @@
     [Parameter]
     public House House { get; set; }
 
-    private bool OnSelectedStreet => PlayerSheet.SelectedHouse != null && PlayerSheet.SelectedHouse.Street == Street.Position;
+    private bool OnSelectedStreet => PlayerSheet.SelectedHouse is not null && PlayerSheet.SelectedHouse.Street == Street.Position;
     private bool IsSelectedHouse => OnSelectedStreet && PlayerSheet.SelectedHouse.Index == House.Index;
 
     private string GetHouseClass()
@@ -123,7 +123,7 @@
         {
             houseClass += " house-first";
         }
-        if (House.FenceBuilt || (PlayerSheet.SelectedFenceHouse != null && PlayerSheet.SelectedFenceHouse.Street == Street.Position && PlayerSheet.SelectedFenceHouse.Index == House.Index))
+        if (House.FenceBuilt || (PlayerSheet.SelectedFenceHouse is not null && PlayerSheet.SelectedFenceHouse.Street == Street.Position && PlayerSheet.SelectedFenceHouse.Index == House.Index))
         {
             houseClass += " house-fenced";
         }
@@ -144,7 +144,7 @@
         if (!House.FenceBuilt && SelectedNumberEffectPair?.Effect == CardType.Fence && !House.InFinalEstate)
         {
             var houseToTheRight = Street.Houses.SingleOrDefault(x => x.Index == House.Index + 1);
-            if (houseToTheRight == null || !houseToTheRight.Number.HasValue || houseToTheRight.Number != House.Number)
+            if (houseToTheRight is null || !houseToTheRight.Number.HasValue || houseToTheRight.Number != House.Number)
             {
                 return true;
             }
@@ -155,7 +155,7 @@
 
     private void OnHouseSelected(ChangeEventArgs e)
     {
-        if (SelectedNumberEffectPair != null)
+        if (SelectedNumberEffectPair is not null)
         {
             var selectedNumber = Convert.ToInt32(e.Value);
             var selectedHouse = selectedNumber >= 0 ? new SelectedHouse { Street = Street.Position, Index = House.Index, Number = selectedNumber } : null;
@@ -178,7 +178,7 @@
         if (CanBuildFence())
         {
             var oldSelection = PlayerSheet.SelectedFenceHouse;
-            var newSelection = oldSelection != null && oldSelection.Index == House.Index ? null : new SelectedHouse { Street = Street.Position, Index = House.Index };
+            var newSelection = oldSelection is not null && oldSelection.Index == House.Index ? null : new SelectedHouse { Street = Street.Position, Index = House.Index };
             PlayerSheet.SelectedFenceChanged(newSelection);
         }
     }

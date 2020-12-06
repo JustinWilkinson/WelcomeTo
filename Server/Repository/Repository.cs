@@ -88,7 +88,7 @@ namespace WelcomeTo.Server.Repository
             using var connection = GetOpenConnection();
             command.Connection = connection;
             var scalar = command.ExecuteScalar();
-            return converter != null ? converter(scalar) : (T)scalar;
+            return converter is not null ? converter(scalar) : (T)scalar;
         }
 
         /// <summary>

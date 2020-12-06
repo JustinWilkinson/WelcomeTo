@@ -1,4 +1,4 @@
-﻿@if (Street.Parks != null && Street.Parks.Count > 0)
+﻿@if (Street.Parks is not null && Street.Parks.Count > 0)
 {
     <div class="row">
         @foreach (var park in _coveredParks)
@@ -14,7 +14,7 @@
             var park = _uncoveredParks[i];
             if (i == 0 && _uncoveredParks.Count > 1 && PlayerSheet.SelectedNumberEffectPair?.Effect == CardType.Park && PlayerSheet.SelectedHouse?.Street == Street.Position)
             {
-                if (PlayerSheet.SelectedPark == null)
+                if (PlayerSheet.SelectedPark is null)
                 {
                     <div class="col-2 text-muted text-center mr-auto pointer">
                         <div class="rounded-circle bg-warning">@park.Points</div>

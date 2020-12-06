@@ -18,7 +18,7 @@ namespace WelcomeTo.Client.Services
             set
             {
                 _gameId = value;
-                if (value != null)
+                if (value is not null)
                 {
                     _storage.SetItem("GameId", value);
                 }
@@ -36,7 +36,7 @@ namespace WelcomeTo.Client.Services
             set
             {
                 _playerName = value;
-                if (value != null)
+                if (value is not null)
                 {
                     _storage.SetItem("PlayerName", value);
                 }

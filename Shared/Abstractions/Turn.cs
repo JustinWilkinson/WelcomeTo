@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using WelcomeTo.Shared.Enumerations;
 
-namespace WelcomeTo.Shared
+namespace WelcomeTo.Shared.Abstractions
 {
-    public class Turn
+    public record Turn
     {
         public Card HouseNumberCard1 { get; set; }
 

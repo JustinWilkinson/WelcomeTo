@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using WelcomeTo.Server.Configuration;
-using WelcomeTo.Shared;
+using WelcomeTo.Shared.Abstractions;
 using WelcomeTo.Shared.Enumerations;
 using WelcomeTo.Shared.Extensions;
 

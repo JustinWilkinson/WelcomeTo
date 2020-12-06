@@ -13,7 +13,7 @@
                     }
                     else if (Player.CanPerformAction(Game.CurrentTurn))
                     {
-                        if (SelectedHouse != null)
+                        if (SelectedHouse is not null)
                         {
                             <button class="btn btn-primary ml-auto" @onclick="() => UpdatePlayerSheetAsync()">Confirm Action</button>
                         }
@@ -73,7 +73,7 @@
         SelectedFenceChanged(null, false);
         SelectedBisHouseChanged(null, false);
 
-        if (house == null)
+        if (house is null)
         {
             SelectedRealEstateValueChanged(null, false);
         }
@@ -112,7 +112,7 @@
     {
         if (!isReconfirm)
         {
-            if (SelectedHouse != null)
+            if (SelectedHouse is not null)
             {
                 Player.ProcessAction(SelectedNumberEffectPair, SelectedHouse, SelectedBisHouse, SelectedFenceHouse, SelectedPark, SelectedRealEstateValue);
                 SelectedHouseChanged(null, false);
