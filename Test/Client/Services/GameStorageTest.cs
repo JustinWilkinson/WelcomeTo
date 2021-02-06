@@ -1,29 +1,26 @@
 ﻿using Cloudcrate.AspNetCore.Blazor.Browser.Storage;
 using Microsoft.JSInterop;
 using Moq;
-using NUnit.Framework;
 using WelcomeTo.Client.Services;
+using Xunit;
 
 namespace WelcomeTo.Test.Client.Services
 {
-    [TestFixture]
     public class GameStorageTest
     {
         private readonly Mock<IJsRuntimeWrapper> _mockJSRuntime = new Mock<IJsRuntimeWrapper>();
-        private GameStorage _gameStorage;
+        private readonly GameStorage _gameStorage;
         private const string GameId = "GameId";
         private const string PlayerName = "PlayerName";
 
-        [SetUp]
-        public void SetUp()
+        public GameStorageTest()
         {
-            _mockJSRuntime.Reset();
             _mockJSRuntime.Setup(s => s.Invoke<string>(It.IsAny<string>(), GameId)).Returns(GameId);
             _mockJSRuntime.Setup(s => s.Invoke<string>(It.IsAny<string>(), PlayerName)).Returns(PlayerName);
             _gameStorage = new GameStorage(new LocalStorage(_mockJSRuntime.Object));
         }
 
-        [Test]
+        [Fact]
         public void GameStorage_Caches_GameId()
         {
             // Arrange
@@ -37,12 +34,12 @@ namespace WelcomeTo.Test.Client.Services
             // Assert
             _mockJSRuntime.Verify(s => s.Invoke<string>(It.IsAny<string>(), GameId), Times.Once);
             _mockJSRuntime.Verify(s => s.Invoke<object>(It.IsAny<string>(), GameId, newGameId), Times.Once);
-            Assert.AreEqual(GameId, callOne);
-            Assert.AreEqual(newGameId, callTwo);
+            Assert.Equal(GameId, callOne);
+            Assert.Equal(newGameId, callTwo);
         }
 
 
-        [Test]
+        [Fact]
         public void GameStorage_Caches_PlayerName()
         {
             // Arrange
@@ -56,11 +53,11 @@ namespace WelcomeTo.Test.Client.Services
             // Assert
             _mockJSRuntime.Verify(s => s.Invoke<string>(It.IsAny<string>(), PlayerName), Times.Once);
             _mockJSRuntime.Verify(s => s.Invoke<object>(It.IsAny<string>(), PlayerName, newPlayerName), Times.Once);
-            Assert.AreEqual(PlayerName, callOne);
-            Assert.AreEqual(newPlayerName, callTwo);
+            Assert.Equal(PlayerName, callOne);
+            Assert.Equal(newPlayerName, callTwo);
         }
 
-        [Test]
+        [Fact]
         public void GameStorage_SettingGameIdToNull_RemovesGameId()
         {
             // Act
@@ -70,7 +67,7 @@ namespace WelcomeTo.Test.Client.Services
             _mockJSRuntime.Verify(s => s.Invoke<object>(It.IsAny<string>(), GameId), Times.Once);
         }
 
-        [Test]
+        [Fact]
         public void GameStorage_SettingPlayerNameToNull_RemovesPlayerName()
         {
             // Act
