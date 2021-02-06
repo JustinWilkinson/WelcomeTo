@@ -1,15 +1,14 @@
-﻿using NUnit.Framework;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using WelcomeTo.Shared.Abstractions;
 using WelcomeTo.Shared.Enumerations;
+using Xunit;
 
 namespace WelcomeTo.Test.Shared
 {
-    [TestFixture]
     public class StreetTests
     {
-        [Test]
+        [Fact]
         public void GetEstates_ForGivenStreet_ReturnsCorrectValues()
         {
             // Arrange 
@@ -36,19 +35,19 @@ namespace WelcomeTo.Test.Shared
             var estates = street.GetEstates();
 
             // Assert
-            Assert.AreEqual(3, estates.Count);
-            Assert.AreEqual(3, estates[0].HouseIndices.Count);
-            Assert.AreEqual(0, estates[0].HouseIndices[0]);
-            Assert.AreEqual(1, estates[0].HouseIndices[1]);
-            Assert.AreEqual(2, estates[0].HouseIndices[2]);
-            Assert.AreEqual(1, estates[1].HouseIndices.Count);
-            Assert.AreEqual(8, estates[1].HouseIndices[0]);
-            Assert.AreEqual(2, estates[2].HouseIndices.Count);
-            Assert.AreEqual(10, estates[2].HouseIndices[0]);
-            Assert.AreEqual(11, estates[2].HouseIndices[1]);
+            Assert.Equal(3, estates.Count);
+            Assert.Equal(3, estates[0].HouseIndices.Count);
+            Assert.Equal(0, estates[0].HouseIndices[0]);
+            Assert.Equal(1, estates[0].HouseIndices[1]);
+            Assert.Equal(2, estates[0].HouseIndices[2]);
+            Assert.Single(estates[1].HouseIndices);
+            Assert.Equal(8, estates[1].HouseIndices[0]);
+            Assert.Equal(2, estates[2].HouseIndices.Count);
+            Assert.Equal(10, estates[2].HouseIndices[0]);
+            Assert.Equal(11, estates[2].HouseIndices[1]);
         }
 
-        [Test]
+        [Fact]
         public void GetPossibileNumbersForUnbuiltHouse_NormalCardSelected_ReturnsCorrectOptions()
         {
             // Arrange
@@ -79,13 +78,12 @@ namespace WelcomeTo.Test.Shared
 
                 if (house.Index == 5)
                 {
-                    Assert.IsTrue(possibleHouseNumbers.Any());
-                    Assert.AreEqual(1, possibleHouseNumbers.Length);
-                    Assert.AreEqual(8, possibleHouseNumbers[0]);
+                    Assert.True(possibleHouseNumbers.Any());
+                    Assert.Equal(8, Assert.Single(possibleHouseNumbers));
                 }
                 else
                 {
-                    Assert.IsFalse(possibleHouseNumbers.Any());
+                    Assert.False(possibleHouseNumbers.Any());
                 }
             }
 

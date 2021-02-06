@@ -1,14 +1,13 @@
-﻿using NUnit.Framework;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using WelcomeTo.Shared.Extensions;
+using Xunit;
 
 namespace WelcomeTo.Test.Shared.Extensions
 {
-    [TestFixture]
     public class LinqExtensionsTest
     {
-        [Test]
+        [Fact]
         public void Without_SourceEnumerableWithDuplicatedElement_ExcludesOnlyOne()
         {
             // Arrange
@@ -19,8 +18,7 @@ namespace WelcomeTo.Test.Shared.Extensions
             var result = source.Without(exclude).ToArray();
 
             // Assert
-            Assert.AreEqual(1, result.Length);
-            Assert.AreEqual(5, result[0]);
+            Assert.Equal(5, Assert.Single(result));
         }
     }
 }
