@@ -4,7 +4,7 @@ using WelcomeTo.Shared.Enumerations;
 
 namespace WelcomeTo.Shared.Abstractions
 {
-    public class Player
+    public record Player
     {
         public string Name { get; set; }
 

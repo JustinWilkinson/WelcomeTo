@@ -8,7 +8,7 @@ namespace WelcomeTo.Test.Client.Services
 {
     public class GameStorageTest
     {
-        private readonly Mock<IJsRuntimeWrapper> _mockJSRuntime = new Mock<IJsRuntimeWrapper>();
+        private readonly Mock<IJsRuntimeWrapper> _mockJSRuntime = new();
         private readonly GameStorage _gameStorage;
         private const string GameId = "GameId";
         private const string PlayerName = "PlayerName";

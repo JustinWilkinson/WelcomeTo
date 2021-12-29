@@ -28,10 +28,10 @@ namespace WelcomeTo.Server.Repository
         private const int RECORD_COUNT = 5;
 
         private readonly ILogger<RecordRepository> _logger;
-        private readonly object _cacheLock =  new object();
+        private readonly object _cacheLock =  new();
 
-        private List<Record> _fame = new List<Record>();
-        private List<Record> _shame = new List<Record>();
+        private List<Record> _fame = new();
+        private List<Record> _shame = new();
         private bool _unsavedChanges = false;
 
         public RecordRepository(ILogger<RecordRepository> logger) : base("CREATE TABLE IF NOT EXISTS Records (RecordsJson text)")

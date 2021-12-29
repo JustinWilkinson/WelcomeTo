@@ -30,11 +30,11 @@ namespace WelcomeTo.Server.Services
         private readonly IEnumerable<int> _bisPoints;
         private readonly IEnumerable<int> _refusalPoints;
 
-        private readonly List<CityPlan> _cityPlans1 = new List<CityPlan>();
-        private readonly List<CityPlan> _cityPlans2 = new List<CityPlan>();
-        private readonly List<CityPlan> _cityPlans3 = new List<CityPlan>();
+        private readonly List<CityPlan> _cityPlans1 = new();
+        private readonly List<CityPlan> _cityPlans2 = new();
+        private readonly List<CityPlan> _cityPlans3 = new();
 
-        private readonly Random _random = new Random();
+        private readonly Random _random = new();
 
         public GameBuilder(IOptions<ApplicationOptions> options)
         {
@@ -84,14 +84,14 @@ namespace WelcomeTo.Server.Services
             };
         }
 
-        public Board StartingBoard => new Board
+        public Board StartingBoard => new()
         {
             TopStreet = BuildStreet(StreetPosition.Top),
             MiddleStreet = BuildStreet(StreetPosition.Middle),
             BottomStreet = BuildStreet(StreetPosition.Bottom)
         };
 
-        public ScoreSheet StartingScoreSheet => new ScoreSheet
+        public ScoreSheet StartingScoreSheet => new()
         {
             RealEstateValuesTable = _realEstateSizeValues.ToDictionary(s => s.Key, s => s.Value.Select(points => new PointsListItem { Points = points, IsCovered = false }).ToList()),
             PoolPoints = _poolPoints.Select(points => new PointsListItem { Points = points, IsCovered = false }).ToList(),

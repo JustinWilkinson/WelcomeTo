@@ -5,7 +5,7 @@ using WelcomeTo.Shared.Enumerations;
 
 namespace WelcomeTo.Shared.Abstractions
 {
-    public class ScoreSheet
+    public record ScoreSheet
     {
         public Dictionary<RealEstateSize, List<PointsListItem>> RealEstateValuesTable { get; set; }
 

@@ -7,10 +7,10 @@ namespace WelcomeTo.Test.Shared.Extensions
     public class JsonExtensionsTest
     {
 
-        private static readonly TestSerializerClass _testObject = new TestSerializerClass { IntValue = 1, StringValue = "Value", BooleanValue = true, camelCaseStringValue = "value", camelCaseBooleanValue = false };
+        private static readonly TestSerializerClass _testObject = new() { IntValue = 1, StringValue = "Value", BooleanValue = true, camelCaseStringValue = "value", camelCaseBooleanValue = false };
         private static readonly JsonElement _objectJsonElement = JsonDocument.Parse(JsonSerializer.Serialize(_testObject)).RootElement;
 
-        private static readonly TestWithObjectProperty _testWithObjectProperty = new TestWithObjectProperty { ObjectProperty = _testObject, camelCaseObjectProperty = _testObject };
+        private static readonly TestWithObjectProperty _testWithObjectProperty = new() { ObjectProperty = _testObject, camelCaseObjectProperty = _testObject };
         private static readonly JsonElement _testWithObjectPropertyJsonElement = JsonDocument.Parse(JsonSerializer.Serialize(_testWithObjectProperty)).RootElement;
 
         [Fact]

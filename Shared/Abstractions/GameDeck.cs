@@ -4,7 +4,7 @@ using WelcomeTo.Shared.Extensions;
 
 namespace WelcomeTo.Shared.Abstractions
 {
-    public class GameDeck
+    public record GameDeck
     {
         public List<Card> Deck1 { get; set; }
 

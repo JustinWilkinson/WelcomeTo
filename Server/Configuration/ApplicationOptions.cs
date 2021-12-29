@@ -4,26 +4,26 @@ using WelcomeTo.Shared.Enumerations;
 
 namespace WelcomeTo.Server.Configuration
 {
-    public class ApplicationOptions
+    public record ApplicationOptions
     {
-        public string ConnectionString { get; set; }
+        public string ConnectionString { get; init; }
 
-        public Dictionary<CardType, List<int>> CardDistribution { get; set; }
+        public Dictionary<CardType, List<int>> CardDistribution { get; init; }
 
-        public List<CityPlan> CityPlans { get; set; }
+        public List<CityPlan> CityPlans { get; init; }
 
-        public Dictionary<StreetPosition, List<bool>> PoolPositions { get; set; }
+        public Dictionary<StreetPosition, List<bool>> PoolPositions { get; init; }
 
-        public Dictionary<StreetPosition, List<int>> ParkPoints { get; set; }
+        public Dictionary<StreetPosition, List<int>> ParkPoints { get; init; }
 
-        public Dictionary<RealEstateSize, List<int>> RealEstateSizes { get; set; }
+        public Dictionary<RealEstateSize, List<int>> RealEstateSizes { get; init; }
 
-        public IEnumerable<int> PoolPoints { get; set; }
+        public IEnumerable<int> PoolPoints { get; init; }
 
-        public IEnumerable<int> TempAgencyPoints { get; set; }
+        public IEnumerable<int> TempAgencyPoints { get; init; }
 
-        public IEnumerable<int> BisPoints { get; set; }
+        public IEnumerable<int> BisPoints { get; init; }
 
-        public IEnumerable<int> RefusalPoints { get; set; }
+        public IEnumerable<int> RefusalPoints { get; init; }
     }
 }
