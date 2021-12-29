@@ -25,7 +25,7 @@ namespace WelcomeTo.Shared.Extensions
         /// <param name="numberOfShuffles">Number of times to shuffle</param>
         public static IEnumerable<T> Shuffle<T>(this IEnumerable<T> enumerable, int numberOfShuffles = 5)
         {
-            Random random = new Random();
+            Random random = new();
             var array = enumerable.ToArray();
 
             for (var i = 0; i < numberOfShuffles; i++)

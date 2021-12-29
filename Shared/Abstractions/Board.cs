@@ -4,7 +4,7 @@ using WelcomeTo.Shared.Enumerations;
 
 namespace WelcomeTo.Shared.Abstractions
 {
-    public class Board
+    public record Board
     {
         public string TownName { get; set; }
 

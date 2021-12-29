@@ -6,7 +6,7 @@ using WelcomeTo.Shared.Extensions;
 
 namespace WelcomeTo.Shared.Abstractions
 {
-    public class Game
+    public record Game
     {
         public Guid Id { get; set; }
 

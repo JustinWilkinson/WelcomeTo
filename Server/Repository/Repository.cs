@@ -12,7 +12,7 @@ namespace WelcomeTo.Server.Repository
     /// </summary>
     public abstract class Repository
     {
-        private static string _connectionString;
+        private static string ConnectionString;
 
         /// <summary>
         /// Creates the database if it doesn't exist, and stores the connection string in memory to limit hits on config file.
@@ -20,8 +20,8 @@ namespace WelcomeTo.Server.Repository
         /// <param name="connectionString"></param>
         public static void CreateDatabase(string connectionString)
         {
-            _connectionString = connectionString;
-            var path = new SQLiteConnectionStringBuilder(_connectionString).DataSource;
+            ConnectionString = connectionString;
+            var path = new SQLiteConnectionStringBuilder(ConnectionString).DataSource;
             if (!File.Exists(path))
             {
                 SQLiteConnection.CreateFile(path);
@@ -44,7 +44,7 @@ namespace WelcomeTo.Server.Repository
         /// </summary>
         protected SQLiteConnection GetOpenConnection()
         {
-            var connection = new SQLiteConnection(_connectionString);
+            var connection = new SQLiteConnection(ConnectionString);
             connection.Open();
             return connection;
         }

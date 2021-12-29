@@ -63,7 +63,7 @@ namespace WelcomeTo.Server.Repository
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"An error occurred retrieving game '{id}'.");
+                _logger.LogError(ex, "An error occurred retrieving game '{id}'.", id);
                 throw;
             }
         }
@@ -93,7 +93,7 @@ namespace WelcomeTo.Server.Repository
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"An error occurred saving game '{game.Id}'.");
+                _logger.LogError(ex, "An error occurred saving game '{id}'.", game.Id);
                 throw;
             }
         }
@@ -155,7 +155,7 @@ namespace WelcomeTo.Server.Repository
             }
         }
 
-        private void UpdateGame(SQLiteConnection connection, Game game)
+        private static void UpdateGame(SQLiteConnection connection, Game game)
         {
             var updateCommand = new SQLiteCommand("UPDATE Games SET GameJson = @Json WHERE Id = @Id", connection);
             updateCommand.AddParameter("@Id", game.Id);
