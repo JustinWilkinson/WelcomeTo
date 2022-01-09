@@ -23,11 +23,12 @@ namespace WelcomeTo.Server
                 var jobScheduler = await JobScheduler.GetSchedulerAsync();
                 await jobScheduler.ScheduleDailyJobAsync<CleanUpJob>("CleanUp", "DailyCleanUpTrigger");
 
-                webHost.Run();
+                await webHost.RunAsync();
             }
             catch (Exception ex)
             {
                 logger.Error(ex, "A fatal exception occurred causing the application to terminate.");
+                throw;
             }
             finally
             {

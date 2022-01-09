@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
 using System.IO;
+using System.Threading.Tasks;
 using WelcomeTo.Shared.Extensions;
 
 namespace WelcomeTo.Server.Repository
@@ -13,6 +14,10 @@ namespace WelcomeTo.Server.Repository
     public abstract class Repository
     {
         private static string ConnectionString;
+
+
+        private bool _initializing;
+        private bool _initialized;
 
         /// <summary>
         /// Creates the database if it doesn't exist, and stores the connection string in memory to limit hits on config file.
@@ -29,42 +34,20 @@ namespace WelcomeTo.Server.Repository
         }
 
         /// <summary>
-        /// Intended to allow inheriting repositories to remove boilerplate, use this to create the database table for the repository.
-        /// </summary>
-        /// <param name="createTable">Command to run on instantiation</param>
-        protected Repository(string createTable)
-        {
-            using var connection = GetOpenConnection();
-            var command = new SQLiteCommand(createTable, connection);
-            command.ExecuteNonQuery();
-        }
-
-        /// <summary>
-        /// Returns an open SQLiteConnection.
-        /// </summary>
-        protected SQLiteConnection GetOpenConnection()
-        {
-            var connection = new SQLiteConnection(ConnectionString);
-            connection.Open();
-            return connection;
-        }
-
-
-        /// <summary>
         /// Creates a SQLiteCommand from the provided string and executes it using a new connection.
         /// </summary>
         /// <param name="commandString">Command text to execute</param>
-        protected void Execute(string commandString) => Execute(new SQLiteCommand(commandString));
+        protected Task Execute(string commandString) => Execute(new SQLiteCommand(commandString));
 
         /// <summary>
         /// Executes the provided command using a new connection.
         /// </summary>
         /// <param name="command">Command to execute</param>
-        protected void Execute(SQLiteCommand command)
+        protected async Task Execute(SQLiteCommand command)
         {
-            using var connection = GetOpenConnection();
+            await using var connection = await GetOpenConnection();
             command.Connection = connection;
-            command.ExecuteNonQuery();
+            await command.ExecuteNonQueryAsync();
         }
 
         /// <summary>
@@ -74,7 +57,7 @@ namespace WelcomeTo.Server.Repository
         /// <param name="commandString">Command text to execute</param>
         /// <param name="converter">Conversion method for returned value</param>
         /// <returns>An instance of T created by converting the returned value with the specified converter.</returns>
-        protected T ExecuteScalar<T>(string commandString, Func<object, T> converter = null) => ExecuteScalar(new SQLiteCommand(commandString), converter);
+        protected Task<T> ExecuteScalar<T>(string commandString, Func<object, T> converter = null) => ExecuteScalar(new SQLiteCommand(commandString), converter);
 
         /// <summary>
         /// Executes the provided SQLiteCommand using a new connection, returning a scalar value using the specified converter.
@@ -83,11 +66,11 @@ namespace WelcomeTo.Server.Repository
         /// <param name="command">Command text to execute</param>
         /// <param name="converter">Conversion method for returned value</param>
         /// <returns>An instance of T created by converting the returned value with the specified converter.</returns>
-        protected T ExecuteScalar<T>(SQLiteCommand command, Func<object, T> converter = null)
+        protected async Task<T> ExecuteScalar<T>(SQLiteCommand command, Func<object, T> converter = null)
         {
-            using var connection = GetOpenConnection();
+            await using var connection = await GetOpenConnection();
             command.Connection = connection;
-            var scalar = command.ExecuteScalar();
+            var scalar = await command.ExecuteScalarAsync();
             return converter is not null ? converter(scalar) : (T)scalar;
         }
 
@@ -98,7 +81,7 @@ namespace WelcomeTo.Server.Repository
         /// <param name="commandString">Command text to execute</param>
         /// <param name="converter">Conversion method for rows</param>
         /// <returns>An IEnumerable of T created by converting the returned rows to T using the specified converter.</returns>
-        protected IEnumerable<T> Execute<T>(string commandString, Func<SQLiteDataReader, T> converter) => Execute(new SQLiteCommand(commandString), converter);
+        protected IAsyncEnumerable<T> Execute<T>(string commandString, Func<SQLiteDataReader, T> converter) => Execute(new SQLiteCommand(commandString), converter);
 
         /// <summary>
         /// Executes the provided SQLiteCommand using a new connection, returning an IEnumerable of T generated from each row in the result set using the specified converter.
@@ -107,12 +90,12 @@ namespace WelcomeTo.Server.Repository
         /// <param name="command">Command to execute</param>
         /// <param name="converter">Conversion method for rows</param>
         /// <returns>An IEnumerable of T created by converting the returned rows to T using the specified converter.</returns>
-        protected IEnumerable<T> Execute<T>(SQLiteCommand command, Func<SQLiteDataReader, T> converter)
+        protected async IAsyncEnumerable<T> Execute<T>(SQLiteCommand command, Func<SQLiteDataReader, T> converter)
         {
-            using var connection = GetOpenConnection();
+            await using var connection = await GetOpenConnection();
             command.Connection = connection;
-            using var reader = command.ExecuteReader();
-            while (reader.Read())
+            await using var reader = command.ExecuteReader();
+            while (await reader.ReadAsync())
             {
                 yield return converter(reader);
             }
@@ -123,21 +106,51 @@ namespace WelcomeTo.Server.Repository
         /// </summary>
         /// <param name="action">Action to run in transaction</param>
         /// <param name="isolationLevel">Isolation Level of the transaction, defaults to Serializable</param>
-        protected void ExecuteInTransaction(Action<SQLiteConnection> action, IsolationLevel isolationLevel = IsolationLevel.Serializable)
+        protected async Task ExecuteInTransaction(Action<SQLiteConnection> action, IsolationLevel isolationLevel = IsolationLevel.Serializable)
         {
-            using var connection = GetOpenConnection();
-            var transaction = connection.BeginTransaction(isolationLevel);
+            await using var connection = await GetOpenConnection();
+            await using var transaction = await connection.BeginTransactionAsync(isolationLevel);
             try
             {
                 action(connection);
-                transaction.Commit();
+                await transaction.CommitAsync();
             }
             catch
             {
-                transaction.Rollback();
+                await transaction.RollbackAsync();
                 throw;
             }
         }
+
+        /// <summary>
+        /// Returns an open SQLiteConnection.
+        /// </summary>
+        protected async Task<SQLiteConnection> GetOpenConnection()
+        {
+            await InitializeIfRequiredAsync();
+
+            var connection = new SQLiteConnection(ConnectionString);
+            await connection.OpenAsync();
+            return connection;
+        }
+
+        /// <summary>
+        /// Initializes the repository if it hasn't been already.
+        /// </summary>
+        protected async ValueTask InitializeIfRequiredAsync()
+        {
+            if (!_initialized && !_initializing)
+            {
+                _initializing = true;
+                await InitializeAsync();
+                _initialized = true;
+            }
+        }
+
+        /// <summary>
+        /// Initialize repository.
+        /// </summary>
+        protected abstract Task InitializeAsync();
 
         /// <summary>
         /// Retrieves the value from the named column, and converts it to an instance of T by deserializing the string value of the column.

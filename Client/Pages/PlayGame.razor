@@ -90,7 +90,7 @@ else
                     <TabItem Title="@IdentifiedPlayer.Name">
                         @if (Game.CompletedAtUtc.HasValue || _showWaitingMessage)
                         {
-                            <ReadOnlyPlayerSheet Player="IdentifiedPlayer" />
+                            <ReadOnlyPlayerSheet Player="IdentifiedPlayer" IsSelf="true" />
                         }
                         else
                         {
@@ -100,7 +100,7 @@ else
                     @foreach (var player in Game.Players.Where(p => p.Name != IdentifiedPlayer.Name))
                     {
                         <TabItem Title="@player.Name">
-                            <ReadOnlyPlayerSheet Player="player" />
+                            <ReadOnlyPlayerSheet Player="player" IsSelf="false" />
                         </TabItem>
                     }
                 </TabItems>

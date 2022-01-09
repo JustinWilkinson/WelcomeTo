@@ -1,7 +1,9 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace WelcomeTo.Shared.Extensions
 {
@@ -58,7 +60,7 @@ namespace WelcomeTo.Shared.Extensions
             }
             else
             {
-                propertyName = propertyName.Length > 1 ? $"{char.ToLowerInvariant(propertyName[0])}{propertyName.Substring(1)}" : propertyName.ToLowerInvariant();
+                propertyName = propertyName.Length > 1 ? $"{char.ToLowerInvariant(propertyName[0])}{propertyName[1..]}" : propertyName.ToLowerInvariant();
                 return json.TryGetProperty(propertyName, out property) ? propertyConverter(property) : default;
             }
         }
@@ -83,5 +85,20 @@ namespace WelcomeTo.Shared.Extensions
         /// <param name="obj">Object to serialize</param>
         /// <returns>A json string respresentaion of the provided object</returns>
         public static string Serialize(this object obj) => JsonConvert.SerializeObject(obj, Formatting.Indented);
+
+        /// <summary>
+        /// Serializes the object provided using Newtonsoft Json and an indented format for easy readability.
+        /// </summary>
+        /// <param name="obj">Object to serialize</param>
+        /// <returns>A json string respresentaion of the provided object</returns>
+        public static async Task<string> SerializeAsync<T>(this Task<T> task) => JsonConvert.SerializeObject(await task, Formatting.Indented);
+
+        /// <summary>
+        /// Serializes the object provided using Newtonsoft Json and an indented format for easy readability.
+        /// </summary>
+        /// <param name="obj">Object to serialize</param>
+        /// <returns>A json string respresentaion of the provided object</returns>
+        public static async Task<string> SerializeAsync<T>(this IAsyncEnumerable<T> asyncEnumerable) 
+            => JsonConvert.SerializeObject(await asyncEnumerable.ToListAsync(), Formatting.Indented);
     }
 }

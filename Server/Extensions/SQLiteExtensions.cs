@@ -15,9 +15,10 @@ namespace WelcomeTo.Server.Extensions
         /// <param name="parameterName">The name to give to the parameter</param>
         /// <param name="parameterValue">The value to assign to the parameter</param>
         /// <param name="dbType">The DbType of the parameter, defaults to DbType.String</param>
-        public static void AddParameter(this SQLiteCommand command, string parameterName, object parameterValue, DbType dbType = DbType.String)
+        public static SQLiteCommand AddParameter(this SQLiteCommand command, string parameterName, object parameterValue, DbType dbType = DbType.String)
         {
             command.Parameters.Add(new SQLiteParameter(parameterName, parameterValue) { DbType = dbType });
+            return command;
         }
     }
 }
