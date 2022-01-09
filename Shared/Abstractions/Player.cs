@@ -12,6 +12,8 @@ namespace WelcomeTo.Shared.Abstractions
 
         public Board Board { get; set; }
 
+        public bool HideBoard { get; set; }
+
         public ScoreSheet ScoreSheet { get; set; }
 
         public bool CanPerformAction(Turn currentTurn)

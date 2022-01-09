@@ -1,23 +1,40 @@
 ﻿<CascadingValue Value="this">
     <div class="container-fluid grass-background p-2">
-        <TabControl>
-            <TabItems>
-                <TabItem Title="Board">
-                    <ReadOnlyPlayerBoard Board="Player.Board" />
-                </TabItem>
-                <TabItem Title="Score Sheet">
-                    <ReadOnlyScoreSheet ScoreSheet="Player.ScoreSheet" />
-                </TabItem>
-            </TabItems>
-        </TabControl>
+        @{
+            Console.WriteLine("Self " + IsSelf);
+            Console.WriteLine("HideBoard " + Player.HideBoard);
+            Console.WriteLine("Game " + Game.CompletedAtUtc);
+        }
+        @if (!IsSelf && Player.HideBoard && !Game.CompletedAtUtc.HasValue)
+        {
+            <div class="container-fluid p-4">
+                <h2 class="text-center text-white">This player has hidden their board from prying eyes!</h2>
+            </div>
+        }
+        else
+        {
+            <TabControl>
+                <TabItems>
+                    <TabItem Title="Board">
+                        <ReadOnlyPlayerBoard Board="Player.Board" />
+                    </TabItem>
+                    <TabItem Title="Score Sheet">
+                        <ReadOnlyScoreSheet ScoreSheet="Player.ScoreSheet" />
+                    </TabItem>
+                </TabItems>
+            </TabControl>
+        }
     </div>
 </CascadingValue>
 
 
-@code{
+@code {
     [CascadingParameter]
     public Game Game { get; set; }
 
     [Parameter]
     public Player Player { get; set; }
+
+    [Parameter]
+    public bool IsSelf { get; set; }
 }

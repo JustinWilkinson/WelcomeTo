@@ -12,14 +12,14 @@ namespace WelcomeTo.Client.Services.SignalR
 
         }
 
-        public async Task AddToGroupAsync(string groupId) => await _hubConnection.InvokeAsync("AddToGroupAsync", groupId);
+        public Task AddToGroupAsync(string groupId) => _hubConnection.InvokeAsync("AddToGroupAsync", groupId);
 
-        public async Task RemoveFromGroupAsync(string groupId) => await _hubConnection.InvokeAsync("RemoveFromGroupAsync", groupId);
+        public Task RemoveFromGroupAsync(string groupId) => _hubConnection.InvokeAsync("RemoveFromGroupAsync", groupId);
 
-        public async Task UpdateGameAsync(string gameId) => await _hubConnection.InvokeAsync("UpdateGameAsync", gameId);
+        public Task UpdateGameAsync(string gameId) => _hubConnection.InvokeAsync("UpdateGameAsync", gameId);
 
-        public async Task OtherPlayerActionTakenAsync(string gameId, string playerName) => await _hubConnection.InvokeAsync("OtherPlayerActionTakenAsync", gameId, playerName);
+        public Task OtherPlayerActionTakenAsync(string gameId, string playerName) => _hubConnection.InvokeAsync("OtherPlayerActionTakenAsync", gameId, playerName);
 
-        public async Task NewGameAddedAsync() => await _hubConnection.InvokeAsync("NewGameAddedAsync");
+        public Task NewGameAddedAsync() => _hubConnection.InvokeAsync("NewGameAddedAsync");
     }
 }

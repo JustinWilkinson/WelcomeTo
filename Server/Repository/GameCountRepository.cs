@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
-using System.Linq;
+using System.Threading.Tasks;
+using WelcomeTo.Shared.Extensions;
 
 namespace WelcomeTo.Server.Repository
 {
@@ -9,9 +10,9 @@ namespace WelcomeTo.Server.Repository
     /// </summary>
     public interface IGameCountRepository
     {
-        int GetGameCount();
+        Task<int> GetGameCount();
 
-        void IncrementGameCount();
+        Task IncrementGameCount();
     }
 
     /// <summary>
@@ -21,14 +22,20 @@ namespace WelcomeTo.Server.Repository
     {
         private readonly ILogger<GameCountRepository> _logger;
 
-        public GameCountRepository(ILogger<GameCountRepository> logger) : base("CREATE TABLE IF NOT EXISTS GameCount (GameCount integer)")
+        public GameCountRepository(ILogger<GameCountRepository> logger)
         {
             _logger = logger;
+        }
+
+        protected override async Task InitializeAsync()
+        {
             try
             {
-                if (ExecuteScalar("SELECT COUNT(*) AS Count FROM GameCount", Convert.ToInt32) == 0)
+                await Execute("CREATE TABLE IF NOT EXISTS GameCount (GameCount integer)");
+
+                if (await ExecuteScalar("SELECT COUNT(*) AS Count FROM GameCount", Convert.ToInt32) == 0)
                 {
-                    Execute("INSERT INTO GameCount VALUES (0)");
+                    await Execute("INSERT INTO GameCount VALUES (0)");
                 }
             }
             catch (Exception ex)
@@ -38,11 +45,11 @@ namespace WelcomeTo.Server.Repository
             }
         }
 
-        public int GetGameCount()
+        public async Task<int> GetGameCount()
         {
             try
             {
-                return Execute("SELECT * FROM GameCount", GetColumnValue("GameCount", Convert.ToInt32)).Single();
+                return await Execute("SELECT * FROM GameCount", GetColumnValue("GameCount", Convert.ToInt32)).SingleAsync();
             }
             catch (Exception ex)
             {
@@ -51,11 +58,11 @@ namespace WelcomeTo.Server.Repository
             }
         }
 
-        public void IncrementGameCount()
+        public async Task IncrementGameCount()
         {
             try
             {
-                Execute("UPDATE GameCount SET GameCount = GameCount + 1");
+                await Execute("UPDATE GameCount SET GameCount = GameCount + 1");
             }
             catch (Exception ex)
             {

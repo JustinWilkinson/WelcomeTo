@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace WelcomeTo.Shared.Extensions
 {
@@ -145,6 +146,147 @@ namespace WelcomeTo.Shared.Extensions
             foreach (var element in enumerable)
             {
                 action(element);
+            }
+        }
+
+        /// <summary>
+        /// Converts an IAsyncEnumerable to a list.
+        /// </summary>
+        /// <typeparam name="T">The type of items in the IAsyncEnumerable.</typeparam>
+        /// <param name="asyncEnumerable">The IAsyncEnumerable to convert.</param>
+        /// <returns>A list formed of the elements of the IAsyncEnumerable.</returns>
+        public static async Task<List<T>> ToListAsync<T>(this IAsyncEnumerable<T> asyncEnumerable)
+        {
+            var list = new List<T>();
+
+            await foreach (var item in asyncEnumerable)
+            {
+                list.Add(item);
+            }
+
+            return list;
+        }
+
+        /// <summary>
+        /// Returns the single item, throwing for multiple or no matches.
+        /// </summary>
+        /// <typeparam name="T">The type of items in the IAsyncEnumerable.</typeparam>
+        /// <param name="asyncEnumerable">The IAsyncEnumerable to check for.</param>
+        /// <returns>The single item or the default value.</returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        public static async Task<T> SingleAsync<T>(this IAsyncEnumerable<T> asyncEnumerable)
+        {
+            T returnItem = default;
+
+            var count = 0;
+            await foreach (var item in asyncEnumerable)
+            {
+                if (count++ > 1)
+                {
+                    break;
+                }
+
+                returnItem = item;
+            }
+
+            return count == 1 ? returnItem : throw new InvalidOperationException("No matching item found!");
+        }
+
+        /// <summary>
+        /// Returns the single item or the default value, throwing only for multiple matches.
+        /// </summary>
+        /// <typeparam name="T">The type of items in the IAsyncEnumerable.</typeparam>
+        /// <param name="asyncEnumerable">The IAsyncEnumerable to check for.</param>
+        /// <returns>The single item or the default value.</returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        public static async Task<T> SingleOrDefaultAsync<T>(this IAsyncEnumerable<T> asyncEnumerable)
+        {
+            T returnItem = default;
+
+            var count = 0;
+            await foreach (var item in asyncEnumerable)
+            {
+                if (count > 1)
+                {
+                    break;
+                }
+
+                returnItem = item;
+            }
+
+            return count <= 1 ? returnItem : throw new InvalidOperationException("No matching item found!");
+        }
+
+        /// <summary>
+        /// Asynchronously projects an IAsyncEnumerable.
+        /// </summary>
+        /// <typeparam name="TInitial">The type of the original collection.</typeparam>
+        /// <typeparam name="TTarget">The target type of the projection.</typeparam>
+        /// <param name="asyncEnumerable">The IAsyncEnumerable to iterate over.</param>
+        /// <param name="selector">The projecting function.</param>
+        /// <returns>A projected IAsyncEnumerable.</returns>
+        public static async IAsyncEnumerable<TTarget> SelectAsync<TInitial, TTarget>(this IAsyncEnumerable<TInitial> asyncEnumerable, Func<TInitial, TTarget> selector)
+        {
+            await foreach (var item in asyncEnumerable)
+            {
+                yield return selector(item);
+            }
+        }
+
+        /// <summary>
+        /// Filters an IAsyncEnumerable with a predicate.
+        /// </summary>
+        /// <typeparam name="T">The type of items in the collection.</typeparam>
+        /// <param name="asyncEnumerable">The IAsyncEnumerable to iterate over.</param>
+        /// <param name="predicate">The predicate to filter by.</param>
+        /// <returns>A filtered IAsyncEnumerable.</returns>
+        public static async IAsyncEnumerable<T> WhereAsync<T>(this IAsyncEnumerable<T> asyncEnumerable, Func<T, bool> predicate)
+        {
+            await foreach (var item in asyncEnumerable)
+            {
+                if (predicate(item))
+                {
+                    yield return item;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Iterates over an IAsyncEnumerable with a catch block.
+        /// </summary>
+        /// <typeparam name="T">The type of items in the collection.</typeparam>
+        /// <param name="asyncEnumerable">The IAsyncEnumerable to iterate over.</param>
+        /// <param name="catchBlock">The catch block to run in the event of an exception.</param>
+        /// <param name="rethrow">Specifies whether or not to rethrow the exception, defaults to true.</param>
+        /// <returns>The items in the original IAsyncEnumerable with exception handling.</returns>
+        public static async IAsyncEnumerable<T> WithCatch<T>(this IAsyncEnumerable<T> asyncEnumerable, Action<Exception> catchBlock, bool rethrow = true)
+        {
+            await using var enumerator = asyncEnumerable.GetAsyncEnumerator();
+
+            while (true)
+            {
+                T item = default;
+
+                try
+                {
+                    if (!await enumerator.MoveNextAsync())
+                    {
+                        yield break;
+                    }
+
+                    item = enumerator.Current;
+                }
+                catch (Exception ex)
+                {
+                    catchBlock(ex);
+
+                    if (rethrow)
+                    {
+                        throw;
+                    }
+                }
+
+                yield return item;
             }
         }
     }

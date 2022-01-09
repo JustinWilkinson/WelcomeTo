@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using WelcomeTo.Server.Extensions;
 using WelcomeTo.Shared.Abstractions;
 using WelcomeTo.Shared.Enumerations;
@@ -15,9 +17,9 @@ namespace WelcomeTo.Server.Repository
     /// </summary>
     public interface IRecordRepository
     {
-        IEnumerable<Record> ListRecords();
+        Task<IEnumerable<Record>> ListRecords();
 
-        void UpdateRecords(Game records);
+        Task UpdateRecords(Game records);
     }
 
     /// <summary>
@@ -25,31 +27,35 @@ namespace WelcomeTo.Server.Repository
     /// </summary>
     public class RecordRepository : Repository, IRecordRepository
     {
-        private const int RECORD_COUNT = 5;
+        private const int RecordCount = 5;
 
         private readonly ILogger<RecordRepository> _logger;
-        private readonly object _cacheLock =  new();
+        private readonly SemaphoreSlim _semaphore = new(1, 1);
 
         private List<Record> _fame = new();
         private List<Record> _shame = new();
-        private bool _unsavedChanges = false;
 
-        public RecordRepository(ILogger<RecordRepository> logger) : base("CREATE TABLE IF NOT EXISTS Records (RecordsJson text)")
+        public RecordRepository(ILogger<RecordRepository> logger)
         {
             _logger = logger;
+        }
 
+        protected override async Task InitializeAsync()
+        {
             try
             {
-                lock (_cacheLock)
+                await _semaphore.WaitAsync();
+
+                await Execute("CREATE TABLE IF NOT EXISTS Records (RecordsJson text)");
+
+                if (await ExecuteScalar("SELECT COUNT(*) AS Count FROM Records", Convert.ToInt32) == 0)
                 {
-                    if (ExecuteScalar("SELECT COUNT(*) AS Count FROM Records", Convert.ToInt32) == 0)
-                    {
-                        Execute("INSERT INTO Records VALUES ('')");
-                    }
-                    else
-                    {
-                        Execute("SELECT * FROM Records", DeserializeColumn<IEnumerable<Record>>("RecordsJson")).SingleOrDefault()?.ForEach(r => (r.Type == RecordType.Fame ? _fame : _shame).Add(r));
-                    }
+                    await Execute("INSERT INTO Records VALUES ('')");
+                }
+                else
+                {
+                    var records = await Execute("SELECT * FROM Records", DeserializeColumn<IEnumerable<Record>>("RecordsJson")).SingleOrDefaultAsync();
+                    records.ForEach(r => (r.Type == RecordType.Fame ? _fame : _shame).Add(r));
                 }
             }
             catch (Exception ex)
@@ -57,47 +63,57 @@ namespace WelcomeTo.Server.Repository
                 _logger.LogError(ex, "An error occurred initialising the Record Repository");
                 throw;
             }
-
+            finally 
+            {
+                _semaphore.Release();
+            }
         }
 
-        public IEnumerable<Record> ListRecords()
+        public async Task<IEnumerable<Record>> ListRecords()
         {
+            await InitializeIfRequiredAsync();
+
             try
             {
-                lock (_cacheLock)
-                {
-                    OrderRecords();
-                    return _fame.Concat(_shame);
-                }
+                await _semaphore.WaitAsync();
+
+                OrderRecords();
+                return _fame.Concat(_shame);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred retrieving records.");
                 throw;
             }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
-        public void UpdateRecords(Game game)
+        public async Task UpdateRecords(Game game)
         {
+            await InitializeIfRequiredAsync();
+
             try
             {
-                lock (_cacheLock)
-                {
-                    var now = DateTime.UtcNow;
-                    foreach (var player in game.Players)
-                    {
-                        var score = game.GetPointsTotal(player);
-                        if (CheckForFameRecord(game.Name, player.Name, score, now) | CheckForShameRecord(game.Name, player.Name, score, now)) // Use bitwise OR, want to always check both.
-                        {
-                            _unsavedChanges = true;
-                            OrderRecords();
-                        }
-                    }
+                await _semaphore.WaitAsync();
 
-                    if (_unsavedChanges)
+                var unsavedChanges = false;
+                var now = DateTime.UtcNow;
+                foreach (var player in game.Players)
+                {
+                    var score = game.GetPointsTotal(player);
+                    if (CheckForFameRecord(game.Name, player.Name, score, now) | CheckForShameRecord(game.Name, player.Name, score, now)) // Use bitwise OR, want to always check both.
                     {
-                        UpdateRecords();
+                        OrderRecords();
+                        unsavedChanges = true;
                     }
+                }
+
+                if (unsavedChanges)
+                {
+                    await UpdateRecords();
                 }
             }
             catch (Exception ex)
@@ -105,17 +121,20 @@ namespace WelcomeTo.Server.Repository
                 _logger.LogError(ex, "An error occurred updating the records.");
                 throw;
             }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         #region Private
-        private void UpdateRecords()
+        private async Task UpdateRecords()
         {
             try
             {
                 var command = new SQLiteCommand("UPDATE Records SET RecordsJson = @RecordsJson");
                 command.AddParameter("@RecordsJson", _fame.Concat(_shame).Serialize());
-                Execute(command);
-                _unsavedChanges = false;
+                await Execute(command);
             }
             catch (Exception ex)
             {
@@ -127,7 +146,7 @@ namespace WelcomeTo.Server.Repository
         private bool CheckForFameRecord(string gameName, string playerName, int score, DateTime now)
         {
             var beatenRecord = _fame.FirstOrDefault(r => score >= r.Score);
-            if (beatenRecord is not null || _fame.Count < RECORD_COUNT)
+            if (beatenRecord is not null || _fame.Count < RecordCount)
             {
                 var newRecord = new Record
                 {
@@ -144,7 +163,7 @@ namespace WelcomeTo.Server.Repository
                     var record = _fame[i];
                     if (record.Position > newRecord.Position || (record.Position == newRecord.Position && record.Score < newRecord.Score))
                     {
-                        if (++record.Position > RECORD_COUNT)
+                        if (++record.Position > RecordCount)
                         {
                             _fame.RemoveAt(i);
                         }
@@ -161,7 +180,7 @@ namespace WelcomeTo.Server.Repository
         private bool CheckForShameRecord(string gameName, string playerName, int score, DateTime now)
         {
             var beatenRecord = _shame.FirstOrDefault(r => score <= r.Score);
-            if (beatenRecord is not null || _shame.Count < RECORD_COUNT)
+            if (beatenRecord is not null || _shame.Count < RecordCount)
             {
                 var newRecord = new Record
                 {
@@ -178,7 +197,7 @@ namespace WelcomeTo.Server.Repository
                     var record = _shame[i];
                     if (record.Position > newRecord.Position || (record.Position == newRecord.Position && record.Score > newRecord.Score))
                     {
-                        if (++record.Position > RECORD_COUNT)
+                        if (++record.Position > RecordCount)
                         {
                             _shame.RemoveAt(i);
                         }

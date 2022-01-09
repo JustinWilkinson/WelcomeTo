@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Text.Json;
+using System.Threading.Tasks;
 using WelcomeTo.Server.Repository;
 using WelcomeTo.Server.Services;
 using WelcomeTo.Shared.Abstractions;
@@ -30,16 +31,17 @@ namespace WelcomeTo.Server.Controllers
         }
 
         [HttpPut("New")]
-        public void New(JsonElement json)
+        public Task New(JsonElement json)
         {
-            _gameRepository.CreateGame(_gameBuilder.Build(json.GetStringProperty("GameId"), json.GetStringProperty("Name")), json.GetBooleanProperty("PrivateGame"));
-            _gameCountRepository.IncrementGameCount();
+            return Task.WhenAll(
+                _gameRepository.CreateGame(_gameBuilder.Build(json.GetStringProperty("GameId"), json.GetStringProperty("Name")), json.GetBooleanProperty("PrivateGame")),
+                _gameCountRepository.IncrementGameCount());
         }
 
         [HttpPost("Start")]
-        public void StartGame(JsonElement gameIdJson)
+        public Task StartGame(JsonElement gameIdJson)
         {
-            _gameRepository.ModifyGame(gameIdJson.GetString(), game =>
+            return _gameRepository.ModifyGame(gameIdJson.GetString(), game =>
             {
                 game.StartedAtUtc = DateTime.UtcNow;
                 game.StartNextTurn();
@@ -47,7 +49,7 @@ namespace WelcomeTo.Server.Controllers
         }
 
         [HttpPost("Join")]
-        public string Join(JsonElement gameIdJson)
+        public Task<string> Join(JsonElement gameIdJson)
         {
             return _gameRepository.ModifyGame(gameIdJson.GetString(), game =>
             {
@@ -66,7 +68,7 @@ namespace WelcomeTo.Server.Controllers
         }
 
         [HttpPost("UpdatePlayerName")]
-        public bool UpdatePlayerName(JsonElement json)
+        public Task<bool> UpdatePlayerName(JsonElement json)
         {
             return _gameRepository.ModifyGame(json.GetStringProperty("GameId"), game => 
             {
@@ -82,15 +84,17 @@ namespace WelcomeTo.Server.Controllers
         }
 
         [HttpPost("UpdatePlayerSheet")]
-        public string UpdatePlayerSheet(JsonElement json)
+        public async Task<string> UpdatePlayerSheet(JsonElement json)
         {
-            var game = _gameRepository.ModifyGame(json.GetStringProperty("GameId"), game =>
+            var game = await _gameRepository.ModifyGame(json.GetStringProperty("GameId"), game =>
             {
                 var newPlayerInfo = json.GetObjectProperty<Player>("Player");
-                var dbPlayerInfo = game.Players.Single(p => p.Name == newPlayerInfo.Name);
-                dbPlayerInfo.Board = newPlayerInfo.Board;
-                dbPlayerInfo.ScoreSheet = newPlayerInfo.ScoreSheet;
-                game.CurrentTurn.PlayerNamesWithActionTaken.Add(dbPlayerInfo.Name);
+                var player = game.Players.Single(p => p.Name == newPlayerInfo.Name);
+                player.Board = newPlayerInfo.Board;
+                player.ScoreSheet = newPlayerInfo.ScoreSheet;
+                player.HideBoard = newPlayerInfo.HideBoard;
+                
+                game.CurrentTurn.PlayerNamesWithActionTaken.Add(player.Name);
 
                 if (!game.Players.Select(x => x.Name).Except(game.CurrentTurn.PlayerNamesWithActionTaken).Any())
                 {
@@ -102,26 +106,27 @@ namespace WelcomeTo.Server.Controllers
 
             if (game.CompletedAtUtc.HasValue)
             {
-                _recordRepository.UpdateRecords(game);
+                await _recordRepository.UpdateRecords(game);
             }
 
             return game.Serialize();
         }
 
         [HttpPost("RequestReshuffle")]
-        public void RequestReshuffle(JsonElement json) => _gameRepository.ModifyGame(json.GetStringProperty("GameId"), game => game.CurrentTurn.ReshuffleRequesters.Add(json.GetStringProperty("RequesterName")));
+        public Task RequestReshuffle(JsonElement json) 
+            => _gameRepository.ModifyGame(json.GetStringProperty("GameId"), game => game.CurrentTurn.ReshuffleRequesters.Add(json.GetStringProperty("RequesterName")));
 
         [HttpGet("Get")]
-        public string Get(string id) => _gameRepository.GetGame(id).Serialize();
+        public Task<string> Get(string id) => _gameRepository.GetGame(id).SerializeAsync();
 
         [HttpGet("List")]
-        public string List() => _gameRepository.ListGames().Serialize();
+        public Task<string> List() => _gameRepository.ListGames().SerializeAsync();
 
         [HttpGet("Count")]
-        public int Get() => _gameCountRepository.GetGameCount();
+        public Task<int> Get() => _gameCountRepository.GetGameCount();
 
         [HttpPost("RemovePlayer")]
-        public string RemovePlayer(JsonElement json)
+        public Task<string> RemovePlayer(JsonElement json)
         {
             return _gameRepository.ModifyGame(json.GetStringProperty("GameId"), game =>
             {

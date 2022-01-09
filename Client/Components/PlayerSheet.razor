@@ -4,6 +4,18 @@
             <TabHeader>
                 <div class="d-flex">
                     <TabHeaderTemplate />
+                    @if (Player.HideBoard)
+                    {
+                         <button class="btn btn-dark ml-auto mr-2" @onclick="() => ToggleBoard(false)">
+                            <span class="oi oi-lock-locked"></span> Board Hidden
+                        </button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-light ml-auto mr-2" @onclick="() => ToggleBoard(true)">
+                            <span class="oi oi-lock-unlocked"></span> Board Shared
+                        </button>
+                    }
                     @if (_requireReconfirm)
                     {
                         <div class="form-inline ml-auto">
@@ -15,16 +27,16 @@
                     {
                         if (SelectedHouse is not null)
                         {
-                            <button class="btn btn-primary ml-auto" @onclick="() => UpdatePlayerSheetAsync()">Confirm Action</button>
+                            <button class="btn btn-primary" @onclick="() => UpdatePlayerSheetAsync()">Confirm Action</button>
                         }
                         else
                         {
-                            <button class="btn btn-primary ml-auto" disabled>Confirm Action</button>
+                            <button class="btn btn-primary" disabled>Confirm Action</button>
                         }
                     }
                     else
                     {
-                        <div class="form-inline ml-auto">
+                        <div class="form-inline">
                             <label class="col-form-label mr-1 text-white">You cannot perform any action this turn.</label>
                             <button class="form-control btn btn-primary" @onclick="() => UpdatePlayerSheetAsync()">Pass</button>
                         </div>
@@ -58,6 +70,9 @@
 
     [Parameter]
     public EventCallback OnFinalConfirmation { get; set; }
+
+    [Parameter]
+    public EventCallback OnToggleBoard { get; set; }
 
     public SelectedHouse SelectedHouse { get; set; }
     public SelectedHouse SelectedBisHouse { get; set; }
@@ -150,5 +165,11 @@
         {
             StateHasChanged();
         }
+    }
+
+    private void ToggleBoard(bool hideBoard)
+    {
+        Player.HideBoard = hideBoard;
+        StateHasChanged();
     }
 }
