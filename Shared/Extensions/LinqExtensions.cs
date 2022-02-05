@@ -206,7 +206,7 @@ namespace WelcomeTo.Shared.Extensions
             var count = 0;
             await foreach (var item in asyncEnumerable)
             {
-                if (count > 1)
+                if (++count > 1)
                 {
                     break;
                 }
