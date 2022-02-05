@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 using WelcomeTo.Server.Repository;
 using WelcomeTo.Shared.Extensions;
 
@@ -19,6 +20,6 @@ namespace WelcomeTo.Server.Controllers
         }
 
         [HttpGet("List")]
-        public string List() => _recordRepository.ListRecords().Serialize();
+        public async Task<string> List() => (await _recordRepository.ListRecords()).Serialize();
     }
 }
